@@ -11,6 +11,8 @@ type BatchPayload {
   count: Long!
 }
 
+scalar DateTime
+
 scalar Long
 
 type Mutation {
@@ -46,6 +48,11 @@ type Query {
   node(id: ID!): Node
 }
 
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
@@ -53,8 +60,15 @@ type Subscription {
 type User {
   id: ID!
   email: String!
+  emailvalidated: Boolean!
+  validateEmailToken: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   password: String!
-  name: String
+  resetPasswordToken: String!
+  resetPasswordExpires: Float
+  name: String!
+  role: Role!
 }
 
 type UserConnection {
@@ -66,8 +80,13 @@ type UserConnection {
 input UserCreateInput {
   id: ID
   email: String!
+  emailvalidated: Boolean
+  validateEmailToken: String!
   password: String!
-  name: String
+  resetPasswordToken: String!
+  resetPasswordExpires: Float
+  name: String!
+  role: Role
 }
 
 type UserEdge {
@@ -80,17 +99,38 @@ enum UserOrderByInput {
   id_DESC
   email_ASC
   email_DESC
+  emailvalidated_ASC
+  emailvalidated_DESC
+  validateEmailToken_ASC
+  validateEmailToken_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
   password_ASC
   password_DESC
+  resetPasswordToken_ASC
+  resetPasswordToken_DESC
+  resetPasswordExpires_ASC
+  resetPasswordExpires_DESC
   name_ASC
   name_DESC
+  role_ASC
+  role_DESC
 }
 
 type UserPreviousValues {
   id: ID!
   email: String!
+  emailvalidated: Boolean!
+  validateEmailToken: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   password: String!
-  name: String
+  resetPasswordToken: String!
+  resetPasswordExpires: Float
+  name: String!
+  role: Role!
 }
 
 type UserSubscriptionPayload {
@@ -113,14 +153,24 @@ input UserSubscriptionWhereInput {
 
 input UserUpdateInput {
   email: String
+  emailvalidated: Boolean
+  validateEmailToken: String
   password: String
+  resetPasswordToken: String
+  resetPasswordExpires: Float
   name: String
+  role: Role
 }
 
 input UserUpdateManyMutationInput {
   email: String
+  emailvalidated: Boolean
+  validateEmailToken: String
   password: String
+  resetPasswordToken: String
+  resetPasswordExpires: Float
   name: String
+  role: Role
 }
 
 input UserWhereInput {
@@ -152,6 +202,38 @@ input UserWhereInput {
   email_not_starts_with: String
   email_ends_with: String
   email_not_ends_with: String
+  emailvalidated: Boolean
+  emailvalidated_not: Boolean
+  validateEmailToken: String
+  validateEmailToken_not: String
+  validateEmailToken_in: [String!]
+  validateEmailToken_not_in: [String!]
+  validateEmailToken_lt: String
+  validateEmailToken_lte: String
+  validateEmailToken_gt: String
+  validateEmailToken_gte: String
+  validateEmailToken_contains: String
+  validateEmailToken_not_contains: String
+  validateEmailToken_starts_with: String
+  validateEmailToken_not_starts_with: String
+  validateEmailToken_ends_with: String
+  validateEmailToken_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
   password: String
   password_not: String
   password_in: [String!]
@@ -166,6 +248,28 @@ input UserWhereInput {
   password_not_starts_with: String
   password_ends_with: String
   password_not_ends_with: String
+  resetPasswordToken: String
+  resetPasswordToken_not: String
+  resetPasswordToken_in: [String!]
+  resetPasswordToken_not_in: [String!]
+  resetPasswordToken_lt: String
+  resetPasswordToken_lte: String
+  resetPasswordToken_gt: String
+  resetPasswordToken_gte: String
+  resetPasswordToken_contains: String
+  resetPasswordToken_not_contains: String
+  resetPasswordToken_starts_with: String
+  resetPasswordToken_not_starts_with: String
+  resetPasswordToken_ends_with: String
+  resetPasswordToken_not_ends_with: String
+  resetPasswordExpires: Float
+  resetPasswordExpires_not: Float
+  resetPasswordExpires_in: [Float!]
+  resetPasswordExpires_not_in: [Float!]
+  resetPasswordExpires_lt: Float
+  resetPasswordExpires_lte: Float
+  resetPasswordExpires_gt: Float
+  resetPasswordExpires_gte: Float
   name: String
   name_not: String
   name_in: [String!]
@@ -180,6 +284,10 @@ input UserWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
+  role: Role
+  role_not: Role
+  role_in: [Role!]
+  role_not_in: [Role!]
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
@@ -188,6 +296,8 @@ input UserWhereInput {
 input UserWhereUniqueInput {
   id: ID
   email: String
+  validateEmailToken: String
+  resetPasswordToken: String
 }
 `
       }

@@ -106,31 +106,28 @@ export type UserOrderByInput =
   | "id_DESC"
   | "email_ASC"
   | "email_DESC"
+  | "emailvalidated_ASC"
+  | "emailvalidated_DESC"
+  | "validateEmailToken_ASC"
+  | "validateEmailToken_DESC"
+  | "createdAt_ASC"
+  | "createdAt_DESC"
+  | "updatedAt_ASC"
+  | "updatedAt_DESC"
   | "password_ASC"
   | "password_DESC"
+  | "resetPasswordToken_ASC"
+  | "resetPasswordToken_DESC"
+  | "resetPasswordExpires_ASC"
+  | "resetPasswordExpires_DESC"
   | "name_ASC"
-  | "name_DESC";
+  | "name_DESC"
+  | "role_ASC"
+  | "role_DESC";
+
+export type Role = "ADMIN" | "CUSTOMER";
 
 export type MutationType = "CREATED" | "UPDATED" | "DELETED";
-
-export interface UserCreateInput {
-  id?: Maybe<ID_Input>;
-  email: String;
-  password: String;
-  name?: Maybe<String>;
-}
-
-export interface UserUpdateInput {
-  email?: Maybe<String>;
-  password?: Maybe<String>;
-  name?: Maybe<String>;
-}
-
-export interface UserUpdateManyMutationInput {
-  email?: Maybe<String>;
-  password?: Maybe<String>;
-  name?: Maybe<String>;
-}
 
 export interface UserWhereInput {
   id?: Maybe<ID_Input>;
@@ -161,6 +158,38 @@ export interface UserWhereInput {
   email_not_starts_with?: Maybe<String>;
   email_ends_with?: Maybe<String>;
   email_not_ends_with?: Maybe<String>;
+  emailvalidated?: Maybe<Boolean>;
+  emailvalidated_not?: Maybe<Boolean>;
+  validateEmailToken?: Maybe<String>;
+  validateEmailToken_not?: Maybe<String>;
+  validateEmailToken_in?: Maybe<String[] | String>;
+  validateEmailToken_not_in?: Maybe<String[] | String>;
+  validateEmailToken_lt?: Maybe<String>;
+  validateEmailToken_lte?: Maybe<String>;
+  validateEmailToken_gt?: Maybe<String>;
+  validateEmailToken_gte?: Maybe<String>;
+  validateEmailToken_contains?: Maybe<String>;
+  validateEmailToken_not_contains?: Maybe<String>;
+  validateEmailToken_starts_with?: Maybe<String>;
+  validateEmailToken_not_starts_with?: Maybe<String>;
+  validateEmailToken_ends_with?: Maybe<String>;
+  validateEmailToken_not_ends_with?: Maybe<String>;
+  createdAt?: Maybe<DateTimeInput>;
+  createdAt_not?: Maybe<DateTimeInput>;
+  createdAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  createdAt_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  createdAt_lt?: Maybe<DateTimeInput>;
+  createdAt_lte?: Maybe<DateTimeInput>;
+  createdAt_gt?: Maybe<DateTimeInput>;
+  createdAt_gte?: Maybe<DateTimeInput>;
+  updatedAt?: Maybe<DateTimeInput>;
+  updatedAt_not?: Maybe<DateTimeInput>;
+  updatedAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  updatedAt_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  updatedAt_lt?: Maybe<DateTimeInput>;
+  updatedAt_lte?: Maybe<DateTimeInput>;
+  updatedAt_gt?: Maybe<DateTimeInput>;
+  updatedAt_gte?: Maybe<DateTimeInput>;
   password?: Maybe<String>;
   password_not?: Maybe<String>;
   password_in?: Maybe<String[] | String>;
@@ -175,6 +204,28 @@ export interface UserWhereInput {
   password_not_starts_with?: Maybe<String>;
   password_ends_with?: Maybe<String>;
   password_not_ends_with?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+  resetPasswordToken_not?: Maybe<String>;
+  resetPasswordToken_in?: Maybe<String[] | String>;
+  resetPasswordToken_not_in?: Maybe<String[] | String>;
+  resetPasswordToken_lt?: Maybe<String>;
+  resetPasswordToken_lte?: Maybe<String>;
+  resetPasswordToken_gt?: Maybe<String>;
+  resetPasswordToken_gte?: Maybe<String>;
+  resetPasswordToken_contains?: Maybe<String>;
+  resetPasswordToken_not_contains?: Maybe<String>;
+  resetPasswordToken_starts_with?: Maybe<String>;
+  resetPasswordToken_not_starts_with?: Maybe<String>;
+  resetPasswordToken_ends_with?: Maybe<String>;
+  resetPasswordToken_not_ends_with?: Maybe<String>;
+  resetPasswordExpires?: Maybe<Float>;
+  resetPasswordExpires_not?: Maybe<Float>;
+  resetPasswordExpires_in?: Maybe<Float[] | Float>;
+  resetPasswordExpires_not_in?: Maybe<Float[] | Float>;
+  resetPasswordExpires_lt?: Maybe<Float>;
+  resetPasswordExpires_lte?: Maybe<Float>;
+  resetPasswordExpires_gt?: Maybe<Float>;
+  resetPasswordExpires_gte?: Maybe<Float>;
   name?: Maybe<String>;
   name_not?: Maybe<String>;
   name_in?: Maybe<String[] | String>;
@@ -189,9 +240,47 @@ export interface UserWhereInput {
   name_not_starts_with?: Maybe<String>;
   name_ends_with?: Maybe<String>;
   name_not_ends_with?: Maybe<String>;
+  role?: Maybe<Role>;
+  role_not?: Maybe<Role>;
+  role_in?: Maybe<Role[] | Role>;
+  role_not_in?: Maybe<Role[] | Role>;
   AND?: Maybe<UserWhereInput[] | UserWhereInput>;
   OR?: Maybe<UserWhereInput[] | UserWhereInput>;
   NOT?: Maybe<UserWhereInput[] | UserWhereInput>;
+}
+
+export interface UserCreateInput {
+  id?: Maybe<ID_Input>;
+  email: String;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken: String;
+  password: String;
+  resetPasswordToken: String;
+  resetPasswordExpires?: Maybe<Float>;
+  name: String;
+  role?: Maybe<Role>;
+}
+
+export interface UserUpdateInput {
+  email?: Maybe<String>;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken?: Maybe<String>;
+  password?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+  resetPasswordExpires?: Maybe<Float>;
+  name?: Maybe<String>;
+  role?: Maybe<Role>;
+}
+
+export interface UserUpdateManyMutationInput {
+  email?: Maybe<String>;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken?: Maybe<String>;
+  password?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+  resetPasswordExpires?: Maybe<Float>;
+  name?: Maybe<String>;
+  role?: Maybe<Role>;
 }
 
 export interface UserSubscriptionWhereInput {
@@ -208,26 +297,102 @@ export interface UserSubscriptionWhereInput {
 export type UserWhereUniqueInput = AtLeastOne<{
   id: Maybe<ID_Input>;
   email?: Maybe<String>;
+  validateEmailToken?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
 }>;
 
 export interface NodeNode {
   id: ID_Output;
 }
 
-export interface AggregateUser {
-  count: Int;
+export interface PageInfo {
+  hasNextPage: Boolean;
+  hasPreviousPage: Boolean;
+  startCursor?: String;
+  endCursor?: String;
 }
 
-export interface AggregateUserPromise
-  extends Promise<AggregateUser>,
-    Fragmentable {
-  count: () => Promise<Int>;
+export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
+  hasNextPage: () => Promise<Boolean>;
+  hasPreviousPage: () => Promise<Boolean>;
+  startCursor: () => Promise<String>;
+  endCursor: () => Promise<String>;
 }
 
-export interface AggregateUserSubscription
-  extends Promise<AsyncIterator<AggregateUser>>,
+export interface PageInfoSubscription
+  extends Promise<AsyncIterator<PageInfo>>,
     Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
+  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
+  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
+  startCursor: () => Promise<AsyncIterator<String>>;
+  endCursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface UserPreviousValues {
+  id: ID_Output;
+  email: String;
+  emailvalidated: Boolean;
+  validateEmailToken: String;
+  createdAt: DateTimeOutput;
+  updatedAt: DateTimeOutput;
+  password: String;
+  resetPasswordToken: String;
+  resetPasswordExpires?: Float;
+  name: String;
+  role: Role;
+}
+
+export interface UserPreviousValuesPromise
+  extends Promise<UserPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  email: () => Promise<String>;
+  emailvalidated: () => Promise<Boolean>;
+  validateEmailToken: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
+  updatedAt: () => Promise<DateTimeOutput>;
+  password: () => Promise<String>;
+  resetPasswordToken: () => Promise<String>;
+  resetPasswordExpires: () => Promise<Float>;
+  name: () => Promise<String>;
+  role: () => Promise<Role>;
+}
+
+export interface UserPreviousValuesSubscription
+  extends Promise<AsyncIterator<UserPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  email: () => Promise<AsyncIterator<String>>;
+  emailvalidated: () => Promise<AsyncIterator<Boolean>>;
+  validateEmailToken: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+  updatedAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+  password: () => Promise<AsyncIterator<String>>;
+  resetPasswordToken: () => Promise<AsyncIterator<String>>;
+  resetPasswordExpires: () => Promise<AsyncIterator<Float>>;
+  name: () => Promise<AsyncIterator<String>>;
+  role: () => Promise<AsyncIterator<Role>>;
+}
+
+export interface UserConnection {
+  pageInfo: PageInfo;
+  edges: UserEdge[];
+}
+
+export interface UserConnectionPromise
+  extends Promise<UserConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<UserEdge>>() => T;
+  aggregate: <T = AggregateUserPromise>() => T;
+}
+
+export interface UserConnectionSubscription
+  extends Promise<AsyncIterator<UserConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateUserSubscription>() => T;
 }
 
 export interface BatchPayload {
@@ -244,31 +409,6 @@ export interface BatchPayloadSubscription
   extends Promise<AsyncIterator<BatchPayload>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Long>>;
-}
-
-export interface UserPreviousValues {
-  id: ID_Output;
-  email: String;
-  password: String;
-  name?: String;
-}
-
-export interface UserPreviousValuesPromise
-  extends Promise<UserPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  email: () => Promise<String>;
-  password: () => Promise<String>;
-  name: () => Promise<String>;
-}
-
-export interface UserPreviousValuesSubscription
-  extends Promise<AsyncIterator<UserPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  email: () => Promise<AsyncIterator<String>>;
-  password: () => Promise<AsyncIterator<String>>;
-  name: () => Promise<AsyncIterator<String>>;
 }
 
 export interface UserEdge {
@@ -316,15 +456,29 @@ export interface UserSubscriptionPayloadSubscription
 export interface User {
   id: ID_Output;
   email: String;
+  emailvalidated: Boolean;
+  validateEmailToken: String;
+  createdAt: DateTimeOutput;
+  updatedAt: DateTimeOutput;
   password: String;
-  name?: String;
+  resetPasswordToken: String;
+  resetPasswordExpires?: Float;
+  name: String;
+  role: Role;
 }
 
 export interface UserPromise extends Promise<User>, Fragmentable {
   id: () => Promise<ID_Output>;
   email: () => Promise<String>;
+  emailvalidated: () => Promise<Boolean>;
+  validateEmailToken: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
+  updatedAt: () => Promise<DateTimeOutput>;
   password: () => Promise<String>;
+  resetPasswordToken: () => Promise<String>;
+  resetPasswordExpires: () => Promise<Float>;
   name: () => Promise<String>;
+  role: () => Promise<Role>;
 }
 
 export interface UserSubscription
@@ -332,8 +486,15 @@ export interface UserSubscription
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   email: () => Promise<AsyncIterator<String>>;
+  emailvalidated: () => Promise<AsyncIterator<Boolean>>;
+  validateEmailToken: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+  updatedAt: () => Promise<AsyncIterator<DateTimeOutput>>;
   password: () => Promise<AsyncIterator<String>>;
+  resetPasswordToken: () => Promise<AsyncIterator<String>>;
+  resetPasswordExpires: () => Promise<AsyncIterator<Float>>;
   name: () => Promise<AsyncIterator<String>>;
+  role: () => Promise<AsyncIterator<Role>>;
 }
 
 export interface UserNullablePromise
@@ -341,53 +502,37 @@ export interface UserNullablePromise
     Fragmentable {
   id: () => Promise<ID_Output>;
   email: () => Promise<String>;
+  emailvalidated: () => Promise<Boolean>;
+  validateEmailToken: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
+  updatedAt: () => Promise<DateTimeOutput>;
   password: () => Promise<String>;
+  resetPasswordToken: () => Promise<String>;
+  resetPasswordExpires: () => Promise<Float>;
   name: () => Promise<String>;
+  role: () => Promise<Role>;
 }
 
-export interface UserConnection {
-  pageInfo: PageInfo;
-  edges: UserEdge[];
+export interface AggregateUser {
+  count: Int;
 }
 
-export interface UserConnectionPromise
-  extends Promise<UserConnection>,
+export interface AggregateUserPromise
+  extends Promise<AggregateUser>,
     Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<UserEdge>>() => T;
-  aggregate: <T = AggregateUserPromise>() => T;
+  count: () => Promise<Int>;
 }
 
-export interface UserConnectionSubscription
-  extends Promise<AsyncIterator<UserConnection>>,
+export interface AggregateUserSubscription
+  extends Promise<AsyncIterator<AggregateUser>>,
     Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateUserSubscription>() => T;
+  count: () => Promise<AsyncIterator<Int>>;
 }
 
-export interface PageInfo {
-  hasNextPage: Boolean;
-  hasPreviousPage: Boolean;
-  startCursor?: String;
-  endCursor?: String;
-}
-
-export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
-  hasNextPage: () => Promise<Boolean>;
-  hasPreviousPage: () => Promise<Boolean>;
-  startCursor: () => Promise<String>;
-  endCursor: () => Promise<String>;
-}
-
-export interface PageInfoSubscription
-  extends Promise<AsyncIterator<PageInfo>>,
-    Fragmentable {
-  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
-  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
-  startCursor: () => Promise<AsyncIterator<String>>;
-  endCursor: () => Promise<AsyncIterator<String>>;
-}
+/*
+The `Boolean` scalar type represents `true` or `false`.
+*/
+export type Boolean = boolean;
 
 /*
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
@@ -403,20 +548,34 @@ export type ID_Input = string | number;
 export type ID_Output = string;
 
 /*
+DateTime scalar input type, allowing Date
+*/
+export type DateTimeInput = Date | string;
+
+/*
+DateTime scalar output type, which is always a string
+*/
+export type DateTimeOutput = string;
+
+/*
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+*/
+export type Float = number;
+
+/*
 The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
 */
 export type Int = number;
-
-/*
-The `Boolean` scalar type represents `true` or `false`.
-*/
-export type Boolean = boolean;
 
 /**
  * Model Metadata
  */
 
 export const models: Model[] = [
+  {
+    name: "Role",
+    embedded: false
+  },
   {
     name: "User",
     embedded: false
