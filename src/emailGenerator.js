@@ -1,10 +1,10 @@
 const nodemailer = require('nodemailer')
-const { userMail, passMail } = require('./utils')
+const { userMail, passMail,service } = require('./utils')
 
 module.exports = {
   async sendWelcomeEmail (user, ctx) {
     const mailer = nodemailer.createTransport({
-      service: 'qiye.aliyun',
+      service,
       auth: {
         user: userMail,
         pass: passMail
@@ -13,7 +13,7 @@ module.exports = {
 
     const mailOptions = {
       to: user.email,
-      from: 'aduit@gewu.org.cn',
+      from: userMail,
       subject: '欢迎来到格物在线审计',
       html: `
       <div>你好 ${user.name}</div>
@@ -27,7 +27,7 @@ module.exports = {
   },
   sendForgetPassword (uniqueId, email, ctx) {
     const mailer = nodemailer.createTransport({
-      service: 'qiye.aliyun',
+      service,
       auth: {
         user: userMail,
         pass: passMail
@@ -36,7 +36,7 @@ module.exports = {
 
     const mailOptions = {
       to: email,
-      from: 'aduit@gewu.org.cn',
+      from: userMail,
       subject: '忘记密码 - 格物在线审计',
       html: `
       <div>你好,请点击下面链接重新设置密码.</div>

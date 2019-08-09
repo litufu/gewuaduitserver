@@ -107,7 +107,7 @@ const Mutation = {
     }
     try {
       let uniqueId = crypto.randomBytes(64).toString('hex')
-      await ctx.db.updateUser({
+      await ctx.prisma.updateUser({
         where: { id: user.id },
         data: {
           resetPasswordExpires: new Date().getTime() + 1000 * 60 * 60 * 5, // 5 hours
@@ -130,7 +130,7 @@ const Mutation = {
     }
     const newPasswordHash = await bcrypt.hash(newPassword, 10)
     
-    const newUser = await ctx.db.updateUser({
+    const newUser = await ctx.prisma.updateUser({
         where: { id: userId },
         data: { password: newPasswordHash }
       })

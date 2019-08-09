@@ -1,8 +1,9 @@
 const { verify } = require('jsonwebtoken')
 
-
+// 企业邮箱
 const userMail = "aduit@gewu.org.cn"
-const passMail = "litufu001!"
+const passMail = "litufu001!2"
+const service = "qiye.aliyun"
 
 const APP_SECRET = 'appsecret321'
 
@@ -25,5 +26,6 @@ module.exports = {
   getUserId,
   APP_SECRET,
   userMail,
-  passMail
+  passMail,
+  service,
 }
