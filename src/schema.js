@@ -5,6 +5,7 @@ const typeDefs = gql`
 
   type Query {
     me: User
+    emailHasTaken(email:String!):Boolean!
   }
 
   type Mutation {
