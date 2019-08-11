@@ -122,7 +122,7 @@ const Mutation = {
   },
   updatePassword:async (parent, { oldPassword,newPassword }, ctx) => {
     // 更新密码
-    const userId = getUserId(context)
+    const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
     const oldPasswordValid = await bcrypt.compare(oldPassword, user.password)
     if (!oldPasswordValid) {
@@ -138,8 +138,7 @@ const Mutation = {
     return newUser
   },
   contactToAccountingFirm:async (parent, { accountingFirmCode }, ctx) => {
-    // 更新密码
-    const userId = getUserId(context)
+    const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
     if (!user) {
       throw new Error("用户不存在")
@@ -151,6 +150,32 @@ const Mutation = {
       })
     
     return newUser
+  },
+  createCustomer:async (parent, { name,code,type,nature }, ctx) => {
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 检查用户是否已经关联了会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if (!accountingFirm){
+      throw new Error("尚未关联会计师事务所，请在个人设置中关联会计师事务所")
+    }
+    // 检查会计师事务所是否已经有了该客户
+    const company = await ctx.prisma.company({name})
+    if (company){
+      throw new Error("客户已经存在，无需重复创建")
+    }
+    
+    const newcompany = await ctx.prisma.createCompany({
+      name,
+      code,
+      type,
+      nature
+    })
+    
+    return newcompany
   },
 }
 

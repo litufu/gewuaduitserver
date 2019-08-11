@@ -14,7 +14,7 @@ class AuthError extends Error {
 }
 
 function getUserId(context) {
-  const Authorization = context.request.get('Authorization')
+  const Authorization = (context.req.headers && context.req.headers.authorization) || '';
   if (Authorization) {
     const token = Authorization.replace('Bearer ', '')
     const verifiedToken = verify(token, APP_SECRET)
