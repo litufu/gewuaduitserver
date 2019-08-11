@@ -9,6 +9,7 @@
     "graphql": "^14.4.2",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.3.0",
+    "papaparse": "^5.0.1",
     "prisma-client-lib": "^1.34.3"
   },
   "devDependencies": {
@@ -18,6 +19,7 @@
   "scripts": {
     "start": "nodemon -e js,graphql -x node -r dotenv/config src/index.js",
     "debug": "nodemon -e js,graphql -x node --inspect -r dotenv/config src/index.js",
+    "initData": "node src/initData/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
