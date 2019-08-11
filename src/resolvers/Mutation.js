@@ -137,6 +137,21 @@ const Mutation = {
     
     return newUser
   },
+  contactToAccountingFirm:async (parent, { accountingFirmCode }, ctx) => {
+    // 更新密码
+    const userId = getUserId(context)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    
+    const newUser = await ctx.prisma.updateUser({
+        where: { id: userId },
+        data: { accountingFirm: {connect:{code:accountingFirmCode}} }
+      })
+    
+    return newUser
+  },
 }
 
 module.exports = {

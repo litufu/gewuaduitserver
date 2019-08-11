@@ -13,6 +13,13 @@ const Query = {
       return true
     }
   },
+  accountingFirms:async (parent, {name}, ctx) => {
+    const firms = await ctx.prisma.accountingFirms({ 
+      where: { name_contains: name },
+      first: 5
+    })
+   return firms
+  },
 }
 
 module.exports = {

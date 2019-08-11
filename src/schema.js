@@ -6,6 +6,7 @@ const typeDefs = gql`
   type Query {
     me: User
     emailHasTaken(email:String!):Boolean!
+    accountingFirms(name:String!):[AccountingFirm]
   }
 
   type Mutation {
@@ -16,6 +17,7 @@ const typeDefs = gql`
     login(email: String!, password: String!): AuthPayload!
     forgetPassword(email: String!): User!
     updatePassword(oldPassword: String, newPassword: String!): User!
+    contactToAccountingFirm(accountingFirmCode:String!):User!
   }
 
  
@@ -127,7 +129,6 @@ const typeDefs = gql`
     uploadContent:String
     users:[User]
   }
- 
- 
+  
 `;
 module.exports = typeDefs;
