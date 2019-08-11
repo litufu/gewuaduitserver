@@ -40,6 +40,92 @@ const typeDefs = gql`
     resetPasswordExpires: Float
     name: String!
     role: Role!
+    accountingFirm:AccountingFirm
+    projects:[Project]
+    dataRecords:[DataRecord]
+  }
+
+  type AccountingFirm{
+    id: ID!
+    name:String!
+    code:String!
+    address:String!
+    phone:String!
+    email:String!
+    contact:String!
+    employees:[User]
+  }
+
+  enum CompanyType {
+    DOMESTIC
+    OUTLANDS
+  }
+
+  enum CompanyNature{
+    STATEOWNED
+    LISTED
+    PLANNEDLISTED
+    OTHER
+  }
+
+
+  type Company{
+    id: ID!
+    type:CompanyType!
+    nature:CompanyNature!
+    name:String!
+    code:String
+    address:String
+    legalRepresentative:String
+    establishDate:DateTime
+    registeredCapital:String
+    paidinCapital:String
+    businessScope:String
+    holders:[Holder]
+  }
+
+  type Holder{
+    id: ID!
+    name:String!
+    ratio:Float!
+    company:Company!
+  }
+
+  type Project{
+    id: ID!
+    accountingFirm:AccountingFirm!
+    company:Company!
+    startTime:DateTime!
+    endTime:DateTime!
+    members:[Member]
+  }
+
+  enum ProjectRole{
+    MANAGER
+    PARTNER
+    ASSISTANT
+    QC
+    REVIEWPARTNER
+    JUDGE
+    CPA
+  }
+
+  type Member{
+    id: ID!
+    project:Project!
+    user:User!
+    role:ProjectRole!
+  }
+
+  type DataRecord{
+    id: ID!
+    accountingFirm:AccountingFirm!
+    company:Company!
+    startTime:DateTime!
+    endTime:DateTime!
+    uploadTime:DateTime!
+    uploadContent:String
+    users:[User]
   }
  
  

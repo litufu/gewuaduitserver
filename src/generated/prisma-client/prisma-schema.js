@@ -3,7 +3,306 @@ module.exports = {
   // Please don't change this file manually but run `prisma generate` to update it.
   // For more information, please read the docs: https://www.prisma.io/docs/prisma-client/
 
-/* GraphQL */ `type AggregateUser {
+/* GraphQL */ `type AccountingFirm {
+  id: ID!
+  name: String!
+  code: String!
+  address: String!
+  phone: String!
+  email: String!
+  contact: String!
+  employees(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+}
+
+type AccountingFirmConnection {
+  pageInfo: PageInfo!
+  edges: [AccountingFirmEdge]!
+  aggregate: AggregateAccountingFirm!
+}
+
+input AccountingFirmCreateInput {
+  id: ID
+  name: String!
+  code: String!
+  address: String!
+  phone: String!
+  email: String!
+  contact: String!
+  employees: UserCreateManyWithoutAccountingFirmInput
+}
+
+input AccountingFirmCreateOneInput {
+  create: AccountingFirmCreateInput
+  connect: AccountingFirmWhereUniqueInput
+}
+
+input AccountingFirmCreateOneWithoutEmployeesInput {
+  create: AccountingFirmCreateWithoutEmployeesInput
+  connect: AccountingFirmWhereUniqueInput
+}
+
+input AccountingFirmCreateWithoutEmployeesInput {
+  id: ID
+  name: String!
+  code: String!
+  address: String!
+  phone: String!
+  email: String!
+  contact: String!
+}
+
+type AccountingFirmEdge {
+  node: AccountingFirm!
+  cursor: String!
+}
+
+enum AccountingFirmOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  code_ASC
+  code_DESC
+  address_ASC
+  address_DESC
+  phone_ASC
+  phone_DESC
+  email_ASC
+  email_DESC
+  contact_ASC
+  contact_DESC
+}
+
+type AccountingFirmPreviousValues {
+  id: ID!
+  name: String!
+  code: String!
+  address: String!
+  phone: String!
+  email: String!
+  contact: String!
+}
+
+type AccountingFirmSubscriptionPayload {
+  mutation: MutationType!
+  node: AccountingFirm
+  updatedFields: [String!]
+  previousValues: AccountingFirmPreviousValues
+}
+
+input AccountingFirmSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: AccountingFirmWhereInput
+  AND: [AccountingFirmSubscriptionWhereInput!]
+  OR: [AccountingFirmSubscriptionWhereInput!]
+  NOT: [AccountingFirmSubscriptionWhereInput!]
+}
+
+input AccountingFirmUpdateDataInput {
+  name: String
+  code: String
+  address: String
+  phone: String
+  email: String
+  contact: String
+  employees: UserUpdateManyWithoutAccountingFirmInput
+}
+
+input AccountingFirmUpdateInput {
+  name: String
+  code: String
+  address: String
+  phone: String
+  email: String
+  contact: String
+  employees: UserUpdateManyWithoutAccountingFirmInput
+}
+
+input AccountingFirmUpdateManyMutationInput {
+  name: String
+  code: String
+  address: String
+  phone: String
+  email: String
+  contact: String
+}
+
+input AccountingFirmUpdateOneRequiredInput {
+  create: AccountingFirmCreateInput
+  update: AccountingFirmUpdateDataInput
+  upsert: AccountingFirmUpsertNestedInput
+  connect: AccountingFirmWhereUniqueInput
+}
+
+input AccountingFirmUpdateOneWithoutEmployeesInput {
+  create: AccountingFirmCreateWithoutEmployeesInput
+  update: AccountingFirmUpdateWithoutEmployeesDataInput
+  upsert: AccountingFirmUpsertWithoutEmployeesInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: AccountingFirmWhereUniqueInput
+}
+
+input AccountingFirmUpdateWithoutEmployeesDataInput {
+  name: String
+  code: String
+  address: String
+  phone: String
+  email: String
+  contact: String
+}
+
+input AccountingFirmUpsertNestedInput {
+  update: AccountingFirmUpdateDataInput!
+  create: AccountingFirmCreateInput!
+}
+
+input AccountingFirmUpsertWithoutEmployeesInput {
+  update: AccountingFirmUpdateWithoutEmployeesDataInput!
+  create: AccountingFirmCreateWithoutEmployeesInput!
+}
+
+input AccountingFirmWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  code: String
+  code_not: String
+  code_in: [String!]
+  code_not_in: [String!]
+  code_lt: String
+  code_lte: String
+  code_gt: String
+  code_gte: String
+  code_contains: String
+  code_not_contains: String
+  code_starts_with: String
+  code_not_starts_with: String
+  code_ends_with: String
+  code_not_ends_with: String
+  address: String
+  address_not: String
+  address_in: [String!]
+  address_not_in: [String!]
+  address_lt: String
+  address_lte: String
+  address_gt: String
+  address_gte: String
+  address_contains: String
+  address_not_contains: String
+  address_starts_with: String
+  address_not_starts_with: String
+  address_ends_with: String
+  address_not_ends_with: String
+  phone: String
+  phone_not: String
+  phone_in: [String!]
+  phone_not_in: [String!]
+  phone_lt: String
+  phone_lte: String
+  phone_gt: String
+  phone_gte: String
+  phone_contains: String
+  phone_not_contains: String
+  phone_starts_with: String
+  phone_not_starts_with: String
+  phone_ends_with: String
+  phone_not_ends_with: String
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  contact: String
+  contact_not: String
+  contact_in: [String!]
+  contact_not_in: [String!]
+  contact_lt: String
+  contact_lte: String
+  contact_gt: String
+  contact_gte: String
+  contact_contains: String
+  contact_not_contains: String
+  contact_starts_with: String
+  contact_not_starts_with: String
+  contact_ends_with: String
+  contact_not_ends_with: String
+  employees_every: UserWhereInput
+  employees_some: UserWhereInput
+  employees_none: UserWhereInput
+  AND: [AccountingFirmWhereInput!]
+  OR: [AccountingFirmWhereInput!]
+  NOT: [AccountingFirmWhereInput!]
+}
+
+input AccountingFirmWhereUniqueInput {
+  id: ID
+  name: String
+  code: String
+}
+
+type AggregateAccountingFirm {
+  count: Int!
+}
+
+type AggregateCompany {
+  count: Int!
+}
+
+type AggregateDataRecord {
+  count: Int!
+}
+
+type AggregateHolder {
+  count: Int!
+}
+
+type AggregateMember {
+  count: Int!
+}
+
+type AggregateProject {
+  count: Int!
+}
+
+type AggregateUser {
   count: Int!
 }
 
@@ -11,11 +310,1022 @@ type BatchPayload {
   count: Long!
 }
 
+type Company {
+  id: ID!
+  type: CompanyType!
+  nature: CompanyNature!
+  name: String!
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Holder!]
+}
+
+type CompanyConnection {
+  pageInfo: PageInfo!
+  edges: [CompanyEdge]!
+  aggregate: AggregateCompany!
+}
+
+input CompanyCreateInput {
+  id: ID
+  type: CompanyType!
+  nature: CompanyNature!
+  name: String!
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderCreateManyWithoutCompanyInput
+}
+
+input CompanyCreateOneInput {
+  create: CompanyCreateInput
+  connect: CompanyWhereUniqueInput
+}
+
+input CompanyCreateOneWithoutHoldersInput {
+  create: CompanyCreateWithoutHoldersInput
+  connect: CompanyWhereUniqueInput
+}
+
+input CompanyCreateWithoutHoldersInput {
+  id: ID
+  type: CompanyType!
+  nature: CompanyNature!
+  name: String!
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+}
+
+type CompanyEdge {
+  node: Company!
+  cursor: String!
+}
+
+enum CompanyNature {
+  STATEOWNED
+  LISTED
+  PLANNEDLISTED
+  OTHER
+}
+
+enum CompanyOrderByInput {
+  id_ASC
+  id_DESC
+  type_ASC
+  type_DESC
+  nature_ASC
+  nature_DESC
+  name_ASC
+  name_DESC
+  code_ASC
+  code_DESC
+  address_ASC
+  address_DESC
+  legalRepresentative_ASC
+  legalRepresentative_DESC
+  establishDate_ASC
+  establishDate_DESC
+  registeredCapital_ASC
+  registeredCapital_DESC
+  paidinCapital_ASC
+  paidinCapital_DESC
+  businessScope_ASC
+  businessScope_DESC
+}
+
+type CompanyPreviousValues {
+  id: ID!
+  type: CompanyType!
+  nature: CompanyNature!
+  name: String!
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+}
+
+type CompanySubscriptionPayload {
+  mutation: MutationType!
+  node: Company
+  updatedFields: [String!]
+  previousValues: CompanyPreviousValues
+}
+
+input CompanySubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: CompanyWhereInput
+  AND: [CompanySubscriptionWhereInput!]
+  OR: [CompanySubscriptionWhereInput!]
+  NOT: [CompanySubscriptionWhereInput!]
+}
+
+enum CompanyType {
+  DOMESTIC
+  OUTLANDS
+}
+
+input CompanyUpdateDataInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderUpdateManyWithoutCompanyInput
+}
+
+input CompanyUpdateInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderUpdateManyWithoutCompanyInput
+}
+
+input CompanyUpdateManyMutationInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+}
+
+input CompanyUpdateOneRequiredInput {
+  create: CompanyCreateInput
+  update: CompanyUpdateDataInput
+  upsert: CompanyUpsertNestedInput
+  connect: CompanyWhereUniqueInput
+}
+
+input CompanyUpdateOneRequiredWithoutHoldersInput {
+  create: CompanyCreateWithoutHoldersInput
+  update: CompanyUpdateWithoutHoldersDataInput
+  upsert: CompanyUpsertWithoutHoldersInput
+  connect: CompanyWhereUniqueInput
+}
+
+input CompanyUpdateWithoutHoldersDataInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+}
+
+input CompanyUpsertNestedInput {
+  update: CompanyUpdateDataInput!
+  create: CompanyCreateInput!
+}
+
+input CompanyUpsertWithoutHoldersInput {
+  update: CompanyUpdateWithoutHoldersDataInput!
+  create: CompanyCreateWithoutHoldersInput!
+}
+
+input CompanyWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  type: CompanyType
+  type_not: CompanyType
+  type_in: [CompanyType!]
+  type_not_in: [CompanyType!]
+  nature: CompanyNature
+  nature_not: CompanyNature
+  nature_in: [CompanyNature!]
+  nature_not_in: [CompanyNature!]
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  code: String
+  code_not: String
+  code_in: [String!]
+  code_not_in: [String!]
+  code_lt: String
+  code_lte: String
+  code_gt: String
+  code_gte: String
+  code_contains: String
+  code_not_contains: String
+  code_starts_with: String
+  code_not_starts_with: String
+  code_ends_with: String
+  code_not_ends_with: String
+  address: String
+  address_not: String
+  address_in: [String!]
+  address_not_in: [String!]
+  address_lt: String
+  address_lte: String
+  address_gt: String
+  address_gte: String
+  address_contains: String
+  address_not_contains: String
+  address_starts_with: String
+  address_not_starts_with: String
+  address_ends_with: String
+  address_not_ends_with: String
+  legalRepresentative: String
+  legalRepresentative_not: String
+  legalRepresentative_in: [String!]
+  legalRepresentative_not_in: [String!]
+  legalRepresentative_lt: String
+  legalRepresentative_lte: String
+  legalRepresentative_gt: String
+  legalRepresentative_gte: String
+  legalRepresentative_contains: String
+  legalRepresentative_not_contains: String
+  legalRepresentative_starts_with: String
+  legalRepresentative_not_starts_with: String
+  legalRepresentative_ends_with: String
+  legalRepresentative_not_ends_with: String
+  establishDate: DateTime
+  establishDate_not: DateTime
+  establishDate_in: [DateTime!]
+  establishDate_not_in: [DateTime!]
+  establishDate_lt: DateTime
+  establishDate_lte: DateTime
+  establishDate_gt: DateTime
+  establishDate_gte: DateTime
+  registeredCapital: String
+  registeredCapital_not: String
+  registeredCapital_in: [String!]
+  registeredCapital_not_in: [String!]
+  registeredCapital_lt: String
+  registeredCapital_lte: String
+  registeredCapital_gt: String
+  registeredCapital_gte: String
+  registeredCapital_contains: String
+  registeredCapital_not_contains: String
+  registeredCapital_starts_with: String
+  registeredCapital_not_starts_with: String
+  registeredCapital_ends_with: String
+  registeredCapital_not_ends_with: String
+  paidinCapital: String
+  paidinCapital_not: String
+  paidinCapital_in: [String!]
+  paidinCapital_not_in: [String!]
+  paidinCapital_lt: String
+  paidinCapital_lte: String
+  paidinCapital_gt: String
+  paidinCapital_gte: String
+  paidinCapital_contains: String
+  paidinCapital_not_contains: String
+  paidinCapital_starts_with: String
+  paidinCapital_not_starts_with: String
+  paidinCapital_ends_with: String
+  paidinCapital_not_ends_with: String
+  businessScope: String
+  businessScope_not: String
+  businessScope_in: [String!]
+  businessScope_not_in: [String!]
+  businessScope_lt: String
+  businessScope_lte: String
+  businessScope_gt: String
+  businessScope_gte: String
+  businessScope_contains: String
+  businessScope_not_contains: String
+  businessScope_starts_with: String
+  businessScope_not_starts_with: String
+  businessScope_ends_with: String
+  businessScope_not_ends_with: String
+  holders_every: HolderWhereInput
+  holders_some: HolderWhereInput
+  holders_none: HolderWhereInput
+  AND: [CompanyWhereInput!]
+  OR: [CompanyWhereInput!]
+  NOT: [CompanyWhereInput!]
+}
+
+input CompanyWhereUniqueInput {
+  id: ID
+  name: String
+}
+
+type DataRecord {
+  id: ID!
+  accountingFirm: AccountingFirm!
+  company: Company!
+  startTime: DateTime!
+  endTime: DateTime!
+  uploadTime: DateTime!
+  uploadContent: Json
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+}
+
+type DataRecordConnection {
+  pageInfo: PageInfo!
+  edges: [DataRecordEdge]!
+  aggregate: AggregateDataRecord!
+}
+
+input DataRecordCreateInput {
+  id: ID
+  accountingFirm: AccountingFirmCreateOneInput!
+  company: CompanyCreateOneInput!
+  startTime: DateTime!
+  endTime: DateTime!
+  uploadTime: DateTime!
+  uploadContent: Json
+  users: UserCreateManyWithoutDataRecordsInput
+}
+
+input DataRecordCreateManyWithoutUsersInput {
+  create: [DataRecordCreateWithoutUsersInput!]
+  connect: [DataRecordWhereUniqueInput!]
+}
+
+input DataRecordCreateWithoutUsersInput {
+  id: ID
+  accountingFirm: AccountingFirmCreateOneInput!
+  company: CompanyCreateOneInput!
+  startTime: DateTime!
+  endTime: DateTime!
+  uploadTime: DateTime!
+  uploadContent: Json
+}
+
+type DataRecordEdge {
+  node: DataRecord!
+  cursor: String!
+}
+
+enum DataRecordOrderByInput {
+  id_ASC
+  id_DESC
+  startTime_ASC
+  startTime_DESC
+  endTime_ASC
+  endTime_DESC
+  uploadTime_ASC
+  uploadTime_DESC
+  uploadContent_ASC
+  uploadContent_DESC
+}
+
+type DataRecordPreviousValues {
+  id: ID!
+  startTime: DateTime!
+  endTime: DateTime!
+  uploadTime: DateTime!
+  uploadContent: Json
+}
+
+input DataRecordScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  startTime: DateTime
+  startTime_not: DateTime
+  startTime_in: [DateTime!]
+  startTime_not_in: [DateTime!]
+  startTime_lt: DateTime
+  startTime_lte: DateTime
+  startTime_gt: DateTime
+  startTime_gte: DateTime
+  endTime: DateTime
+  endTime_not: DateTime
+  endTime_in: [DateTime!]
+  endTime_not_in: [DateTime!]
+  endTime_lt: DateTime
+  endTime_lte: DateTime
+  endTime_gt: DateTime
+  endTime_gte: DateTime
+  uploadTime: DateTime
+  uploadTime_not: DateTime
+  uploadTime_in: [DateTime!]
+  uploadTime_not_in: [DateTime!]
+  uploadTime_lt: DateTime
+  uploadTime_lte: DateTime
+  uploadTime_gt: DateTime
+  uploadTime_gte: DateTime
+  AND: [DataRecordScalarWhereInput!]
+  OR: [DataRecordScalarWhereInput!]
+  NOT: [DataRecordScalarWhereInput!]
+}
+
+type DataRecordSubscriptionPayload {
+  mutation: MutationType!
+  node: DataRecord
+  updatedFields: [String!]
+  previousValues: DataRecordPreviousValues
+}
+
+input DataRecordSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: DataRecordWhereInput
+  AND: [DataRecordSubscriptionWhereInput!]
+  OR: [DataRecordSubscriptionWhereInput!]
+  NOT: [DataRecordSubscriptionWhereInput!]
+}
+
+input DataRecordUpdateInput {
+  accountingFirm: AccountingFirmUpdateOneRequiredInput
+  company: CompanyUpdateOneRequiredInput
+  startTime: DateTime
+  endTime: DateTime
+  uploadTime: DateTime
+  uploadContent: Json
+  users: UserUpdateManyWithoutDataRecordsInput
+}
+
+input DataRecordUpdateManyDataInput {
+  startTime: DateTime
+  endTime: DateTime
+  uploadTime: DateTime
+  uploadContent: Json
+}
+
+input DataRecordUpdateManyMutationInput {
+  startTime: DateTime
+  endTime: DateTime
+  uploadTime: DateTime
+  uploadContent: Json
+}
+
+input DataRecordUpdateManyWithoutUsersInput {
+  create: [DataRecordCreateWithoutUsersInput!]
+  delete: [DataRecordWhereUniqueInput!]
+  connect: [DataRecordWhereUniqueInput!]
+  set: [DataRecordWhereUniqueInput!]
+  disconnect: [DataRecordWhereUniqueInput!]
+  update: [DataRecordUpdateWithWhereUniqueWithoutUsersInput!]
+  upsert: [DataRecordUpsertWithWhereUniqueWithoutUsersInput!]
+  deleteMany: [DataRecordScalarWhereInput!]
+  updateMany: [DataRecordUpdateManyWithWhereNestedInput!]
+}
+
+input DataRecordUpdateManyWithWhereNestedInput {
+  where: DataRecordScalarWhereInput!
+  data: DataRecordUpdateManyDataInput!
+}
+
+input DataRecordUpdateWithoutUsersDataInput {
+  accountingFirm: AccountingFirmUpdateOneRequiredInput
+  company: CompanyUpdateOneRequiredInput
+  startTime: DateTime
+  endTime: DateTime
+  uploadTime: DateTime
+  uploadContent: Json
+}
+
+input DataRecordUpdateWithWhereUniqueWithoutUsersInput {
+  where: DataRecordWhereUniqueInput!
+  data: DataRecordUpdateWithoutUsersDataInput!
+}
+
+input DataRecordUpsertWithWhereUniqueWithoutUsersInput {
+  where: DataRecordWhereUniqueInput!
+  update: DataRecordUpdateWithoutUsersDataInput!
+  create: DataRecordCreateWithoutUsersInput!
+}
+
+input DataRecordWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  accountingFirm: AccountingFirmWhereInput
+  company: CompanyWhereInput
+  startTime: DateTime
+  startTime_not: DateTime
+  startTime_in: [DateTime!]
+  startTime_not_in: [DateTime!]
+  startTime_lt: DateTime
+  startTime_lte: DateTime
+  startTime_gt: DateTime
+  startTime_gte: DateTime
+  endTime: DateTime
+  endTime_not: DateTime
+  endTime_in: [DateTime!]
+  endTime_not_in: [DateTime!]
+  endTime_lt: DateTime
+  endTime_lte: DateTime
+  endTime_gt: DateTime
+  endTime_gte: DateTime
+  uploadTime: DateTime
+  uploadTime_not: DateTime
+  uploadTime_in: [DateTime!]
+  uploadTime_not_in: [DateTime!]
+  uploadTime_lt: DateTime
+  uploadTime_lte: DateTime
+  uploadTime_gt: DateTime
+  uploadTime_gte: DateTime
+  users_every: UserWhereInput
+  users_some: UserWhereInput
+  users_none: UserWhereInput
+  AND: [DataRecordWhereInput!]
+  OR: [DataRecordWhereInput!]
+  NOT: [DataRecordWhereInput!]
+}
+
+input DataRecordWhereUniqueInput {
+  id: ID
+}
+
 scalar DateTime
+
+type Holder {
+  id: ID!
+  name: String!
+  ratio: Float!
+  company: Company!
+}
+
+type HolderConnection {
+  pageInfo: PageInfo!
+  edges: [HolderEdge]!
+  aggregate: AggregateHolder!
+}
+
+input HolderCreateInput {
+  id: ID
+  name: String!
+  ratio: Float!
+  company: CompanyCreateOneWithoutHoldersInput!
+}
+
+input HolderCreateManyWithoutCompanyInput {
+  create: [HolderCreateWithoutCompanyInput!]
+  connect: [HolderWhereUniqueInput!]
+}
+
+input HolderCreateWithoutCompanyInput {
+  id: ID
+  name: String!
+  ratio: Float!
+}
+
+type HolderEdge {
+  node: Holder!
+  cursor: String!
+}
+
+enum HolderOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  ratio_ASC
+  ratio_DESC
+}
+
+type HolderPreviousValues {
+  id: ID!
+  name: String!
+  ratio: Float!
+}
+
+input HolderScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  ratio: Float
+  ratio_not: Float
+  ratio_in: [Float!]
+  ratio_not_in: [Float!]
+  ratio_lt: Float
+  ratio_lte: Float
+  ratio_gt: Float
+  ratio_gte: Float
+  AND: [HolderScalarWhereInput!]
+  OR: [HolderScalarWhereInput!]
+  NOT: [HolderScalarWhereInput!]
+}
+
+type HolderSubscriptionPayload {
+  mutation: MutationType!
+  node: Holder
+  updatedFields: [String!]
+  previousValues: HolderPreviousValues
+}
+
+input HolderSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: HolderWhereInput
+  AND: [HolderSubscriptionWhereInput!]
+  OR: [HolderSubscriptionWhereInput!]
+  NOT: [HolderSubscriptionWhereInput!]
+}
+
+input HolderUpdateInput {
+  name: String
+  ratio: Float
+  company: CompanyUpdateOneRequiredWithoutHoldersInput
+}
+
+input HolderUpdateManyDataInput {
+  name: String
+  ratio: Float
+}
+
+input HolderUpdateManyMutationInput {
+  name: String
+  ratio: Float
+}
+
+input HolderUpdateManyWithoutCompanyInput {
+  create: [HolderCreateWithoutCompanyInput!]
+  delete: [HolderWhereUniqueInput!]
+  connect: [HolderWhereUniqueInput!]
+  set: [HolderWhereUniqueInput!]
+  disconnect: [HolderWhereUniqueInput!]
+  update: [HolderUpdateWithWhereUniqueWithoutCompanyInput!]
+  upsert: [HolderUpsertWithWhereUniqueWithoutCompanyInput!]
+  deleteMany: [HolderScalarWhereInput!]
+  updateMany: [HolderUpdateManyWithWhereNestedInput!]
+}
+
+input HolderUpdateManyWithWhereNestedInput {
+  where: HolderScalarWhereInput!
+  data: HolderUpdateManyDataInput!
+}
+
+input HolderUpdateWithoutCompanyDataInput {
+  name: String
+  ratio: Float
+}
+
+input HolderUpdateWithWhereUniqueWithoutCompanyInput {
+  where: HolderWhereUniqueInput!
+  data: HolderUpdateWithoutCompanyDataInput!
+}
+
+input HolderUpsertWithWhereUniqueWithoutCompanyInput {
+  where: HolderWhereUniqueInput!
+  update: HolderUpdateWithoutCompanyDataInput!
+  create: HolderCreateWithoutCompanyInput!
+}
+
+input HolderWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  ratio: Float
+  ratio_not: Float
+  ratio_in: [Float!]
+  ratio_not_in: [Float!]
+  ratio_lt: Float
+  ratio_lte: Float
+  ratio_gt: Float
+  ratio_gte: Float
+  company: CompanyWhereInput
+  AND: [HolderWhereInput!]
+  OR: [HolderWhereInput!]
+  NOT: [HolderWhereInput!]
+}
+
+input HolderWhereUniqueInput {
+  id: ID
+}
+
+scalar Json
 
 scalar Long
 
+type Member {
+  id: ID!
+  project: Project!
+  user: User!
+  role: ProjectRole!
+}
+
+type MemberConnection {
+  pageInfo: PageInfo!
+  edges: [MemberEdge]!
+  aggregate: AggregateMember!
+}
+
+input MemberCreateInput {
+  id: ID
+  project: ProjectCreateOneWithoutMembersInput!
+  user: UserCreateOneInput!
+  role: ProjectRole!
+}
+
+input MemberCreateManyWithoutProjectInput {
+  create: [MemberCreateWithoutProjectInput!]
+  connect: [MemberWhereUniqueInput!]
+}
+
+input MemberCreateWithoutProjectInput {
+  id: ID
+  user: UserCreateOneInput!
+  role: ProjectRole!
+}
+
+type MemberEdge {
+  node: Member!
+  cursor: String!
+}
+
+enum MemberOrderByInput {
+  id_ASC
+  id_DESC
+  role_ASC
+  role_DESC
+}
+
+type MemberPreviousValues {
+  id: ID!
+  role: ProjectRole!
+}
+
+input MemberScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  role: ProjectRole
+  role_not: ProjectRole
+  role_in: [ProjectRole!]
+  role_not_in: [ProjectRole!]
+  AND: [MemberScalarWhereInput!]
+  OR: [MemberScalarWhereInput!]
+  NOT: [MemberScalarWhereInput!]
+}
+
+type MemberSubscriptionPayload {
+  mutation: MutationType!
+  node: Member
+  updatedFields: [String!]
+  previousValues: MemberPreviousValues
+}
+
+input MemberSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: MemberWhereInput
+  AND: [MemberSubscriptionWhereInput!]
+  OR: [MemberSubscriptionWhereInput!]
+  NOT: [MemberSubscriptionWhereInput!]
+}
+
+input MemberUpdateInput {
+  project: ProjectUpdateOneRequiredWithoutMembersInput
+  user: UserUpdateOneRequiredInput
+  role: ProjectRole
+}
+
+input MemberUpdateManyDataInput {
+  role: ProjectRole
+}
+
+input MemberUpdateManyMutationInput {
+  role: ProjectRole
+}
+
+input MemberUpdateManyWithoutProjectInput {
+  create: [MemberCreateWithoutProjectInput!]
+  delete: [MemberWhereUniqueInput!]
+  connect: [MemberWhereUniqueInput!]
+  set: [MemberWhereUniqueInput!]
+  disconnect: [MemberWhereUniqueInput!]
+  update: [MemberUpdateWithWhereUniqueWithoutProjectInput!]
+  upsert: [MemberUpsertWithWhereUniqueWithoutProjectInput!]
+  deleteMany: [MemberScalarWhereInput!]
+  updateMany: [MemberUpdateManyWithWhereNestedInput!]
+}
+
+input MemberUpdateManyWithWhereNestedInput {
+  where: MemberScalarWhereInput!
+  data: MemberUpdateManyDataInput!
+}
+
+input MemberUpdateWithoutProjectDataInput {
+  user: UserUpdateOneRequiredInput
+  role: ProjectRole
+}
+
+input MemberUpdateWithWhereUniqueWithoutProjectInput {
+  where: MemberWhereUniqueInput!
+  data: MemberUpdateWithoutProjectDataInput!
+}
+
+input MemberUpsertWithWhereUniqueWithoutProjectInput {
+  where: MemberWhereUniqueInput!
+  update: MemberUpdateWithoutProjectDataInput!
+  create: MemberCreateWithoutProjectInput!
+}
+
+input MemberWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  project: ProjectWhereInput
+  user: UserWhereInput
+  role: ProjectRole
+  role_not: ProjectRole
+  role_in: [ProjectRole!]
+  role_not_in: [ProjectRole!]
+  AND: [MemberWhereInput!]
+  OR: [MemberWhereInput!]
+  NOT: [MemberWhereInput!]
+}
+
+input MemberWhereUniqueInput {
+  id: ID
+}
+
 type Mutation {
+  createAccountingFirm(data: AccountingFirmCreateInput!): AccountingFirm!
+  updateAccountingFirm(data: AccountingFirmUpdateInput!, where: AccountingFirmWhereUniqueInput!): AccountingFirm
+  updateManyAccountingFirms(data: AccountingFirmUpdateManyMutationInput!, where: AccountingFirmWhereInput): BatchPayload!
+  upsertAccountingFirm(where: AccountingFirmWhereUniqueInput!, create: AccountingFirmCreateInput!, update: AccountingFirmUpdateInput!): AccountingFirm!
+  deleteAccountingFirm(where: AccountingFirmWhereUniqueInput!): AccountingFirm
+  deleteManyAccountingFirms(where: AccountingFirmWhereInput): BatchPayload!
+  createCompany(data: CompanyCreateInput!): Company!
+  updateCompany(data: CompanyUpdateInput!, where: CompanyWhereUniqueInput!): Company
+  updateManyCompanies(data: CompanyUpdateManyMutationInput!, where: CompanyWhereInput): BatchPayload!
+  upsertCompany(where: CompanyWhereUniqueInput!, create: CompanyCreateInput!, update: CompanyUpdateInput!): Company!
+  deleteCompany(where: CompanyWhereUniqueInput!): Company
+  deleteManyCompanies(where: CompanyWhereInput): BatchPayload!
+  createDataRecord(data: DataRecordCreateInput!): DataRecord!
+  updateDataRecord(data: DataRecordUpdateInput!, where: DataRecordWhereUniqueInput!): DataRecord
+  updateManyDataRecords(data: DataRecordUpdateManyMutationInput!, where: DataRecordWhereInput): BatchPayload!
+  upsertDataRecord(where: DataRecordWhereUniqueInput!, create: DataRecordCreateInput!, update: DataRecordUpdateInput!): DataRecord!
+  deleteDataRecord(where: DataRecordWhereUniqueInput!): DataRecord
+  deleteManyDataRecords(where: DataRecordWhereInput): BatchPayload!
+  createHolder(data: HolderCreateInput!): Holder!
+  updateHolder(data: HolderUpdateInput!, where: HolderWhereUniqueInput!): Holder
+  updateManyHolders(data: HolderUpdateManyMutationInput!, where: HolderWhereInput): BatchPayload!
+  upsertHolder(where: HolderWhereUniqueInput!, create: HolderCreateInput!, update: HolderUpdateInput!): Holder!
+  deleteHolder(where: HolderWhereUniqueInput!): Holder
+  deleteManyHolders(where: HolderWhereInput): BatchPayload!
+  createMember(data: MemberCreateInput!): Member!
+  updateMember(data: MemberUpdateInput!, where: MemberWhereUniqueInput!): Member
+  updateManyMembers(data: MemberUpdateManyMutationInput!, where: MemberWhereInput): BatchPayload!
+  upsertMember(where: MemberWhereUniqueInput!, create: MemberCreateInput!, update: MemberUpdateInput!): Member!
+  deleteMember(where: MemberWhereUniqueInput!): Member
+  deleteManyMembers(where: MemberWhereInput): BatchPayload!
+  createProject(data: ProjectCreateInput!): Project!
+  updateProject(data: ProjectUpdateInput!, where: ProjectWhereUniqueInput!): Project
+  updateManyProjects(data: ProjectUpdateManyMutationInput!, where: ProjectWhereInput): BatchPayload!
+  upsertProject(where: ProjectWhereUniqueInput!, create: ProjectCreateInput!, update: ProjectUpdateInput!): Project!
+  deleteProject(where: ProjectWhereUniqueInput!): Project
+  deleteManyProjects(where: ProjectWhereInput): BatchPayload!
   createUser(data: UserCreateInput!): User!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
@@ -41,7 +1351,269 @@ type PageInfo {
   endCursor: String
 }
 
+type Project {
+  id: ID!
+  accountingFirm: AccountingFirm!
+  company: Company!
+  startTime: DateTime!
+  endTime: DateTime!
+  members(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Member!]
+}
+
+type ProjectConnection {
+  pageInfo: PageInfo!
+  edges: [ProjectEdge]!
+  aggregate: AggregateProject!
+}
+
+input ProjectCreateInput {
+  id: ID
+  accountingFirm: AccountingFirmCreateOneInput!
+  company: CompanyCreateOneInput!
+  startTime: DateTime!
+  endTime: DateTime!
+  members: MemberCreateManyWithoutProjectInput
+}
+
+input ProjectCreateManyInput {
+  create: [ProjectCreateInput!]
+  connect: [ProjectWhereUniqueInput!]
+}
+
+input ProjectCreateOneWithoutMembersInput {
+  create: ProjectCreateWithoutMembersInput
+  connect: ProjectWhereUniqueInput
+}
+
+input ProjectCreateWithoutMembersInput {
+  id: ID
+  accountingFirm: AccountingFirmCreateOneInput!
+  company: CompanyCreateOneInput!
+  startTime: DateTime!
+  endTime: DateTime!
+}
+
+type ProjectEdge {
+  node: Project!
+  cursor: String!
+}
+
+enum ProjectOrderByInput {
+  id_ASC
+  id_DESC
+  startTime_ASC
+  startTime_DESC
+  endTime_ASC
+  endTime_DESC
+}
+
+type ProjectPreviousValues {
+  id: ID!
+  startTime: DateTime!
+  endTime: DateTime!
+}
+
+enum ProjectRole {
+  MANAGER
+  PARTNER
+  ASSISTANT
+  QC
+  REVIEWPARTNER
+  JUDGE
+  CPA
+}
+
+input ProjectScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  startTime: DateTime
+  startTime_not: DateTime
+  startTime_in: [DateTime!]
+  startTime_not_in: [DateTime!]
+  startTime_lt: DateTime
+  startTime_lte: DateTime
+  startTime_gt: DateTime
+  startTime_gte: DateTime
+  endTime: DateTime
+  endTime_not: DateTime
+  endTime_in: [DateTime!]
+  endTime_not_in: [DateTime!]
+  endTime_lt: DateTime
+  endTime_lte: DateTime
+  endTime_gt: DateTime
+  endTime_gte: DateTime
+  AND: [ProjectScalarWhereInput!]
+  OR: [ProjectScalarWhereInput!]
+  NOT: [ProjectScalarWhereInput!]
+}
+
+type ProjectSubscriptionPayload {
+  mutation: MutationType!
+  node: Project
+  updatedFields: [String!]
+  previousValues: ProjectPreviousValues
+}
+
+input ProjectSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: ProjectWhereInput
+  AND: [ProjectSubscriptionWhereInput!]
+  OR: [ProjectSubscriptionWhereInput!]
+  NOT: [ProjectSubscriptionWhereInput!]
+}
+
+input ProjectUpdateDataInput {
+  accountingFirm: AccountingFirmUpdateOneRequiredInput
+  company: CompanyUpdateOneRequiredInput
+  startTime: DateTime
+  endTime: DateTime
+  members: MemberUpdateManyWithoutProjectInput
+}
+
+input ProjectUpdateInput {
+  accountingFirm: AccountingFirmUpdateOneRequiredInput
+  company: CompanyUpdateOneRequiredInput
+  startTime: DateTime
+  endTime: DateTime
+  members: MemberUpdateManyWithoutProjectInput
+}
+
+input ProjectUpdateManyDataInput {
+  startTime: DateTime
+  endTime: DateTime
+}
+
+input ProjectUpdateManyInput {
+  create: [ProjectCreateInput!]
+  update: [ProjectUpdateWithWhereUniqueNestedInput!]
+  upsert: [ProjectUpsertWithWhereUniqueNestedInput!]
+  delete: [ProjectWhereUniqueInput!]
+  connect: [ProjectWhereUniqueInput!]
+  set: [ProjectWhereUniqueInput!]
+  disconnect: [ProjectWhereUniqueInput!]
+  deleteMany: [ProjectScalarWhereInput!]
+  updateMany: [ProjectUpdateManyWithWhereNestedInput!]
+}
+
+input ProjectUpdateManyMutationInput {
+  startTime: DateTime
+  endTime: DateTime
+}
+
+input ProjectUpdateManyWithWhereNestedInput {
+  where: ProjectScalarWhereInput!
+  data: ProjectUpdateManyDataInput!
+}
+
+input ProjectUpdateOneRequiredWithoutMembersInput {
+  create: ProjectCreateWithoutMembersInput
+  update: ProjectUpdateWithoutMembersDataInput
+  upsert: ProjectUpsertWithoutMembersInput
+  connect: ProjectWhereUniqueInput
+}
+
+input ProjectUpdateWithoutMembersDataInput {
+  accountingFirm: AccountingFirmUpdateOneRequiredInput
+  company: CompanyUpdateOneRequiredInput
+  startTime: DateTime
+  endTime: DateTime
+}
+
+input ProjectUpdateWithWhereUniqueNestedInput {
+  where: ProjectWhereUniqueInput!
+  data: ProjectUpdateDataInput!
+}
+
+input ProjectUpsertWithoutMembersInput {
+  update: ProjectUpdateWithoutMembersDataInput!
+  create: ProjectCreateWithoutMembersInput!
+}
+
+input ProjectUpsertWithWhereUniqueNestedInput {
+  where: ProjectWhereUniqueInput!
+  update: ProjectUpdateDataInput!
+  create: ProjectCreateInput!
+}
+
+input ProjectWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  accountingFirm: AccountingFirmWhereInput
+  company: CompanyWhereInput
+  startTime: DateTime
+  startTime_not: DateTime
+  startTime_in: [DateTime!]
+  startTime_not_in: [DateTime!]
+  startTime_lt: DateTime
+  startTime_lte: DateTime
+  startTime_gt: DateTime
+  startTime_gte: DateTime
+  endTime: DateTime
+  endTime_not: DateTime
+  endTime_in: [DateTime!]
+  endTime_not_in: [DateTime!]
+  endTime_lt: DateTime
+  endTime_lte: DateTime
+  endTime_gt: DateTime
+  endTime_gte: DateTime
+  members_every: MemberWhereInput
+  members_some: MemberWhereInput
+  members_none: MemberWhereInput
+  AND: [ProjectWhereInput!]
+  OR: [ProjectWhereInput!]
+  NOT: [ProjectWhereInput!]
+}
+
+input ProjectWhereUniqueInput {
+  id: ID
+}
+
 type Query {
+  accountingFirm(where: AccountingFirmWhereUniqueInput!): AccountingFirm
+  accountingFirms(where: AccountingFirmWhereInput, orderBy: AccountingFirmOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [AccountingFirm]!
+  accountingFirmsConnection(where: AccountingFirmWhereInput, orderBy: AccountingFirmOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AccountingFirmConnection!
+  company(where: CompanyWhereUniqueInput!): Company
+  companies(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Company]!
+  companiesConnection(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CompanyConnection!
+  dataRecord(where: DataRecordWhereUniqueInput!): DataRecord
+  dataRecords(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [DataRecord]!
+  dataRecordsConnection(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): DataRecordConnection!
+  holder(where: HolderWhereUniqueInput!): Holder
+  holders(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Holder]!
+  holdersConnection(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HolderConnection!
+  member(where: MemberWhereUniqueInput!): Member
+  members(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Member]!
+  membersConnection(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MemberConnection!
+  project(where: ProjectWhereUniqueInput!): Project
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Project]!
+  projectsConnection(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ProjectConnection!
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
@@ -54,6 +1626,12 @@ enum Role {
 }
 
 type Subscription {
+  accountingFirm(where: AccountingFirmSubscriptionWhereInput): AccountingFirmSubscriptionPayload
+  company(where: CompanySubscriptionWhereInput): CompanySubscriptionPayload
+  dataRecord(where: DataRecordSubscriptionWhereInput): DataRecordSubscriptionPayload
+  holder(where: HolderSubscriptionWhereInput): HolderSubscriptionPayload
+  member(where: MemberSubscriptionWhereInput): MemberSubscriptionPayload
+  project(where: ProjectSubscriptionWhereInput): ProjectSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
@@ -69,6 +1647,9 @@ type User {
   resetPasswordExpires: Float
   name: String!
   role: Role!
+  accountingFirm: AccountingFirm
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Project!]
+  dataRecords(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [DataRecord!]
 }
 
 type UserConnection {
@@ -87,6 +1668,52 @@ input UserCreateInput {
   resetPasswordExpires: Float
   name: String!
   role: Role
+  accountingFirm: AccountingFirmCreateOneWithoutEmployeesInput
+  projects: ProjectCreateManyInput
+  dataRecords: DataRecordCreateManyWithoutUsersInput
+}
+
+input UserCreateManyWithoutAccountingFirmInput {
+  create: [UserCreateWithoutAccountingFirmInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input UserCreateManyWithoutDataRecordsInput {
+  create: [UserCreateWithoutDataRecordsInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutAccountingFirmInput {
+  id: ID
+  email: String!
+  emailvalidated: Boolean
+  validateEmailToken: String!
+  password: String!
+  resetPasswordToken: String!
+  resetPasswordExpires: Float
+  name: String!
+  role: Role
+  projects: ProjectCreateManyInput
+  dataRecords: DataRecordCreateManyWithoutUsersInput
+}
+
+input UserCreateWithoutDataRecordsInput {
+  id: ID
+  email: String!
+  emailvalidated: Boolean
+  validateEmailToken: String!
+  password: String!
+  resetPasswordToken: String!
+  resetPasswordExpires: Float
+  name: String!
+  role: Role
+  accountingFirm: AccountingFirmCreateOneWithoutEmployeesInput
+  projects: ProjectCreateManyInput
 }
 
 type UserEdge {
@@ -133,6 +1760,126 @@ type UserPreviousValues {
   role: Role!
 }
 
+input UserScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  emailvalidated: Boolean
+  emailvalidated_not: Boolean
+  validateEmailToken: String
+  validateEmailToken_not: String
+  validateEmailToken_in: [String!]
+  validateEmailToken_not_in: [String!]
+  validateEmailToken_lt: String
+  validateEmailToken_lte: String
+  validateEmailToken_gt: String
+  validateEmailToken_gte: String
+  validateEmailToken_contains: String
+  validateEmailToken_not_contains: String
+  validateEmailToken_starts_with: String
+  validateEmailToken_not_starts_with: String
+  validateEmailToken_ends_with: String
+  validateEmailToken_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  password: String
+  password_not: String
+  password_in: [String!]
+  password_not_in: [String!]
+  password_lt: String
+  password_lte: String
+  password_gt: String
+  password_gte: String
+  password_contains: String
+  password_not_contains: String
+  password_starts_with: String
+  password_not_starts_with: String
+  password_ends_with: String
+  password_not_ends_with: String
+  resetPasswordToken: String
+  resetPasswordToken_not: String
+  resetPasswordToken_in: [String!]
+  resetPasswordToken_not_in: [String!]
+  resetPasswordToken_lt: String
+  resetPasswordToken_lte: String
+  resetPasswordToken_gt: String
+  resetPasswordToken_gte: String
+  resetPasswordToken_contains: String
+  resetPasswordToken_not_contains: String
+  resetPasswordToken_starts_with: String
+  resetPasswordToken_not_starts_with: String
+  resetPasswordToken_ends_with: String
+  resetPasswordToken_not_ends_with: String
+  resetPasswordExpires: Float
+  resetPasswordExpires_not: Float
+  resetPasswordExpires_in: [Float!]
+  resetPasswordExpires_not_in: [Float!]
+  resetPasswordExpires_lt: Float
+  resetPasswordExpires_lte: Float
+  resetPasswordExpires_gt: Float
+  resetPasswordExpires_gte: Float
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  role: Role
+  role_not: Role
+  role_in: [Role!]
+  role_not_in: [Role!]
+  AND: [UserScalarWhereInput!]
+  OR: [UserScalarWhereInput!]
+  NOT: [UserScalarWhereInput!]
+}
+
 type UserSubscriptionPayload {
   mutation: MutationType!
   node: User
@@ -151,7 +1898,35 @@ input UserSubscriptionWhereInput {
   NOT: [UserSubscriptionWhereInput!]
 }
 
+input UserUpdateDataInput {
+  email: String
+  emailvalidated: Boolean
+  validateEmailToken: String
+  password: String
+  resetPasswordToken: String
+  resetPasswordExpires: Float
+  name: String
+  role: Role
+  accountingFirm: AccountingFirmUpdateOneWithoutEmployeesInput
+  projects: ProjectUpdateManyInput
+  dataRecords: DataRecordUpdateManyWithoutUsersInput
+}
+
 input UserUpdateInput {
+  email: String
+  emailvalidated: Boolean
+  validateEmailToken: String
+  password: String
+  resetPasswordToken: String
+  resetPasswordExpires: Float
+  name: String
+  role: Role
+  accountingFirm: AccountingFirmUpdateOneWithoutEmployeesInput
+  projects: ProjectUpdateManyInput
+  dataRecords: DataRecordUpdateManyWithoutUsersInput
+}
+
+input UserUpdateManyDataInput {
   email: String
   emailvalidated: Boolean
   validateEmailToken: String
@@ -171,6 +1946,95 @@ input UserUpdateManyMutationInput {
   resetPasswordExpires: Float
   name: String
   role: Role
+}
+
+input UserUpdateManyWithoutAccountingFirmInput {
+  create: [UserCreateWithoutAccountingFirmInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutAccountingFirmInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutAccountingFirmInput!]
+  deleteMany: [UserScalarWhereInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
+}
+
+input UserUpdateManyWithoutDataRecordsInput {
+  create: [UserCreateWithoutDataRecordsInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutDataRecordsInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutDataRecordsInput!]
+  deleteMany: [UserScalarWhereInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
+}
+
+input UserUpdateManyWithWhereNestedInput {
+  where: UserScalarWhereInput!
+  data: UserUpdateManyDataInput!
+}
+
+input UserUpdateOneRequiredInput {
+  create: UserCreateInput
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateWithoutAccountingFirmDataInput {
+  email: String
+  emailvalidated: Boolean
+  validateEmailToken: String
+  password: String
+  resetPasswordToken: String
+  resetPasswordExpires: Float
+  name: String
+  role: Role
+  projects: ProjectUpdateManyInput
+  dataRecords: DataRecordUpdateManyWithoutUsersInput
+}
+
+input UserUpdateWithoutDataRecordsDataInput {
+  email: String
+  emailvalidated: Boolean
+  validateEmailToken: String
+  password: String
+  resetPasswordToken: String
+  resetPasswordExpires: Float
+  name: String
+  role: Role
+  accountingFirm: AccountingFirmUpdateOneWithoutEmployeesInput
+  projects: ProjectUpdateManyInput
+}
+
+input UserUpdateWithWhereUniqueWithoutAccountingFirmInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutAccountingFirmDataInput!
+}
+
+input UserUpdateWithWhereUniqueWithoutDataRecordsInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutDataRecordsDataInput!
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
+}
+
+input UserUpsertWithWhereUniqueWithoutAccountingFirmInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutAccountingFirmDataInput!
+  create: UserCreateWithoutAccountingFirmInput!
+}
+
+input UserUpsertWithWhereUniqueWithoutDataRecordsInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutDataRecordsDataInput!
+  create: UserCreateWithoutDataRecordsInput!
 }
 
 input UserWhereInput {
@@ -288,6 +2152,13 @@ input UserWhereInput {
   role_not: Role
   role_in: [Role!]
   role_not_in: [Role!]
+  accountingFirm: AccountingFirmWhereInput
+  projects_every: ProjectWhereInput
+  projects_some: ProjectWhereInput
+  projects_none: ProjectWhereInput
+  dataRecords_every: DataRecordWhereInput
+  dataRecords_some: DataRecordWhereInput
+  dataRecords_none: DataRecordWhereInput
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
