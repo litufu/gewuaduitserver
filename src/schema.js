@@ -6,7 +6,7 @@ const typeDefs = gql`
   type Query {
     me: User
     emailHasTaken(email:String!):Boolean!
-    accountingFirms(name:String!):[AccountingFirm]
+    accountingFirms(inputvalue:String!):[AccountingFirm]
   }
 
   type Mutation {
@@ -17,7 +17,7 @@ const typeDefs = gql`
     login(email: String!, password: String!): AuthPayload!
     forgetPassword(email: String!): User!
     updatePassword(oldPassword: String, newPassword: String!): User!
-    contactToAccountingFirm(accountingFirmCode:String!):User!
+    contactToAccountingFirm(accountingFirmName:String!):User!
     createCustomer(name:String!,code:String!,type:CompanyType!,nature:CompanyNature!):Company!
   }
 

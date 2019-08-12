@@ -124,11 +124,11 @@ const Mutation = {
     // 更新密码
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
-    const oldPasswordValid = await bcrypt.compare(oldPassword, user.password)
+    const oldPasswordValid = await compare(oldPassword, user.password)
     if (!oldPasswordValid) {
       throw new Error('老密码错误，请重试.')
     }
-    const newPasswordHash = await bcrypt.hash(newPassword, 10)
+    const newPasswordHash = await hash(newPassword, 10)
     
     const newUser = await ctx.prisma.updateUser({
         where: { id: userId },
@@ -137,7 +137,7 @@ const Mutation = {
     
     return newUser
   },
-  contactToAccountingFirm:async (parent, { accountingFirmCode }, ctx) => {
+  contactToAccountingFirm:async (parent, { accountingFirmName }, ctx) => {
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
     if (!user) {
@@ -146,7 +146,7 @@ const Mutation = {
     
     const newUser = await ctx.prisma.updateUser({
         where: { id: userId },
-        data: { accountingFirm: {connect:{code:accountingFirmCode}} }
+        data: { accountingFirm: {connect:{name:accountingFirmName}} }
       })
     
     return newUser

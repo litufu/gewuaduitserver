@@ -13,10 +13,10 @@ const Query = {
       return true
     }
   },
-  accountingFirms:async (parent, {name}, ctx) => {
+  accountingFirms:async (parent, {inputvalue}, ctx) => {
     const firms = await ctx.prisma.accountingFirms({ 
-      where: { name_contains: name },
-      first: 5
+      where: { name_starts_with: inputvalue },
+      first: 10
     })
    return firms
   },
