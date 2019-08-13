@@ -1,5 +1,7 @@
 const { hash, compare } = require('bcrypt')
 const crypto = require('crypto')
+const path = require('path')
+const spawn = require("child_process").spawn;
 const { sign } = require('jsonwebtoken')
 const { APP_SECRET, getUserId } = require('../utils')
 const emailGenerator = require('../emailGenerator');
@@ -151,7 +153,8 @@ const Mutation = {
     
     return newUser
   },
-  createCustomer:async (parent, { name,code,type,nature }, ctx) => {
+  createCustomer:async (parent, { name,type,nature }, ctx) => {
+    console.log(name,type,nature)
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
     if (!user) {
@@ -167,13 +170,52 @@ const Mutation = {
     if (company){
       throw new Error("客户已经存在，无需重复创建")
     }
-    
+
     const newcompany = await ctx.prisma.createCompany({
       name,
-      code,
       type,
       nature
     })
+
+    const filepath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
+    const pythonProcess = spawn('python',[filepath, name]);
+    pythonProcess.stdout.on('data', async (data) => {
+        res = JSON.parse(data)
+        if(Array.isArray(res)){
+          for (let i=0;i<res.length;i++) {
+            const ratio = parseFloat(res[i].ratio.replace('%'))
+            const holderName = res[i].holder_name
+            await ctx.prisma.createHolder({
+              name:holderName,
+              ratio,
+              company:{connect:{name}}
+            })
+          }
+        }else{
+          await ctx.prisma.updateCompany({
+            where: { name },
+            data: {
+              code:res.code,
+              address:res.address,
+              legalRepresentative:res.legalRepresentative,
+              establishDate:res.establishDate,
+              registeredCapital:res.registeredCapital,
+              paidinCapital:res.paidinCapital,
+              businessScope:res.businessScope
+            }
+          })
+        }
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+       throw new Error(`客户信息下载失败，请确认客户名称是否正确${data}`)
+    });
+
+    pythonProcess.on('exit', (code) => {
+      if(code!==0){
+        throw new Error(`客户信息下载失败，请确认客户名称是否正确`)
+      }
+    });
     
     return newcompany
   },

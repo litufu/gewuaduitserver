@@ -18,7 +18,7 @@ const typeDefs = gql`
     forgetPassword(email: String!): User!
     updatePassword(oldPassword: String, newPassword: String!): User!
     contactToAccountingFirm(accountingFirmName:String!):User!
-    createCustomer(name:String!,code:String!,type:CompanyType!,nature:CompanyNature!):Company!
+    createCustomer(name:String!,type:CompanyType!,nature:CompanyNature!):Company!
   }
 
  
