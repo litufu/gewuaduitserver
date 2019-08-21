@@ -1,24 +1,42 @@
+const path = require('path')
 
-const spawn = require("child_process").spawn;
-
-
-function download_companyinfo(company_name){
-    const bat = spawn('python',["download_companyinfo.py", company_name]);
-    bat.stdout.on('data', (data) => {
-        res = JSON.parse(data)
-        if(Array.isArray(res)){
-            console.log(res);
+const db_name = "sdfe-123.sqlite"
+const databasePath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+const pythonProcess = spawn('python',[databasePath]);
+pythonProcess.stdout.on('data', async (data) => {
+    res = JSON.parse(data)
+    if(Array.isArray(res)){
+      for (let i=0;i<res.length;i++) {
+        const ratio = parseFloat(res[i].ratio.replace('%'))
+        const holderName = res[i].holder_name
+        await ctx.prisma.createHolder({
+          name:holderName,
+          ratio,
+          company:{connect:{name}}
+        })
+      }
+    }else{
+      await ctx.prisma.updateCompany({
+        where: { name },
+        data: {
+          code:res.code,
+          address:res.address,
+          legalRepresentative:res.legalRepresentative,
+          establishDate:res.establishDate,
+          registeredCapital:res.registeredCapital,
+          paidinCapital:res.paidinCapital,
+          businessScope:res.businessScope
         }
-    });
-    
-    bat.stderr.on('data', (data) => {
-        console.log(data.toString());
-    });
+      })
+    }
+});
 
+pythonProcess.stderr.on('data', (data) => {
+   throw new Error(`客户信息下载失败，请确认客户名称是否正确${data}`)
+});
 
-    bat.on('exit', (code) => {
-        console.log(`子进程退出，退出码 ${code}`);
-    });
-}
-
-download_companyinfo("安阳格物网络科技有限公司")
+pythonProcess.on('exit', (code) => {
+  if(code!==0){
+    throw new Error(`客户信息下载失败，请确认客户名称是否正确`)
+  }
+});

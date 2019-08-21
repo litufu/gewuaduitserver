@@ -1,10 +1,14 @@
 const { hash, compare } = require('bcrypt')
+const fs = require("fs")
 const crypto = require('crypto')
+const mkdirp = require('mkdirp') 
 const path = require('path')
-const spawn = require("child_process").spawn;
+const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
-const { APP_SECRET, getUserId } = require('../utils')
+const { APP_SECRET, getUserId,storeFS,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,delDir } = require('../utils')
 const emailGenerator = require('../emailGenerator');
+
+mkdirp.sync(UPLOAD_DIR)
 
 const Mutation = {
   signup: async (parent, { name, email, password }, ctx) => {
@@ -154,7 +158,7 @@ const Mutation = {
     return newUser
   },
   createCustomer:async (parent, { name,type,nature }, ctx) => {
-    console.log(name,type,nature)
+    
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
     if (!user) {
@@ -174,9 +178,36 @@ const Mutation = {
     const newcompany = await ctx.prisma.createCompany({
       name,
       type,
-      nature
+      nature,
+      accountingFirms:{connect:{id:accountingFirm.id}}
     })
+    // 建立公司数据库
+    const db_name = `${accountingFirm.id}-${newcompany.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const databasePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/database.py')
+    // 1/创建数据库
+    const initDataBaseProcess = spawn('python',[databasePath, dbPath]);
+    initDataBaseProcess.stdout.on('data', (data) => {
+      if(data==="success"){
+        console.log("数据库建立成功")
+      }
+    });
+    initDataBaseProcess.stderr.on('data', (data) => {
+      throw new Error(`数据库建立失败${data}`)
+    });
+    // 2/初始化数据库
+    const initDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/init_data.py')
+    const initDataStructureProcess  = spawn('python',[initDataPath, dbPath]);
+    initDataStructureProcess.stdout.on('data', (data) => {
+      if(data==="success"){
+        console.log("数据库初始化成功,下一步可以导入数据")
+      }
+    });
+    initDataStructureProcess.stderr.on('data', (data) => {
+      throw new Error(`初始数据失败${data}`)
+    });
 
+    // 搜索公司基本信息
     const filepath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
     const pythonProcess = spawn('python',[filepath, name]);
     pythonProcess.stdout.on('data', async (data) => {
@@ -218,6 +249,103 @@ const Mutation = {
     });
     
     return newcompany
+  },
+  uploadDataFiles:async (parent, { uploads,companyName,startTime,endTime}, ctx) => {
+    // 验证上传者
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+      throw new Error("你还没有加入会计师事务所，无法上传数据")
+    }
+
+    const startTimeStr = dateToString(new Date(startTime))
+    const endTimeStr = dateToString(new Date(endTime))
+    
+    // 检查上传文件的类型
+    for(const upload of uploads){
+      // 解析上传文件
+      const {  mimetype } = await upload.file
+      if(ALLOW_UPLOAD_TYPES.indexOf(mimetype)=== -1){
+        throw new Error("上传数据类型不正确")
+      }
+    }
+
+    // 验证公司
+    const company = await ctx.prisma.company({ name: companyName })
+    if(!company){
+      throw new Error("公司名称不正确")
+    }
+
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    console.log(db_name)
+    console.log(dbPath)
+    const files = []
+    for(const upload of uploads){
+      // 解析上传文件
+      const { createReadStream, filename, mimetype } = await upload.file
+      const stream = createReadStream()
+      // 存储文件记录
+      const file = await ctx.prisma.createFile({
+        path:UPLOAD_DIR,
+        filename,
+        mimetype,
+        type:upload.type
+      })
+      // 存储文件
+      const storeFilePath = `${UPLOAD_DIR}/${file.id}-${filename}`
+      await storeFS({ storeFilePath,stream })
+     
+    //  读取文件并存储到数据库
+      const importDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/import_data.py') 
+      const uploadType = upload.type
+      const importDataProcess = spawn('python',[importDataPath, dbPath,startTimeStr,endTimeStr,storeFilePath,uploadType]); 
+      importDataProcess.stdout.on('data', async (data) => {
+          console.log(data)
+      })
+      importDataProcess.stderr.on('data', (data) => {
+        throw new Error(`数据录入失败${data}`)
+      });
+      importDataProcess.on('close', (code) => {
+        console.log(`数据录入完成 ${code}`);
+        fs.unlink(storeFilePath, function(err) {
+          if (err) {
+              return console.error(err);
+          }
+          console.log("文件删除成功！");
+        })
+      });
+      
+      // 登记文件信息
+      await ctx.prisma.createDataRecord({
+        startTime,
+        endTime,
+        accountingFirm:{connect:{id:accountingFirm.id}},
+        company:{connect:{name:companyName}},
+        files:{connect:{id:file.id}},
+        users:{connect:{id:userId}}
+      })
+      files.push(file)
+    }
+    // // 检查数据路数的正确性
+    // const checkImportDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_import_data.py') 
+    // const checkImportDataProcess = spawn('python',[checkImportDataPath, dbPath,startTimeStr,endTimeStr]); 
+    // checkImportDataProcess.stdout.on('data', async (data) => {
+    //   console.log(data)
+    // })
+    // checkImportDataProcess.stderr.on('data', (data) => {
+    //   throw new Error(`数据检查逻辑失败${data}`)
+    // });
+    // checkImportDataProcess.on('close', (code) => {
+    //   console.log(`数据逻辑检查完成 ${code}`);
+    // });
+    
+    return files
   },
 }
 

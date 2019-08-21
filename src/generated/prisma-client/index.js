@@ -47,6 +47,14 @@ var models = [
   {
     name: "DataRecord",
     embedded: false
+  },
+  {
+    name: "FileType",
+    embedded: false
+  },
+  {
+    name: "File",
+    embedded: false
   }
 ];
 exports.Prisma = prisma_lib_1.makePrismaClientClass({

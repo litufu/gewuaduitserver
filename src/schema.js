@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
   scalar DateTime
@@ -7,6 +7,8 @@ const typeDefs = gql`
     me: User
     emailHasTaken(email:String!):Boolean!
     accountingFirms(inputvalue:String!):[AccountingFirm]
+    companies(inputvalue:String!):[Company]
+    uploads: [File]
   }
 
   type Mutation {
@@ -19,8 +21,27 @@ const typeDefs = gql`
     updatePassword(oldPassword: String, newPassword: String!): User!
     contactToAccountingFirm(accountingFirmName:String!):User!
     createCustomer(name:String!,type:CompanyType!,nature:CompanyNature!):Company!
+    uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):[File]
   }
 
+  input UploadTypeInput{
+    file:Upload!
+    type:String!
+  }
+
+  enum FileType{
+    SUBJECTBALANCE
+    CHRONOLOGICALACCOUNT
+    AUXILIARYACCOUNTING
+  }
+
+  type File {
+    id: ID!
+    path: String!
+    filename: String!
+    mimetype: String!
+    type:FileType!
+  }
  
   type AuthPayload {
     token: String!
@@ -57,6 +78,7 @@ const typeDefs = gql`
     email:String!
     contact:String!
     employees:[User]
+    customers:[Company]
   }
 
   enum CompanyType {
@@ -128,7 +150,7 @@ const typeDefs = gql`
     endTime:DateTime!
     uploadTime:DateTime!
     uploadContent:String
-    users:[User]
+    users:[User] #授权使用者
   }
   
 `;

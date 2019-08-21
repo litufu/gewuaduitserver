@@ -29,6 +29,7 @@ type AccountingFirm{
   email:String!
   contact:String!
   employees:[User!]!
+  customers:[Company!]!
 }
 
 enum CompanyType {
@@ -57,6 +58,7 @@ type Company{
   paidinCapital:String
   businessScope:String
   holders:[Holder!]!
+  accountingFirms:[AccountingFirm!]! @relation(link: TABLE)
 }
 
 type Holder{
@@ -98,7 +100,21 @@ type DataRecord{
   company:Company!
   startTime:DateTime!
   endTime:DateTime!
-  uploadTime:DateTime!
-  uploadContent:Json
+  uploadTime:DateTime!  @createdAt
+  files:[File!]!
   users:[User!]! @relation(link: TABLE)
+}
+
+enum FileType{
+  SUBJECTBALANCE
+  CHRONOLOGICALACCOUNT
+  AUXILIARYACCOUNTING
+}
+
+type File {
+  id: ID! @id
+  path: String!
+  filename: String!
+  mimetype: String!
+  type:FileType!
 }

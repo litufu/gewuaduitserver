@@ -12,6 +12,7 @@ module.exports = {
   email: String!
   contact: String!
   employees(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+  customers(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Company!]
 }
 
 type AccountingFirmConnection {
@@ -29,6 +30,12 @@ input AccountingFirmCreateInput {
   email: String!
   contact: String!
   employees: UserCreateManyWithoutAccountingFirmInput
+  customers: CompanyCreateManyWithoutAccountingFirmsInput
+}
+
+input AccountingFirmCreateManyWithoutCustomersInput {
+  create: [AccountingFirmCreateWithoutCustomersInput!]
+  connect: [AccountingFirmWhereUniqueInput!]
 }
 
 input AccountingFirmCreateOneInput {
@@ -41,6 +48,17 @@ input AccountingFirmCreateOneWithoutEmployeesInput {
   connect: AccountingFirmWhereUniqueInput
 }
 
+input AccountingFirmCreateWithoutCustomersInput {
+  id: ID
+  name: String!
+  code: String!
+  address: String!
+  phone: String!
+  email: String!
+  contact: String!
+  employees: UserCreateManyWithoutAccountingFirmInput
+}
+
 input AccountingFirmCreateWithoutEmployeesInput {
   id: ID
   name: String!
@@ -49,6 +67,7 @@ input AccountingFirmCreateWithoutEmployeesInput {
   phone: String!
   email: String!
   contact: String!
+  customers: CompanyCreateManyWithoutAccountingFirmsInput
 }
 
 type AccountingFirmEdge {
@@ -83,6 +102,110 @@ type AccountingFirmPreviousValues {
   contact: String!
 }
 
+input AccountingFirmScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  code: String
+  code_not: String
+  code_in: [String!]
+  code_not_in: [String!]
+  code_lt: String
+  code_lte: String
+  code_gt: String
+  code_gte: String
+  code_contains: String
+  code_not_contains: String
+  code_starts_with: String
+  code_not_starts_with: String
+  code_ends_with: String
+  code_not_ends_with: String
+  address: String
+  address_not: String
+  address_in: [String!]
+  address_not_in: [String!]
+  address_lt: String
+  address_lte: String
+  address_gt: String
+  address_gte: String
+  address_contains: String
+  address_not_contains: String
+  address_starts_with: String
+  address_not_starts_with: String
+  address_ends_with: String
+  address_not_ends_with: String
+  phone: String
+  phone_not: String
+  phone_in: [String!]
+  phone_not_in: [String!]
+  phone_lt: String
+  phone_lte: String
+  phone_gt: String
+  phone_gte: String
+  phone_contains: String
+  phone_not_contains: String
+  phone_starts_with: String
+  phone_not_starts_with: String
+  phone_ends_with: String
+  phone_not_ends_with: String
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  contact: String
+  contact_not: String
+  contact_in: [String!]
+  contact_not_in: [String!]
+  contact_lt: String
+  contact_lte: String
+  contact_gt: String
+  contact_gte: String
+  contact_contains: String
+  contact_not_contains: String
+  contact_starts_with: String
+  contact_not_starts_with: String
+  contact_ends_with: String
+  contact_not_ends_with: String
+  AND: [AccountingFirmScalarWhereInput!]
+  OR: [AccountingFirmScalarWhereInput!]
+  NOT: [AccountingFirmScalarWhereInput!]
+}
+
 type AccountingFirmSubscriptionPayload {
   mutation: MutationType!
   node: AccountingFirm
@@ -109,6 +232,7 @@ input AccountingFirmUpdateDataInput {
   email: String
   contact: String
   employees: UserUpdateManyWithoutAccountingFirmInput
+  customers: CompanyUpdateManyWithoutAccountingFirmsInput
 }
 
 input AccountingFirmUpdateInput {
@@ -119,6 +243,16 @@ input AccountingFirmUpdateInput {
   email: String
   contact: String
   employees: UserUpdateManyWithoutAccountingFirmInput
+  customers: CompanyUpdateManyWithoutAccountingFirmsInput
+}
+
+input AccountingFirmUpdateManyDataInput {
+  name: String
+  code: String
+  address: String
+  phone: String
+  email: String
+  contact: String
 }
 
 input AccountingFirmUpdateManyMutationInput {
@@ -128,6 +262,23 @@ input AccountingFirmUpdateManyMutationInput {
   phone: String
   email: String
   contact: String
+}
+
+input AccountingFirmUpdateManyWithoutCustomersInput {
+  create: [AccountingFirmCreateWithoutCustomersInput!]
+  delete: [AccountingFirmWhereUniqueInput!]
+  connect: [AccountingFirmWhereUniqueInput!]
+  set: [AccountingFirmWhereUniqueInput!]
+  disconnect: [AccountingFirmWhereUniqueInput!]
+  update: [AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput!]
+  upsert: [AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput!]
+  deleteMany: [AccountingFirmScalarWhereInput!]
+  updateMany: [AccountingFirmUpdateManyWithWhereNestedInput!]
+}
+
+input AccountingFirmUpdateManyWithWhereNestedInput {
+  where: AccountingFirmScalarWhereInput!
+  data: AccountingFirmUpdateManyDataInput!
 }
 
 input AccountingFirmUpdateOneRequiredInput {
@@ -146,6 +297,16 @@ input AccountingFirmUpdateOneWithoutEmployeesInput {
   connect: AccountingFirmWhereUniqueInput
 }
 
+input AccountingFirmUpdateWithoutCustomersDataInput {
+  name: String
+  code: String
+  address: String
+  phone: String
+  email: String
+  contact: String
+  employees: UserUpdateManyWithoutAccountingFirmInput
+}
+
 input AccountingFirmUpdateWithoutEmployeesDataInput {
   name: String
   code: String
@@ -153,6 +314,12 @@ input AccountingFirmUpdateWithoutEmployeesDataInput {
   phone: String
   email: String
   contact: String
+  customers: CompanyUpdateManyWithoutAccountingFirmsInput
+}
+
+input AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput {
+  where: AccountingFirmWhereUniqueInput!
+  data: AccountingFirmUpdateWithoutCustomersDataInput!
 }
 
 input AccountingFirmUpsertNestedInput {
@@ -163,6 +330,12 @@ input AccountingFirmUpsertNestedInput {
 input AccountingFirmUpsertWithoutEmployeesInput {
   update: AccountingFirmUpdateWithoutEmployeesDataInput!
   create: AccountingFirmCreateWithoutEmployeesInput!
+}
+
+input AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput {
+  where: AccountingFirmWhereUniqueInput!
+  update: AccountingFirmUpdateWithoutCustomersDataInput!
+  create: AccountingFirmCreateWithoutCustomersInput!
 }
 
 input AccountingFirmWhereInput {
@@ -267,6 +440,9 @@ input AccountingFirmWhereInput {
   employees_every: UserWhereInput
   employees_some: UserWhereInput
   employees_none: UserWhereInput
+  customers_every: CompanyWhereInput
+  customers_some: CompanyWhereInput
+  customers_none: CompanyWhereInput
   AND: [AccountingFirmWhereInput!]
   OR: [AccountingFirmWhereInput!]
   NOT: [AccountingFirmWhereInput!]
@@ -287,6 +463,10 @@ type AggregateCompany {
 }
 
 type AggregateDataRecord {
+  count: Int!
+}
+
+type AggregateFile {
   count: Int!
 }
 
@@ -323,6 +503,7 @@ type Company {
   paidinCapital: String
   businessScope: String
   holders(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Holder!]
+  accountingFirms(where: AccountingFirmWhereInput, orderBy: AccountingFirmOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [AccountingFirm!]
 }
 
 type CompanyConnection {
@@ -344,6 +525,12 @@ input CompanyCreateInput {
   paidinCapital: String
   businessScope: String
   holders: HolderCreateManyWithoutCompanyInput
+  accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
+}
+
+input CompanyCreateManyWithoutAccountingFirmsInput {
+  create: [CompanyCreateWithoutAccountingFirmsInput!]
+  connect: [CompanyWhereUniqueInput!]
 }
 
 input CompanyCreateOneInput {
@@ -354,6 +541,21 @@ input CompanyCreateOneInput {
 input CompanyCreateOneWithoutHoldersInput {
   create: CompanyCreateWithoutHoldersInput
   connect: CompanyWhereUniqueInput
+}
+
+input CompanyCreateWithoutAccountingFirmsInput {
+  id: ID
+  type: CompanyType!
+  nature: CompanyNature!
+  name: String!
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderCreateManyWithoutCompanyInput
 }
 
 input CompanyCreateWithoutHoldersInput {
@@ -368,6 +570,7 @@ input CompanyCreateWithoutHoldersInput {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+  accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
 
 type CompanyEdge {
@@ -421,6 +624,140 @@ type CompanyPreviousValues {
   businessScope: String
 }
 
+input CompanyScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  type: CompanyType
+  type_not: CompanyType
+  type_in: [CompanyType!]
+  type_not_in: [CompanyType!]
+  nature: CompanyNature
+  nature_not: CompanyNature
+  nature_in: [CompanyNature!]
+  nature_not_in: [CompanyNature!]
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  code: String
+  code_not: String
+  code_in: [String!]
+  code_not_in: [String!]
+  code_lt: String
+  code_lte: String
+  code_gt: String
+  code_gte: String
+  code_contains: String
+  code_not_contains: String
+  code_starts_with: String
+  code_not_starts_with: String
+  code_ends_with: String
+  code_not_ends_with: String
+  address: String
+  address_not: String
+  address_in: [String!]
+  address_not_in: [String!]
+  address_lt: String
+  address_lte: String
+  address_gt: String
+  address_gte: String
+  address_contains: String
+  address_not_contains: String
+  address_starts_with: String
+  address_not_starts_with: String
+  address_ends_with: String
+  address_not_ends_with: String
+  legalRepresentative: String
+  legalRepresentative_not: String
+  legalRepresentative_in: [String!]
+  legalRepresentative_not_in: [String!]
+  legalRepresentative_lt: String
+  legalRepresentative_lte: String
+  legalRepresentative_gt: String
+  legalRepresentative_gte: String
+  legalRepresentative_contains: String
+  legalRepresentative_not_contains: String
+  legalRepresentative_starts_with: String
+  legalRepresentative_not_starts_with: String
+  legalRepresentative_ends_with: String
+  legalRepresentative_not_ends_with: String
+  establishDate: DateTime
+  establishDate_not: DateTime
+  establishDate_in: [DateTime!]
+  establishDate_not_in: [DateTime!]
+  establishDate_lt: DateTime
+  establishDate_lte: DateTime
+  establishDate_gt: DateTime
+  establishDate_gte: DateTime
+  registeredCapital: String
+  registeredCapital_not: String
+  registeredCapital_in: [String!]
+  registeredCapital_not_in: [String!]
+  registeredCapital_lt: String
+  registeredCapital_lte: String
+  registeredCapital_gt: String
+  registeredCapital_gte: String
+  registeredCapital_contains: String
+  registeredCapital_not_contains: String
+  registeredCapital_starts_with: String
+  registeredCapital_not_starts_with: String
+  registeredCapital_ends_with: String
+  registeredCapital_not_ends_with: String
+  paidinCapital: String
+  paidinCapital_not: String
+  paidinCapital_in: [String!]
+  paidinCapital_not_in: [String!]
+  paidinCapital_lt: String
+  paidinCapital_lte: String
+  paidinCapital_gt: String
+  paidinCapital_gte: String
+  paidinCapital_contains: String
+  paidinCapital_not_contains: String
+  paidinCapital_starts_with: String
+  paidinCapital_not_starts_with: String
+  paidinCapital_ends_with: String
+  paidinCapital_not_ends_with: String
+  businessScope: String
+  businessScope_not: String
+  businessScope_in: [String!]
+  businessScope_not_in: [String!]
+  businessScope_lt: String
+  businessScope_lte: String
+  businessScope_gt: String
+  businessScope_gte: String
+  businessScope_contains: String
+  businessScope_not_contains: String
+  businessScope_starts_with: String
+  businessScope_not_starts_with: String
+  businessScope_ends_with: String
+  businessScope_not_ends_with: String
+  AND: [CompanyScalarWhereInput!]
+  OR: [CompanyScalarWhereInput!]
+  NOT: [CompanyScalarWhereInput!]
+}
+
 type CompanySubscriptionPayload {
   mutation: MutationType!
   node: Company
@@ -456,6 +793,7 @@ input CompanyUpdateDataInput {
   paidinCapital: String
   businessScope: String
   holders: HolderUpdateManyWithoutCompanyInput
+  accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
 
 input CompanyUpdateInput {
@@ -470,6 +808,20 @@ input CompanyUpdateInput {
   paidinCapital: String
   businessScope: String
   holders: HolderUpdateManyWithoutCompanyInput
+  accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
+}
+
+input CompanyUpdateManyDataInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
 }
 
 input CompanyUpdateManyMutationInput {
@@ -483,6 +835,23 @@ input CompanyUpdateManyMutationInput {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+}
+
+input CompanyUpdateManyWithoutAccountingFirmsInput {
+  create: [CompanyCreateWithoutAccountingFirmsInput!]
+  delete: [CompanyWhereUniqueInput!]
+  connect: [CompanyWhereUniqueInput!]
+  set: [CompanyWhereUniqueInput!]
+  disconnect: [CompanyWhereUniqueInput!]
+  update: [CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput!]
+  upsert: [CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput!]
+  deleteMany: [CompanyScalarWhereInput!]
+  updateMany: [CompanyUpdateManyWithWhereNestedInput!]
+}
+
+input CompanyUpdateManyWithWhereNestedInput {
+  where: CompanyScalarWhereInput!
+  data: CompanyUpdateManyDataInput!
 }
 
 input CompanyUpdateOneRequiredInput {
@@ -499,6 +868,20 @@ input CompanyUpdateOneRequiredWithoutHoldersInput {
   connect: CompanyWhereUniqueInput
 }
 
+input CompanyUpdateWithoutAccountingFirmsDataInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderUpdateManyWithoutCompanyInput
+}
+
 input CompanyUpdateWithoutHoldersDataInput {
   type: CompanyType
   nature: CompanyNature
@@ -510,6 +893,12 @@ input CompanyUpdateWithoutHoldersDataInput {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+  accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
+}
+
+input CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput {
+  where: CompanyWhereUniqueInput!
+  data: CompanyUpdateWithoutAccountingFirmsDataInput!
 }
 
 input CompanyUpsertNestedInput {
@@ -520,6 +909,12 @@ input CompanyUpsertNestedInput {
 input CompanyUpsertWithoutHoldersInput {
   update: CompanyUpdateWithoutHoldersDataInput!
   create: CompanyCreateWithoutHoldersInput!
+}
+
+input CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput {
+  where: CompanyWhereUniqueInput!
+  update: CompanyUpdateWithoutAccountingFirmsDataInput!
+  create: CompanyCreateWithoutAccountingFirmsInput!
 }
 
 input CompanyWhereInput {
@@ -654,6 +1049,9 @@ input CompanyWhereInput {
   holders_every: HolderWhereInput
   holders_some: HolderWhereInput
   holders_none: HolderWhereInput
+  accountingFirms_every: AccountingFirmWhereInput
+  accountingFirms_some: AccountingFirmWhereInput
+  accountingFirms_none: AccountingFirmWhereInput
   AND: [CompanyWhereInput!]
   OR: [CompanyWhereInput!]
   NOT: [CompanyWhereInput!]
@@ -671,7 +1069,7 @@ type DataRecord {
   startTime: DateTime!
   endTime: DateTime!
   uploadTime: DateTime!
-  uploadContent: Json
+  files(where: FileWhereInput, orderBy: FileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [File!]
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
 }
 
@@ -687,8 +1085,7 @@ input DataRecordCreateInput {
   company: CompanyCreateOneInput!
   startTime: DateTime!
   endTime: DateTime!
-  uploadTime: DateTime!
-  uploadContent: Json
+  files: FileCreateManyInput
   users: UserCreateManyWithoutDataRecordsInput
 }
 
@@ -703,8 +1100,7 @@ input DataRecordCreateWithoutUsersInput {
   company: CompanyCreateOneInput!
   startTime: DateTime!
   endTime: DateTime!
-  uploadTime: DateTime!
-  uploadContent: Json
+  files: FileCreateManyInput
 }
 
 type DataRecordEdge {
@@ -721,8 +1117,6 @@ enum DataRecordOrderByInput {
   endTime_DESC
   uploadTime_ASC
   uploadTime_DESC
-  uploadContent_ASC
-  uploadContent_DESC
 }
 
 type DataRecordPreviousValues {
@@ -730,7 +1124,6 @@ type DataRecordPreviousValues {
   startTime: DateTime!
   endTime: DateTime!
   uploadTime: DateTime!
-  uploadContent: Json
 }
 
 input DataRecordScalarWhereInput {
@@ -800,23 +1193,18 @@ input DataRecordUpdateInput {
   company: CompanyUpdateOneRequiredInput
   startTime: DateTime
   endTime: DateTime
-  uploadTime: DateTime
-  uploadContent: Json
+  files: FileUpdateManyInput
   users: UserUpdateManyWithoutDataRecordsInput
 }
 
 input DataRecordUpdateManyDataInput {
   startTime: DateTime
   endTime: DateTime
-  uploadTime: DateTime
-  uploadContent: Json
 }
 
 input DataRecordUpdateManyMutationInput {
   startTime: DateTime
   endTime: DateTime
-  uploadTime: DateTime
-  uploadContent: Json
 }
 
 input DataRecordUpdateManyWithoutUsersInput {
@@ -841,8 +1229,7 @@ input DataRecordUpdateWithoutUsersDataInput {
   company: CompanyUpdateOneRequiredInput
   startTime: DateTime
   endTime: DateTime
-  uploadTime: DateTime
-  uploadContent: Json
+  files: FileUpdateManyInput
 }
 
 input DataRecordUpdateWithWhereUniqueWithoutUsersInput {
@@ -897,6 +1284,9 @@ input DataRecordWhereInput {
   uploadTime_lte: DateTime
   uploadTime_gt: DateTime
   uploadTime_gte: DateTime
+  files_every: FileWhereInput
+  files_some: FileWhereInput
+  files_none: FileWhereInput
   users_every: UserWhereInput
   users_some: UserWhereInput
   users_none: UserWhereInput
@@ -910,6 +1300,275 @@ input DataRecordWhereUniqueInput {
 }
 
 scalar DateTime
+
+type File {
+  id: ID!
+  path: String!
+  filename: String!
+  mimetype: String!
+  type: FileType!
+}
+
+type FileConnection {
+  pageInfo: PageInfo!
+  edges: [FileEdge]!
+  aggregate: AggregateFile!
+}
+
+input FileCreateInput {
+  id: ID
+  path: String!
+  filename: String!
+  mimetype: String!
+  type: FileType!
+}
+
+input FileCreateManyInput {
+  create: [FileCreateInput!]
+  connect: [FileWhereUniqueInput!]
+}
+
+type FileEdge {
+  node: File!
+  cursor: String!
+}
+
+enum FileOrderByInput {
+  id_ASC
+  id_DESC
+  path_ASC
+  path_DESC
+  filename_ASC
+  filename_DESC
+  mimetype_ASC
+  mimetype_DESC
+  type_ASC
+  type_DESC
+}
+
+type FilePreviousValues {
+  id: ID!
+  path: String!
+  filename: String!
+  mimetype: String!
+  type: FileType!
+}
+
+input FileScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  path: String
+  path_not: String
+  path_in: [String!]
+  path_not_in: [String!]
+  path_lt: String
+  path_lte: String
+  path_gt: String
+  path_gte: String
+  path_contains: String
+  path_not_contains: String
+  path_starts_with: String
+  path_not_starts_with: String
+  path_ends_with: String
+  path_not_ends_with: String
+  filename: String
+  filename_not: String
+  filename_in: [String!]
+  filename_not_in: [String!]
+  filename_lt: String
+  filename_lte: String
+  filename_gt: String
+  filename_gte: String
+  filename_contains: String
+  filename_not_contains: String
+  filename_starts_with: String
+  filename_not_starts_with: String
+  filename_ends_with: String
+  filename_not_ends_with: String
+  mimetype: String
+  mimetype_not: String
+  mimetype_in: [String!]
+  mimetype_not_in: [String!]
+  mimetype_lt: String
+  mimetype_lte: String
+  mimetype_gt: String
+  mimetype_gte: String
+  mimetype_contains: String
+  mimetype_not_contains: String
+  mimetype_starts_with: String
+  mimetype_not_starts_with: String
+  mimetype_ends_with: String
+  mimetype_not_ends_with: String
+  type: FileType
+  type_not: FileType
+  type_in: [FileType!]
+  type_not_in: [FileType!]
+  AND: [FileScalarWhereInput!]
+  OR: [FileScalarWhereInput!]
+  NOT: [FileScalarWhereInput!]
+}
+
+type FileSubscriptionPayload {
+  mutation: MutationType!
+  node: File
+  updatedFields: [String!]
+  previousValues: FilePreviousValues
+}
+
+input FileSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: FileWhereInput
+  AND: [FileSubscriptionWhereInput!]
+  OR: [FileSubscriptionWhereInput!]
+  NOT: [FileSubscriptionWhereInput!]
+}
+
+enum FileType {
+  SUBJECTBALANCE
+  CHRONOLOGICALACCOUNT
+  AUXILIARYACCOUNTING
+}
+
+input FileUpdateDataInput {
+  path: String
+  filename: String
+  mimetype: String
+  type: FileType
+}
+
+input FileUpdateInput {
+  path: String
+  filename: String
+  mimetype: String
+  type: FileType
+}
+
+input FileUpdateManyDataInput {
+  path: String
+  filename: String
+  mimetype: String
+  type: FileType
+}
+
+input FileUpdateManyInput {
+  create: [FileCreateInput!]
+  update: [FileUpdateWithWhereUniqueNestedInput!]
+  upsert: [FileUpsertWithWhereUniqueNestedInput!]
+  delete: [FileWhereUniqueInput!]
+  connect: [FileWhereUniqueInput!]
+  set: [FileWhereUniqueInput!]
+  disconnect: [FileWhereUniqueInput!]
+  deleteMany: [FileScalarWhereInput!]
+  updateMany: [FileUpdateManyWithWhereNestedInput!]
+}
+
+input FileUpdateManyMutationInput {
+  path: String
+  filename: String
+  mimetype: String
+  type: FileType
+}
+
+input FileUpdateManyWithWhereNestedInput {
+  where: FileScalarWhereInput!
+  data: FileUpdateManyDataInput!
+}
+
+input FileUpdateWithWhereUniqueNestedInput {
+  where: FileWhereUniqueInput!
+  data: FileUpdateDataInput!
+}
+
+input FileUpsertWithWhereUniqueNestedInput {
+  where: FileWhereUniqueInput!
+  update: FileUpdateDataInput!
+  create: FileCreateInput!
+}
+
+input FileWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  path: String
+  path_not: String
+  path_in: [String!]
+  path_not_in: [String!]
+  path_lt: String
+  path_lte: String
+  path_gt: String
+  path_gte: String
+  path_contains: String
+  path_not_contains: String
+  path_starts_with: String
+  path_not_starts_with: String
+  path_ends_with: String
+  path_not_ends_with: String
+  filename: String
+  filename_not: String
+  filename_in: [String!]
+  filename_not_in: [String!]
+  filename_lt: String
+  filename_lte: String
+  filename_gt: String
+  filename_gte: String
+  filename_contains: String
+  filename_not_contains: String
+  filename_starts_with: String
+  filename_not_starts_with: String
+  filename_ends_with: String
+  filename_not_ends_with: String
+  mimetype: String
+  mimetype_not: String
+  mimetype_in: [String!]
+  mimetype_not_in: [String!]
+  mimetype_lt: String
+  mimetype_lte: String
+  mimetype_gt: String
+  mimetype_gte: String
+  mimetype_contains: String
+  mimetype_not_contains: String
+  mimetype_starts_with: String
+  mimetype_not_starts_with: String
+  mimetype_ends_with: String
+  mimetype_not_ends_with: String
+  type: FileType
+  type_not: FileType
+  type_in: [FileType!]
+  type_not_in: [FileType!]
+  AND: [FileWhereInput!]
+  OR: [FileWhereInput!]
+  NOT: [FileWhereInput!]
+}
+
+input FileWhereUniqueInput {
+  id: ID
+}
 
 type Holder {
   id: ID!
@@ -1118,8 +1777,6 @@ input HolderWhereUniqueInput {
   id: ID
 }
 
-scalar Json
-
 scalar Long
 
 type Member {
@@ -1308,6 +1965,12 @@ type Mutation {
   upsertDataRecord(where: DataRecordWhereUniqueInput!, create: DataRecordCreateInput!, update: DataRecordUpdateInput!): DataRecord!
   deleteDataRecord(where: DataRecordWhereUniqueInput!): DataRecord
   deleteManyDataRecords(where: DataRecordWhereInput): BatchPayload!
+  createFile(data: FileCreateInput!): File!
+  updateFile(data: FileUpdateInput!, where: FileWhereUniqueInput!): File
+  updateManyFiles(data: FileUpdateManyMutationInput!, where: FileWhereInput): BatchPayload!
+  upsertFile(where: FileWhereUniqueInput!, create: FileCreateInput!, update: FileUpdateInput!): File!
+  deleteFile(where: FileWhereUniqueInput!): File
+  deleteManyFiles(where: FileWhereInput): BatchPayload!
   createHolder(data: HolderCreateInput!): Holder!
   updateHolder(data: HolderUpdateInput!, where: HolderWhereUniqueInput!): Holder
   updateManyHolders(data: HolderUpdateManyMutationInput!, where: HolderWhereInput): BatchPayload!
@@ -1605,6 +2268,9 @@ type Query {
   dataRecord(where: DataRecordWhereUniqueInput!): DataRecord
   dataRecords(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [DataRecord]!
   dataRecordsConnection(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): DataRecordConnection!
+  file(where: FileWhereUniqueInput!): File
+  files(where: FileWhereInput, orderBy: FileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [File]!
+  filesConnection(where: FileWhereInput, orderBy: FileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FileConnection!
   holder(where: HolderWhereUniqueInput!): Holder
   holders(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Holder]!
   holdersConnection(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HolderConnection!
@@ -1629,6 +2295,7 @@ type Subscription {
   accountingFirm(where: AccountingFirmSubscriptionWhereInput): AccountingFirmSubscriptionPayload
   company(where: CompanySubscriptionWhereInput): CompanySubscriptionPayload
   dataRecord(where: DataRecordSubscriptionWhereInput): DataRecordSubscriptionPayload
+  file(where: FileSubscriptionWhereInput): FileSubscriptionPayload
   holder(where: HolderSubscriptionWhereInput): HolderSubscriptionPayload
   member(where: MemberSubscriptionWhereInput): MemberSubscriptionPayload
   project(where: ProjectSubscriptionWhereInput): ProjectSubscriptionPayload

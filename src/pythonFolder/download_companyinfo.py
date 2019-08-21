@@ -135,6 +135,7 @@ def get_company_holders(soup,company_name):
     df = df.rename(index=str, columns={
         "序号": "no",
         "股东及出资信息": "holder_name",
+        "发起人及出资信息": "holder_name",
         "持股比例": "ratio",
         "认缴出资额": "promise_to_pay_amount",
         "认缴出资日期": "promise_to_pay_date",

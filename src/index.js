@@ -1,4 +1,5 @@
-const { ApolloServer } = require('apollo-server');
+const express = require('express');
+const { ApolloServer, gql } = require('apollo-server-express');
 
 const typeDefs = require('./schema');
 const { resolvers } = require('./resolvers')
@@ -14,10 +15,21 @@ const server = new ApolloServer({
           prisma,
         }
       },
+    uploads: {
+      // Limits here should be stricter than config for surrounding
+      // infrastructure such as Nginx so errors can be handled elegantly by
+      // graphql-upload:
+      // https://github.com/jaydenseric/graphql-upload#type-uploadoptions
+      maxFileSize: 10000000, // 10 MB
+      maxFiles: 20
+    }
   });
 
+const app = express();
+server.applyMiddleware({ app });
+
 // if (process.env.NODE_ENV !== 'test')
-server
-.listen({ port: 4000 })
-.then(({ url }) => console.log(`🚀 app running at ${url}`));
+app.listen({ port: 5000 }, () =>
+  console.log(`🚀 Server ready at http://localhost:5000${server.graphqlPath}`)
+);
     

@@ -1,5 +1,5 @@
 const { verify } = require('jsonwebtoken')
-
+const fs = require('fs')
 // 企业邮箱
 const userMail = "aduit@gewu.org.cn"
 const passMail = "litufu001!2"
@@ -22,10 +22,67 @@ function getUserId(context) {
   }
 }
 
+const UPLOAD_DIR = './uploads'
+const ALLOW_UPLOAD_TYPES = [
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel"
+]
+
+const dateToString=(date)=>{
+  const year = date.getFullYear()
+  const month = date.getMonth()	+ 1
+  const day = date.getDate()
+  return `${year}-${month}-${day}`
+}
+
+function delDir(path){
+    let files = [];
+    if(fs.existsSync(path)){
+        files = fs.readdirSync(path);
+        files.forEach((file, index) => {
+            let curPath = path + "/" + file;
+            if(fs.statSync(curPath).isDirectory()){
+                delDir(curPath); //递归删除文件夹
+            } else {
+                fs.unlinkSync(curPath); //删除文件
+            }
+        });
+        fs.rmdirSync(path);
+    }
+}
+
+const storeFS = ({ storeFilePath,stream }) => {
+  return new Promise((resolve, reject) =>
+    stream
+      .on('error', error => {
+        console.log(error)
+        if (stream.truncated)
+          // Delete the truncated file.
+          fs.unlinkSync(storeFilePath)
+        reject(error)
+      })
+      .pipe(fs.createWriteStream(storeFilePath))
+      .on('error', error => {
+        console.log(error)
+        reject(error)
+      }
+        )
+      .on('finish', () => {
+        console.log("文件上传成功")
+        resolve({ storeFilePath })
+      })
+  )
+}
+
 module.exports = {
   getUserId,
   APP_SECRET,
   userMail,
   passMail,
   service,
+  UPLOAD_DIR,
+  storeFS,
+  ALLOW_UPLOAD_TYPES,
+  dateToString,
+  delDir
 }
