@@ -5,6 +5,7 @@ const typeDefs = gql`
 
   type Query {
     me: User
+    colleagues(name:String!):[User]
     emailHasTaken(email:String!):Boolean!
     accountingFirms(inputvalue:String!):[AccountingFirm]
     companies(inputvalue:String!):[Company]
@@ -22,6 +23,7 @@ const typeDefs = gql`
     contactToAccountingFirm(accountingFirmName:String!):User!
     createCustomer(name:String!,type:CompanyType!,nature:CompanyNature!):Company!
     uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):[File]
+    addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
   }
 
   input UploadTypeInput{
@@ -149,7 +151,7 @@ const typeDefs = gql`
     startTime:DateTime!
     endTime:DateTime!
     uploadTime:DateTime!
-    uploadContent:String
+    files:[File!]!
     users:[User] #授权使用者
   }
   

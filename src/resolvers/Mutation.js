@@ -320,16 +320,37 @@ const Mutation = {
           console.log("文件删除成功！");
         })
       });
-      
-      // 登记文件信息
-      await ctx.prisma.createDataRecord({
-        startTime,
-        endTime,
-        accountingFirm:{connect:{id:accountingFirm.id}},
-        company:{connect:{name:companyName}},
-        files:{connect:{id:file.id}},
-        users:{connect:{id:userId}}
+      const dataRecords = await ctx.prisma.dataRecords({
+        where:{
+          AND:[
+            {accountingFirm:{id:accountingFirm.id}},
+            {company:{name:companyName}},
+            {startTime},
+            {endTime},
+          ]
+        }
       })
+      if(dataRecords.length>0){
+        const dataRecord = dataRecords[0]
+        await ctx.prisma.updateDataRecord({
+          where:{id:dataRecord.id},
+          data:{
+            files:{connect:{id:file.id}},
+            users:{connect:{id:userId}}
+          }
+        })
+      }else{
+        await ctx.prisma.createDataRecord({
+          startTime,
+          endTime,
+          accountingFirm:{connect:{id:accountingFirm.id}},
+          company:{connect:{name:companyName}},
+          files:{connect:{id:file.id}},
+          users:{connect:{id:userId}}
+        })
+      }
+      // 登记文件信息
+      
       files.push(file)
     }
     // // 检查数据路数的正确性
@@ -346,6 +367,42 @@ const Mutation = {
     // });
     
     return files
+  },
+  addDataRecordUsers:async (parent, { userEmails,companyName,startTime,endTime}, ctx) => {
+    console.log(userEmails)
+    // 验证上传者
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+      throw new Error("你还没有加入会计师事务所，无法上传数据")
+    }
+    const dataRecords = await ctx.prisma.dataRecords({
+      where:{
+        AND:[
+          {accountingFirm:{id:accountingFirm.id}},
+          {company:{name:companyName}},
+          {startTime},
+          {endTime},
+        ]
+      }
+    })
+    const emails = userEmails.map(email=>({email}))
+    if(dataRecords.length>0){
+      const newDataRecord = await ctx.prisma.updateDataRecord({
+        where: {id:dataRecords[0].id},
+          data: {
+            users:{connect:emails}
+          }
+      })
+      return newDataRecord
+    }else{
+      throw new Error("未发现数据记录")
+    }
   },
 }
 
