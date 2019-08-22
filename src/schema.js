@@ -6,6 +6,7 @@ const typeDefs = gql`
   type Query {
     me: User
     colleagues(name:String!):[User]
+    dataRecord(companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord
     emailHasTaken(email:String!):Boolean!
     accountingFirms(inputvalue:String!):[AccountingFirm]
     companies(inputvalue:String!):[Company]
@@ -24,6 +25,7 @@ const typeDefs = gql`
     createCustomer(name:String!,type:CompanyType!,nature:CompanyNature!):Company!
     uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):[File]
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
+    createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
   }
 
   input UploadTypeInput{
@@ -117,6 +119,12 @@ const typeDefs = gql`
     ratio:Float!
     company:Company!
   }
+
+  input MemberInput{
+    email:String!
+    role:String!
+  }
+
 
   type Project{
     id: ID!

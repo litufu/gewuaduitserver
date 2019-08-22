@@ -369,7 +369,6 @@ const Mutation = {
     return files
   },
   addDataRecordUsers:async (parent, { userEmails,companyName,startTime,endTime}, ctx) => {
-    console.log(userEmails)
     // 验证上传者
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
@@ -400,6 +399,57 @@ const Mutation = {
           }
       })
       return newDataRecord
+    }else{
+      throw new Error("未发现数据记录")
+    }
+  },
+  createProject:async (parent, { members,companyName,startTime,endTime}, ctx) => {
+    // 验证上传者
+    console.log(members)
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+      throw new Error("你还没有加入会计师事务所，无法上传数据")
+    }
+    const dataRecords = await ctx.prisma.dataRecords({
+      where:{
+        AND:[
+          {accountingFirm:{id:accountingFirm.id}},
+          {company:{name:companyName}},
+          {startTime},
+          {endTime},
+        ]
+      }
+    })
+    // 将所有的用户添加到数据授权列表
+    const emails = members.map(member=>({email:member.email}))
+    if(dataRecords.length>0){
+      await ctx.prisma.updateDataRecord({
+        where: {id:dataRecords[0].id},
+          data: {
+            users:{connect:emails}
+          }
+      })
+      const createMembers = members.map(member=>({
+        role:member.role,
+        user:{connect:{email:member.email}}
+        
+      }))
+      const project = await ctx.prisma.createProject({
+        startTime,
+        endTime,
+        accountingFirm:{connect:{id:accountingFirm.id}},
+        company:{connect:{name:companyName}},
+        members:{
+          create:createMembers
+        }
+      })
+      return project
     }else{
       throw new Error("未发现数据记录")
     }
