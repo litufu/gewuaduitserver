@@ -10,7 +10,7 @@ const typeDefs = gql`
     emailHasTaken(email:String!):Boolean!
     accountingFirms(inputvalue:String!):[AccountingFirm]
     companies(inputvalue:String!):[Company]
-    uploads: [File]
+    projects:[Project]
   }
 
   type Mutation {

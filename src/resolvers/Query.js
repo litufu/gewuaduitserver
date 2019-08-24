@@ -81,7 +81,29 @@ const Query = {
       where: { name_contains: inputvalue },
       first: 10
     })
-   
+  },
+  projects:async (parent, args, ctx) => {
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+      throw new Error("你还没有加入会计师事务所，无法上传数据")
+    }
+
+    const projects = await ctx.prisma.projects({
+      where:{
+        AND:[
+          {accountingFirm:{id:accountingFirm.id}},
+          {members_some:{user:{id:userId}}}
+        ]
+      }
+    })
+
+    return projects
   },
 }
 
