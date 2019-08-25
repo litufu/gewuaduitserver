@@ -283,8 +283,6 @@ const Mutation = {
 
     const db_name = `${accountingFirm.id}-${company.id}.sqlite`
     const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    console.log(db_name)
-    console.log(dbPath)
     const files = []
     for(const upload of uploads){
       // 解析上传文件
@@ -353,18 +351,7 @@ const Mutation = {
       
       files.push(file)
     }
-    // // 检查数据路数的正确性
-    // const checkImportDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_import_data.py') 
-    // const checkImportDataProcess = spawn('python',[checkImportDataPath, dbPath,startTimeStr,endTimeStr]); 
-    // checkImportDataProcess.stdout.on('data', async (data) => {
-    //   console.log(data)
-    // })
-    // checkImportDataProcess.stderr.on('data', (data) => {
-    //   throw new Error(`数据检查逻辑失败${data}`)
-    // });
-    // checkImportDataProcess.on('close', (code) => {
-    //   console.log(`数据逻辑检查完成 ${code}`);
-    // });
+    
     
     return files
   },

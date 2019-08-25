@@ -11,6 +11,7 @@ const typeDefs = gql`
     accountingFirms(inputvalue:String!):[AccountingFirm]
     companies(inputvalue:String!):[Company]
     projects:[Project]
+    checkImportData(projectId:String):Boolean!
   }
 
   type Mutation {

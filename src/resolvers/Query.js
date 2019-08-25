@@ -1,4 +1,7 @@
-const { getUserId } = require('../utils')
+const { getUserId ,dateToString} = require('../utils')
+const _ = require('lodash');
+const {  spawnSync} = require('child_process');
+const path = require('path')
 
 const Query = {
   me: (parent, args, ctx) => {
@@ -104,6 +107,25 @@ const Query = {
     })
 
     return projects
+  },
+  checkImportData:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    // 检查数据路数的正确性
+    const checkImportDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_import_data.py') 
+    const checkImportDataProcess = spawnSync('python',[checkImportDataPath, dbPath,startTimeStr,endTimeStr]); 
+    if(_.trim(checkImportDataProcess.stdout.toString())==="true"){
+      return true
+    }
+    return false
   },
 }
 

@@ -71,7 +71,7 @@ def check_import_data(engine,start_time, end_time):
         if not df2['terminal_equal'].all():
             raise Exception('期末数不一致')
 
-    return True
+    print("true")
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(sys.argv[1]))
