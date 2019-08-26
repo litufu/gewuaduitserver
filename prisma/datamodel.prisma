@@ -118,3 +118,30 @@ type File {
   mimetype: String!
   type:FileType!
 }
+
+type SubjectContrast{
+  id: ID! @id
+  origin:String! @unique
+  tb:String!
+  fs:String!
+  coefficient:Int!
+  direction:String!
+  firstClass:String!
+  secondClass:String!
+}
+
+type TbSubject{
+  id: ID! @id
+  show:String! @unique
+  subject:String!
+  direction:String!
+  order:Int!
+}
+
+type FSSubject{
+  id: ID! @id
+  name:String!
+  show:String!
+  subject:String!
+  direction:String!
+}

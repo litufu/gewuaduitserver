@@ -470,6 +470,10 @@ type AggregateFile {
   count: Int!
 }
 
+type AggregateFSSubject {
+  count: Int!
+}
+
 type AggregateHolder {
   count: Int!
 }
@@ -479,6 +483,14 @@ type AggregateMember {
 }
 
 type AggregateProject {
+  count: Int!
+}
+
+type AggregateSubjectContrast {
+  count: Int!
+}
+
+type AggregateTbSubject {
   count: Int!
 }
 
@@ -1570,6 +1582,166 @@ input FileWhereUniqueInput {
   id: ID
 }
 
+type FSSubject {
+  id: ID!
+  name: String!
+  show: String!
+  subject: String!
+  direction: String!
+}
+
+type FSSubjectConnection {
+  pageInfo: PageInfo!
+  edges: [FSSubjectEdge]!
+  aggregate: AggregateFSSubject!
+}
+
+input FSSubjectCreateInput {
+  id: ID
+  name: String!
+  show: String!
+  subject: String!
+  direction: String!
+}
+
+type FSSubjectEdge {
+  node: FSSubject!
+  cursor: String!
+}
+
+enum FSSubjectOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  show_ASC
+  show_DESC
+  subject_ASC
+  subject_DESC
+  direction_ASC
+  direction_DESC
+}
+
+type FSSubjectPreviousValues {
+  id: ID!
+  name: String!
+  show: String!
+  subject: String!
+  direction: String!
+}
+
+type FSSubjectSubscriptionPayload {
+  mutation: MutationType!
+  node: FSSubject
+  updatedFields: [String!]
+  previousValues: FSSubjectPreviousValues
+}
+
+input FSSubjectSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: FSSubjectWhereInput
+  AND: [FSSubjectSubscriptionWhereInput!]
+  OR: [FSSubjectSubscriptionWhereInput!]
+  NOT: [FSSubjectSubscriptionWhereInput!]
+}
+
+input FSSubjectUpdateInput {
+  name: String
+  show: String
+  subject: String
+  direction: String
+}
+
+input FSSubjectUpdateManyMutationInput {
+  name: String
+  show: String
+  subject: String
+  direction: String
+}
+
+input FSSubjectWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  show: String
+  show_not: String
+  show_in: [String!]
+  show_not_in: [String!]
+  show_lt: String
+  show_lte: String
+  show_gt: String
+  show_gte: String
+  show_contains: String
+  show_not_contains: String
+  show_starts_with: String
+  show_not_starts_with: String
+  show_ends_with: String
+  show_not_ends_with: String
+  subject: String
+  subject_not: String
+  subject_in: [String!]
+  subject_not_in: [String!]
+  subject_lt: String
+  subject_lte: String
+  subject_gt: String
+  subject_gte: String
+  subject_contains: String
+  subject_not_contains: String
+  subject_starts_with: String
+  subject_not_starts_with: String
+  subject_ends_with: String
+  subject_not_ends_with: String
+  direction: String
+  direction_not: String
+  direction_in: [String!]
+  direction_not_in: [String!]
+  direction_lt: String
+  direction_lte: String
+  direction_gt: String
+  direction_gte: String
+  direction_contains: String
+  direction_not_contains: String
+  direction_starts_with: String
+  direction_not_starts_with: String
+  direction_ends_with: String
+  direction_not_ends_with: String
+  AND: [FSSubjectWhereInput!]
+  OR: [FSSubjectWhereInput!]
+  NOT: [FSSubjectWhereInput!]
+}
+
+input FSSubjectWhereUniqueInput {
+  id: ID
+}
+
 type Holder {
   id: ID!
   name: String!
@@ -1965,6 +2137,12 @@ type Mutation {
   upsertDataRecord(where: DataRecordWhereUniqueInput!, create: DataRecordCreateInput!, update: DataRecordUpdateInput!): DataRecord!
   deleteDataRecord(where: DataRecordWhereUniqueInput!): DataRecord
   deleteManyDataRecords(where: DataRecordWhereInput): BatchPayload!
+  createFSSubject(data: FSSubjectCreateInput!): FSSubject!
+  updateFSSubject(data: FSSubjectUpdateInput!, where: FSSubjectWhereUniqueInput!): FSSubject
+  updateManyFSSubjects(data: FSSubjectUpdateManyMutationInput!, where: FSSubjectWhereInput): BatchPayload!
+  upsertFSSubject(where: FSSubjectWhereUniqueInput!, create: FSSubjectCreateInput!, update: FSSubjectUpdateInput!): FSSubject!
+  deleteFSSubject(where: FSSubjectWhereUniqueInput!): FSSubject
+  deleteManyFSSubjects(where: FSSubjectWhereInput): BatchPayload!
   createFile(data: FileCreateInput!): File!
   updateFile(data: FileUpdateInput!, where: FileWhereUniqueInput!): File
   updateManyFiles(data: FileUpdateManyMutationInput!, where: FileWhereInput): BatchPayload!
@@ -1989,6 +2167,18 @@ type Mutation {
   upsertProject(where: ProjectWhereUniqueInput!, create: ProjectCreateInput!, update: ProjectUpdateInput!): Project!
   deleteProject(where: ProjectWhereUniqueInput!): Project
   deleteManyProjects(where: ProjectWhereInput): BatchPayload!
+  createSubjectContrast(data: SubjectContrastCreateInput!): SubjectContrast!
+  updateSubjectContrast(data: SubjectContrastUpdateInput!, where: SubjectContrastWhereUniqueInput!): SubjectContrast
+  updateManySubjectContrasts(data: SubjectContrastUpdateManyMutationInput!, where: SubjectContrastWhereInput): BatchPayload!
+  upsertSubjectContrast(where: SubjectContrastWhereUniqueInput!, create: SubjectContrastCreateInput!, update: SubjectContrastUpdateInput!): SubjectContrast!
+  deleteSubjectContrast(where: SubjectContrastWhereUniqueInput!): SubjectContrast
+  deleteManySubjectContrasts(where: SubjectContrastWhereInput): BatchPayload!
+  createTbSubject(data: TbSubjectCreateInput!): TbSubject!
+  updateTbSubject(data: TbSubjectUpdateInput!, where: TbSubjectWhereUniqueInput!): TbSubject
+  updateManyTbSubjects(data: TbSubjectUpdateManyMutationInput!, where: TbSubjectWhereInput): BatchPayload!
+  upsertTbSubject(where: TbSubjectWhereUniqueInput!, create: TbSubjectCreateInput!, update: TbSubjectUpdateInput!): TbSubject!
+  deleteTbSubject(where: TbSubjectWhereUniqueInput!): TbSubject
+  deleteManyTbSubjects(where: TbSubjectWhereInput): BatchPayload!
   createUser(data: UserCreateInput!): User!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
@@ -2268,6 +2458,9 @@ type Query {
   dataRecord(where: DataRecordWhereUniqueInput!): DataRecord
   dataRecords(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [DataRecord]!
   dataRecordsConnection(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): DataRecordConnection!
+  fSSubject(where: FSSubjectWhereUniqueInput!): FSSubject
+  fSSubjects(where: FSSubjectWhereInput, orderBy: FSSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FSSubject]!
+  fSSubjectsConnection(where: FSSubjectWhereInput, orderBy: FSSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FSSubjectConnection!
   file(where: FileWhereUniqueInput!): File
   files(where: FileWhereInput, orderBy: FileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [File]!
   filesConnection(where: FileWhereInput, orderBy: FileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FileConnection!
@@ -2280,6 +2473,12 @@ type Query {
   project(where: ProjectWhereUniqueInput!): Project
   projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Project]!
   projectsConnection(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ProjectConnection!
+  subjectContrast(where: SubjectContrastWhereUniqueInput!): SubjectContrast
+  subjectContrasts(where: SubjectContrastWhereInput, orderBy: SubjectContrastOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SubjectContrast]!
+  subjectContrastsConnection(where: SubjectContrastWhereInput, orderBy: SubjectContrastOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SubjectContrastConnection!
+  tbSubject(where: TbSubjectWhereUniqueInput!): TbSubject
+  tbSubjects(where: TbSubjectWhereInput, orderBy: TbSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TbSubject]!
+  tbSubjectsConnection(where: TbSubjectWhereInput, orderBy: TbSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TbSubjectConnection!
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
@@ -2291,15 +2490,391 @@ enum Role {
   CUSTOMER
 }
 
+type SubjectContrast {
+  id: ID!
+  origin: String!
+  tb: String!
+  fs: String!
+  coefficient: Int!
+  direction: String!
+  firstClass: String!
+  secondClass: String!
+}
+
+type SubjectContrastConnection {
+  pageInfo: PageInfo!
+  edges: [SubjectContrastEdge]!
+  aggregate: AggregateSubjectContrast!
+}
+
+input SubjectContrastCreateInput {
+  id: ID
+  origin: String!
+  tb: String!
+  fs: String!
+  coefficient: Int!
+  direction: String!
+  firstClass: String!
+  secondClass: String!
+}
+
+type SubjectContrastEdge {
+  node: SubjectContrast!
+  cursor: String!
+}
+
+enum SubjectContrastOrderByInput {
+  id_ASC
+  id_DESC
+  origin_ASC
+  origin_DESC
+  tb_ASC
+  tb_DESC
+  fs_ASC
+  fs_DESC
+  coefficient_ASC
+  coefficient_DESC
+  direction_ASC
+  direction_DESC
+  firstClass_ASC
+  firstClass_DESC
+  secondClass_ASC
+  secondClass_DESC
+}
+
+type SubjectContrastPreviousValues {
+  id: ID!
+  origin: String!
+  tb: String!
+  fs: String!
+  coefficient: Int!
+  direction: String!
+  firstClass: String!
+  secondClass: String!
+}
+
+type SubjectContrastSubscriptionPayload {
+  mutation: MutationType!
+  node: SubjectContrast
+  updatedFields: [String!]
+  previousValues: SubjectContrastPreviousValues
+}
+
+input SubjectContrastSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: SubjectContrastWhereInput
+  AND: [SubjectContrastSubscriptionWhereInput!]
+  OR: [SubjectContrastSubscriptionWhereInput!]
+  NOT: [SubjectContrastSubscriptionWhereInput!]
+}
+
+input SubjectContrastUpdateInput {
+  origin: String
+  tb: String
+  fs: String
+  coefficient: Int
+  direction: String
+  firstClass: String
+  secondClass: String
+}
+
+input SubjectContrastUpdateManyMutationInput {
+  origin: String
+  tb: String
+  fs: String
+  coefficient: Int
+  direction: String
+  firstClass: String
+  secondClass: String
+}
+
+input SubjectContrastWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  origin: String
+  origin_not: String
+  origin_in: [String!]
+  origin_not_in: [String!]
+  origin_lt: String
+  origin_lte: String
+  origin_gt: String
+  origin_gte: String
+  origin_contains: String
+  origin_not_contains: String
+  origin_starts_with: String
+  origin_not_starts_with: String
+  origin_ends_with: String
+  origin_not_ends_with: String
+  tb: String
+  tb_not: String
+  tb_in: [String!]
+  tb_not_in: [String!]
+  tb_lt: String
+  tb_lte: String
+  tb_gt: String
+  tb_gte: String
+  tb_contains: String
+  tb_not_contains: String
+  tb_starts_with: String
+  tb_not_starts_with: String
+  tb_ends_with: String
+  tb_not_ends_with: String
+  fs: String
+  fs_not: String
+  fs_in: [String!]
+  fs_not_in: [String!]
+  fs_lt: String
+  fs_lte: String
+  fs_gt: String
+  fs_gte: String
+  fs_contains: String
+  fs_not_contains: String
+  fs_starts_with: String
+  fs_not_starts_with: String
+  fs_ends_with: String
+  fs_not_ends_with: String
+  coefficient: Int
+  coefficient_not: Int
+  coefficient_in: [Int!]
+  coefficient_not_in: [Int!]
+  coefficient_lt: Int
+  coefficient_lte: Int
+  coefficient_gt: Int
+  coefficient_gte: Int
+  direction: String
+  direction_not: String
+  direction_in: [String!]
+  direction_not_in: [String!]
+  direction_lt: String
+  direction_lte: String
+  direction_gt: String
+  direction_gte: String
+  direction_contains: String
+  direction_not_contains: String
+  direction_starts_with: String
+  direction_not_starts_with: String
+  direction_ends_with: String
+  direction_not_ends_with: String
+  firstClass: String
+  firstClass_not: String
+  firstClass_in: [String!]
+  firstClass_not_in: [String!]
+  firstClass_lt: String
+  firstClass_lte: String
+  firstClass_gt: String
+  firstClass_gte: String
+  firstClass_contains: String
+  firstClass_not_contains: String
+  firstClass_starts_with: String
+  firstClass_not_starts_with: String
+  firstClass_ends_with: String
+  firstClass_not_ends_with: String
+  secondClass: String
+  secondClass_not: String
+  secondClass_in: [String!]
+  secondClass_not_in: [String!]
+  secondClass_lt: String
+  secondClass_lte: String
+  secondClass_gt: String
+  secondClass_gte: String
+  secondClass_contains: String
+  secondClass_not_contains: String
+  secondClass_starts_with: String
+  secondClass_not_starts_with: String
+  secondClass_ends_with: String
+  secondClass_not_ends_with: String
+  AND: [SubjectContrastWhereInput!]
+  OR: [SubjectContrastWhereInput!]
+  NOT: [SubjectContrastWhereInput!]
+}
+
+input SubjectContrastWhereUniqueInput {
+  id: ID
+  origin: String
+}
+
 type Subscription {
   accountingFirm(where: AccountingFirmSubscriptionWhereInput): AccountingFirmSubscriptionPayload
   company(where: CompanySubscriptionWhereInput): CompanySubscriptionPayload
   dataRecord(where: DataRecordSubscriptionWhereInput): DataRecordSubscriptionPayload
+  fSSubject(where: FSSubjectSubscriptionWhereInput): FSSubjectSubscriptionPayload
   file(where: FileSubscriptionWhereInput): FileSubscriptionPayload
   holder(where: HolderSubscriptionWhereInput): HolderSubscriptionPayload
   member(where: MemberSubscriptionWhereInput): MemberSubscriptionPayload
   project(where: ProjectSubscriptionWhereInput): ProjectSubscriptionPayload
+  subjectContrast(where: SubjectContrastSubscriptionWhereInput): SubjectContrastSubscriptionPayload
+  tbSubject(where: TbSubjectSubscriptionWhereInput): TbSubjectSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+}
+
+type TbSubject {
+  id: ID!
+  show: String!
+  subject: String!
+  direction: String!
+  order: Int!
+}
+
+type TbSubjectConnection {
+  pageInfo: PageInfo!
+  edges: [TbSubjectEdge]!
+  aggregate: AggregateTbSubject!
+}
+
+input TbSubjectCreateInput {
+  id: ID
+  show: String!
+  subject: String!
+  direction: String!
+  order: Int!
+}
+
+type TbSubjectEdge {
+  node: TbSubject!
+  cursor: String!
+}
+
+enum TbSubjectOrderByInput {
+  id_ASC
+  id_DESC
+  show_ASC
+  show_DESC
+  subject_ASC
+  subject_DESC
+  direction_ASC
+  direction_DESC
+  order_ASC
+  order_DESC
+}
+
+type TbSubjectPreviousValues {
+  id: ID!
+  show: String!
+  subject: String!
+  direction: String!
+  order: Int!
+}
+
+type TbSubjectSubscriptionPayload {
+  mutation: MutationType!
+  node: TbSubject
+  updatedFields: [String!]
+  previousValues: TbSubjectPreviousValues
+}
+
+input TbSubjectSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TbSubjectWhereInput
+  AND: [TbSubjectSubscriptionWhereInput!]
+  OR: [TbSubjectSubscriptionWhereInput!]
+  NOT: [TbSubjectSubscriptionWhereInput!]
+}
+
+input TbSubjectUpdateInput {
+  show: String
+  subject: String
+  direction: String
+  order: Int
+}
+
+input TbSubjectUpdateManyMutationInput {
+  show: String
+  subject: String
+  direction: String
+  order: Int
+}
+
+input TbSubjectWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  show: String
+  show_not: String
+  show_in: [String!]
+  show_not_in: [String!]
+  show_lt: String
+  show_lte: String
+  show_gt: String
+  show_gte: String
+  show_contains: String
+  show_not_contains: String
+  show_starts_with: String
+  show_not_starts_with: String
+  show_ends_with: String
+  show_not_ends_with: String
+  subject: String
+  subject_not: String
+  subject_in: [String!]
+  subject_not_in: [String!]
+  subject_lt: String
+  subject_lte: String
+  subject_gt: String
+  subject_gte: String
+  subject_contains: String
+  subject_not_contains: String
+  subject_starts_with: String
+  subject_not_starts_with: String
+  subject_ends_with: String
+  subject_not_ends_with: String
+  direction: String
+  direction_not: String
+  direction_in: [String!]
+  direction_not_in: [String!]
+  direction_lt: String
+  direction_lte: String
+  direction_gt: String
+  direction_gte: String
+  direction_contains: String
+  direction_not_contains: String
+  direction_starts_with: String
+  direction_not_starts_with: String
+  direction_ends_with: String
+  direction_not_ends_with: String
+  order: Int
+  order_not: Int
+  order_in: [Int!]
+  order_not_in: [Int!]
+  order_lt: Int
+  order_lte: Int
+  order_gt: Int
+  order_gte: Int
+  AND: [TbSubjectWhereInput!]
+  OR: [TbSubjectWhereInput!]
+  NOT: [TbSubjectWhereInput!]
+}
+
+input TbSubjectWhereUniqueInput {
+  id: ID
+  show: String
 }
 
 type User {

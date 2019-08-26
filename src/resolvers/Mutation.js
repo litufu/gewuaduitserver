@@ -1,5 +1,6 @@
 const { hash, compare } = require('bcrypt')
 const fs = require("fs")
+const _ = require("lodash")
 const crypto = require('crypto')
 const mkdirp = require('mkdirp') 
 const path = require('path')
@@ -188,7 +189,7 @@ const Mutation = {
     // 1/创建数据库
     const initDataBaseProcess = spawn('python',[databasePath, dbPath]);
     initDataBaseProcess.stdout.on('data', (data) => {
-      if(data==="success"){
+      if(_.trim(data.toString())==="success"){
         console.log("数据库建立成功")
       }
     });
@@ -196,16 +197,32 @@ const Mutation = {
       throw new Error(`数据库建立失败${data}`)
     });
     // 2/初始化数据库
-    const initDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/init_data.py')
-    const initDataStructureProcess  = spawn('python',[initDataPath, dbPath]);
+    const subjectContrasts = await ctx.prisma.subjectContrasts()
+    const tbSubjects = await ctx.prisma.tbSubjects()
+    const fSSubjects = await ctx.prisma.fSSubjects()
+    const subjectContrastsJson = JSON.stringify(subjectContrasts)
+    const tbSubjectsJson = JSON.stringify(tbSubjects)
+    const fSSubjectsJson = JSON.stringify(fSSubjects)
+    const initDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/init_data_from_server.py')
+    const initDataStructureProcess  = spawn('python',[initDataPath]);
     initDataStructureProcess.stdout.on('data', (data) => {
-      if(data==="success"){
+      if(_.trim(data.toString())==="success"){
         console.log("数据库初始化成功,下一步可以导入数据")
       }
     });
     initDataStructureProcess.stderr.on('data', (data) => {
       throw new Error(`初始数据失败${data}`)
     });
+    
+    initDataStructureProcess.stdin.write(JSON.stringify(dbPath));
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.write(subjectContrastsJson);
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.write(tbSubjectsJson);
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.write(fSSubjectsJson);
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.end();
 
     // 搜索公司基本信息
     const filepath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')

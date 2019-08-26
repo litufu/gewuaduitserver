@@ -55,6 +55,18 @@ var models = [
   {
     name: "File",
     embedded: false
+  },
+  {
+    name: "SubjectContrast",
+    embedded: false
+  },
+  {
+    name: "TbSubject",
+    embedded: false
+  },
+  {
+    name: "FSSubject",
+    embedded: false
   }
 ];
 exports.Prisma = prisma_lib_1.makePrismaClientClass({
