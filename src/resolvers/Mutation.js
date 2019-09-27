@@ -26,8 +26,6 @@ const Mutation = {
       validateEmailToken,
     })
     
-    emailGenerator.sendWelcomeEmail(user, ctx)
-
     return {
       token: sign({ userId: user.id }, APP_SECRET),
       user,

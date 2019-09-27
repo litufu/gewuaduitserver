@@ -94,7 +94,7 @@ const Query = {
     // 验证会计师事务所
     const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
     if(!accountingFirm){
-      throw new Error("你还没有加入会计师事务所，无法上传数据")
+      return []
     }
 
     const projects = await ctx.prisma.projects({
