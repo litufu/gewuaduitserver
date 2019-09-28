@@ -13,6 +13,7 @@ const typeDefs = gql`
     projects:[Project]
     checkImportData(projectId:String):Boolean!
     getSubjectBalance(projectId:String):String!
+    getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
   }
 
   type Mutation {
