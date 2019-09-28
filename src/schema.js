@@ -12,6 +12,7 @@ const typeDefs = gql`
     companies(inputvalue:String!):[Company]
     projects:[Project]
     checkImportData(projectId:String):Boolean!
+    getSubjectBalance(projectId:String):String!
   }
 
   type Mutation {
