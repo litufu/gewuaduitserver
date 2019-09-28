@@ -407,7 +407,6 @@ const Mutation = {
   },
   createProject:async (parent, { members,companyName,startTime,endTime}, ctx) => {
     // 验证上传者
-    console.log(members)
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
     if (!user) {
