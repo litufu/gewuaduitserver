@@ -14,6 +14,7 @@ const typeDefs = gql`
     checkImportData(projectId:String):Boolean!
     getSubjectBalance(projectId:String):String!
     getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
+    getTB(projectId:String):String!
   }
 
   type Mutation {

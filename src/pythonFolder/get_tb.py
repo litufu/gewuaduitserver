@@ -2,9 +2,12 @@
 
 import pandas as pd
 import math
+import sys
 import json
 from datetime import datetime
-from database import SubjectContrast, TBSubject
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database import SubjectContrast, TBSubject,TB
 from utils import gen_df_line, check_start_end_date, get_session_and_engine, \
     get_subject_num_by_name, get_subject_value_by_name, get_detail_subject_df, get_xsz_by_subject_num, \
     get_subject_num_by_similar_name, get_not_null_df_km, get_subject_value_by_num,CJsonEncoder,get_tb_origin_value
@@ -344,6 +347,7 @@ def check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion,start_ti
 
 def recaculate_km(df_km, df_xsz):
     '''
+    将利润分配，本年利润和损益表的期初数全部调整为利润分配。
     :param df_km: 科目余额表
     :param df_xsz: 序时账
     :return: 新的科目余额表
@@ -363,34 +367,57 @@ def recaculate_km(df_km, df_xsz):
     # 重新计算科目余额表
     # 重算期初数
     # 首先计算年初未分配利润
-    credit = df_km_new[df_km_new.index.str.startswith("6") & (df_km_new["direction"] == "贷")]["initial_amount"].sum()
-    debit = df_km_new[df_km_new.index.str.startswith("6")& (df_km_new["direction"] == "借")]["initial_amount"].sum()
+    initial_credit = df_km_new[df_km_new.index.str.startswith("6") &
+                               (df_km_new["direction"] == "贷") &
+                               (df_km_new["is_specific"])]["initial_amount"].sum()
+    initial_debit = df_km_new[df_km_new.index.str.startswith("6")&
+                              (df_km_new["direction"] == "借") &
+                              (df_km_new["is_specific"])]["initial_amount"].sum()
     profit_dividend = df_km_new[df_km_new["subject_name"]=="利润分配"]["initial_amount"].sum()
     profit_this_year = df_km_new[df_km_new["subject_name"]=="本年利润"]["initial_amount"].sum()
-    # 确定期初数
+
+    # 确定借方发生额/贷方发生额，损益类科目结转分录中应该减去期初自动结转的部分。
     for i in range(len(df_km_new)):
         subject_num = df_km_new.index[i]
+        # 确定利润分配期初数=本年利润+利润分配+损益类科目期初数
         if df_km_new.at[subject_num,"subject_name"] == "利润分配":
-            df_km_new.at[subject_num, "initial_amount"] = profit_dividend + profit_this_year + credit - debit
-        elif df_km_new.at[subject_num,"subject_name"] == "本年利润":
-            df_km_new.at[subject_num, "initial_amount"] = 0.00
-        elif str(subject_num).startswith("6"):
-            df_km_new.at[subject_num, "initial_amount"] = 0.00
-    # 确定借方发生额/贷方发生额和期末数
-    for i in range(len(df_km_new)):
-        subject_num = df_km_new.index[i]
+            df_km_new.at[subject_num, "initial_amount"] = profit_dividend + profit_this_year + initial_credit - initial_debit
+        # 序时账透视表中筛选出所有科目和子科目
         df_xsz_pivot_tmp = df_xsz_pivot.loc[df_xsz_pivot.index.str.startswith(subject_num)]
+        # 期初数
+        initial_amount = df_km_new.at[subject_num, "initial_amount"]
+        # 序时账借方合计
         debit = df_xsz_pivot_tmp['debit'].sum()
+        # 序时账贷方合计
         credit = df_xsz_pivot_tmp['credit'].sum()
-        df_km_new.at[subject_num, "debit_amount"] = debit
-        df_km_new.at[subject_num, "credit_amount"] = credit
-        if df_km_new.at[subject_num, "direction"] == "借":
-            df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                subject_num, "initial_amount"] + debit - credit
-        elif df_km_new.at[subject_num, "direction"] == "贷":
-            df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                subject_num, "initial_amount"] - debit + credit
+        # 因为上面利润分配期初数确认时将本年利润和损益类科目的期初数结转了一次，在本年度做一次冲销处理。将损益类科目的期初数从本年结转发生额中减去，
+        if (str(subject_num).startswith("6") and abs(initial_amount)>0.00) or (
+                df_km_new.at[subject_num, "subject_name"] == "本年利润" and abs(initial_amount) > 0.00) :
+            if df_km_new.at[subject_num, "direction"] == "借":
+                df_km_new.at[subject_num, "debit_amount"] = debit
+                df_km_new.at[subject_num, "credit_amount"] = credit - initial_amount
+                df_km_new.at[subject_num, "initial_amount"] = 0.00
+                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                   subject_num, "initial_amount"] + debit - credit
+            elif df_km_new.at[subject_num, "direction"] == "贷":
+                df_km_new.at[subject_num, "debit_amount"] = debit - initial_amount
+                df_km_new.at[subject_num, "credit_amount"] = credit
+                df_km_new.at[subject_num, "initial_amount"] = 0.00
+                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                   subject_num, "initial_amount"] - debit + credit
+        else:
+            df_km_new.at[subject_num, "debit_amount"] = debit
+            df_km_new.at[subject_num, "credit_amount"] = credit
+            if df_km_new.at[subject_num, "direction"] == "借":
+                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                    subject_num, "initial_amount"] + debit - credit
+            elif df_km_new.at[subject_num, "direction"] == "贷":
+                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                    subject_num, "initial_amount"] - debit + credit
+    # 检查期末数中的损益是否有数据，如有做一次结转处理。自动结转未结转损益。
+
     df_km_new = df_km_new.reset_index()
+    # 确定期末数，将期末数有余额的部分，结转至年末未分配利润。
     return df_km_new
 
 def get_bad_debt_value_and_origin(start_time, end_time, df_one_line):
@@ -595,9 +622,6 @@ def get_profit_distribution_xsz_origin(start_time, end_time,df):
         data_origins.append(data_origin_2)
     origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
     return origin
-
-
-
 
 def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
     '''
@@ -1003,17 +1027,42 @@ def recalculation(start_time, end_time, engine, add_suggestion, session):
     df_km_new ,df_xsz_new= get_new_km_xsz_df(start_time, end_time, engine, add_suggestion, session)
     # 根据新的科目余额表计算tb
     df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion,start_time, end_time)
-    for obj in gen_df_line(df_tb):
-        if obj["origin"]:
-            value = get_tb_origin_value(obj["origin"],df_km_new,df_xsz_new)
-            if not math.isclose(obj["amount"] ,value,rel_tol=1e-5):
-                raise Exception("数值来源计算错误")
-    return df_tb
+    save_tb(start_time,end_time,session,df_tb)
+    # for obj in gen_df_line(df_tb):
+    #     if obj["origin"]:
+    #         value = get_tb_origin_value(obj["origin"],df_km_new,df_xsz_new)
+    #         if not math.isclose(obj["amount"] ,value,rel_tol=1e-5):
+    #             raise Exception("数值来源计算错误")
+    tb = df_tb.to_json(orient='records')
+    sys.stdout.write(tb)
+
+
+def save_tb(start_time,end_time,session,df_tb):
+    start_time = datetime.strptime(start_time, '%Y-%m-%d')
+    end_time = datetime.strptime(end_time, '%Y-%m-%d')
+    df_tb = df_tb[['show', 'direction', 'amount', 'origin']]
+    for i in range(len(df_tb)):
+        show = df_tb.iat[i, 0]
+        direction = df_tb.iat[i, 1]
+        amount = df_tb.iat[i, 2]
+        origin = df_tb.iat[i, 3]
+        tb_item = TB(start_time=start_time,end_time=end_time,subject_name=show,direction=direction,amount=amount,origin=origin)
+        session.add(tb_item)
+    session.commit()
 
 
 if __name__ == '__main__':
-    session, engine = get_session_and_engine()
-    from src.utils import add_suggestion
+    # db_path = sys.argv[1]
+    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    from utils import add_suggestion
+    companyname = "深圳市众恒世讯科技股份有限公司"
+    start_time = "2016-1-1"
+    end_time = "2016-12-31"
+    recalculation(start_time,end_time,engine,add_suggestion,session)
 
-    recalculation("深圳市众恒世讯科技股份有限公司", start_time="2016-1-1", end_time="2016-12-31", engine=engine, session=session,
-                  add_suggestion=add_suggestion)
+
+    # recalculation(start_time=sys.argv[2], end_time=sys.argv[3], engine=engine, session=session,
+    #               add_suggestion=add_suggestion)

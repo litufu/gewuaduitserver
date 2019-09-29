@@ -154,10 +154,25 @@ const Query = {
     const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
     const startTimeStr = dateToString(new Date(project.startTime))
     const endTimeStr = dateToString(new Date(project.endTime))
-    // 检查数据路数的正确性
     const getChronologicalAccountPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_chronological_account.py') 
     const getChronologicalAccountProcess = spawnSync('python',[getChronologicalAccountPath, dbPath,startTimeStr,endTimeStr,subjectNum,grade]); 
     return getChronologicalAccountProcess.stdout.toString()
+  },
+  getTB:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const getTBPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_tb.py') 
+    const getTBProcess = spawnSync('python',[getTBPath, dbPath,startTimeStr,endTimeStr]);
+    const tb = getTBProcess.stdout.toString() 
+    return tb
   },
 }
 
