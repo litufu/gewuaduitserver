@@ -17,6 +17,7 @@ const typeDefs = gql`
     getTB(projectId:String):String!
     getSubjects(projectId:String):String!
     getAuxiliaries(projectId:String!):String!
+    getAduitAdjustments(projectId:String!):String!
   }
 
   type Mutation {
@@ -33,6 +34,7 @@ const typeDefs = gql`
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
     addAduitAdjustment(projectId:String!,record:String!):Boolean!
+    deleteAdutiAdjustment(projectId:String!,vocherNum:Int!):Boolean!
   }
 
   input UploadTypeInput{

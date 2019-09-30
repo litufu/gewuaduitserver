@@ -469,7 +469,25 @@ const Mutation = {
     const addAduitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_aduit_adjustment.py') 
     const getAuxiliariesProcess = spawnSync('python',[addAduitAdjustmentPath, dbPath,startTimeStr,endTimeStr,record]);
     const res = getAuxiliariesProcess.stdout.toString() 
-    console.log(res)
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
+  deleteAdutiAdjustment:async(parent,{projectId,vocherNum},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const deleteAdutiAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/delete_aduit_adjustment.py') 
+    const deleteAdutiAdjustmentProcess = spawnSync('python',[deleteAdutiAdjustmentPath, dbPath,endTimeStr,vocherNum]);
+    const res = deleteAdutiAdjustmentProcess.stdout.toString() 
     if(res==="success"){
       return true
     }else{
