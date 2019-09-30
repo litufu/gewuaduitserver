@@ -32,6 +32,7 @@ const typeDefs = gql`
     uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):[File]
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
+    addAduitAdjustment(projectId:String!,record:String!):Boolean!
   }
 
   input UploadTypeInput{

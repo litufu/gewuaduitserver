@@ -455,6 +455,27 @@ const Mutation = {
       throw new Error("未发现数据记录")
     }
   },
+  addAduitAdjustment:async(parent,{projectId,record},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const addAduitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_aduit_adjustment.py') 
+    const getAuxiliariesProcess = spawnSync('python',[addAduitAdjustmentPath, dbPath,startTimeStr,endTimeStr,record]);
+    const res = getAuxiliariesProcess.stdout.toString() 
+    console.log(res)
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
 }
 
 module.exports = {
