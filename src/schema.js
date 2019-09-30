@@ -35,6 +35,7 @@ const typeDefs = gql`
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
     addAduitAdjustment(projectId:String!,record:String!):Boolean!
     deleteAdutiAdjustment(projectId:String!,vocherNum:Int!):Boolean!
+    modifyAduitAdjustment(projectId:String!,record:String!,vocherNum:Int!):Boolean!
   }
 
   input UploadTypeInput{

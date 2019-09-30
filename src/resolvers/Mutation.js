@@ -467,8 +467,8 @@ const Mutation = {
     const startTimeStr = dateToString(new Date(project.startTime))
     const endTimeStr = dateToString(new Date(project.endTime))
     const addAduitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_aduit_adjustment.py') 
-    const getAuxiliariesProcess = spawnSync('python',[addAduitAdjustmentPath, dbPath,startTimeStr,endTimeStr,record]);
-    const res = getAuxiliariesProcess.stdout.toString() 
+    const addAduitAdjustmentProcess = spawnSync('python',[addAduitAdjustmentPath, dbPath,startTimeStr,endTimeStr,record]);
+    const res = addAduitAdjustmentProcess.stdout.toString() 
     if(res==="success"){
       return true
     }else{
@@ -488,6 +488,26 @@ const Mutation = {
     const deleteAdutiAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/delete_aduit_adjustment.py') 
     const deleteAdutiAdjustmentProcess = spawnSync('python',[deleteAdutiAdjustmentPath, dbPath,endTimeStr,vocherNum]);
     const res = deleteAdutiAdjustmentProcess.stdout.toString() 
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
+  modifyAduitAdjustment:async(parent,{projectId,record,vocherNum},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const modifyAduitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/modify_aduit_adjustment.py') 
+    const modifyAduitAdjustmentProcess = spawnSync('python',[modifyAduitAdjustmentPath, dbPath,startTimeStr,endTimeStr,record,vocherNum]);
+    const res = modifyAduitAdjustmentProcess.stdout.toString() 
     if(res==="success"){
       return true
     }else{
