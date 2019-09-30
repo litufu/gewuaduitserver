@@ -15,6 +15,8 @@ const typeDefs = gql`
     getSubjectBalance(projectId:String):String!
     getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
     getTB(projectId:String):String!
+    getSubjects(projectId:String):String!
+    getAuxiliaries(projectId:String!):String!
   }
 
   type Mutation {

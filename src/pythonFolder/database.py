@@ -102,6 +102,32 @@ class ChronologicalAccount(Base):
     credit_price = Column(Float(20,2))
     auxiliary = Column(String)
 
+# 审计调整
+# 会计年	会计月	记账时间	凭证编号	凭证种类	编号	业务说明	科目编号	科目名称	借方发生额	贷方发生额	借方发生额_外币	贷方发生额_外币
+#  借方数量	贷方数量	借方单价	贷方单价 货币种类 核算项目名称
+class AduitAdjustment(Base):
+    __tablename__ = 'aduitadjustment'
+    id = Column(Integer, primary_key=True)
+    year = Column(Integer)
+    month = Column(Integer)
+    record_time = Column(DateTime)
+    vocher_type = Column(String)
+    vocher_num = Column(Integer)
+    subentry_num = Column(Integer)
+    description = Column(String)
+    subject_num = Column(String)
+    subject_name = Column(String)
+    currency_type = Column(String)
+    debit = Column(Float(20,2))
+    credit = Column(Float(20,2))
+    debit_foreign_currency = Column(Float(20,2))
+    credit_foreign_currency = Column(Float(20,2))
+    debit_number = Column(Float(20,2))
+    credit_number = Column(Float(20,2))
+    debit_price = Column(Float(20,2))
+    credit_price = Column(Float(20,2))
+    auxiliary = Column(String)
+
 # 科目对照表
 class SubjectContrast(Base):
     __tablename__ = 'subjectcontrast'
