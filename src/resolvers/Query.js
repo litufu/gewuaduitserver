@@ -158,10 +158,14 @@ const Query = {
     const getChronologicalAccountProcess = spawnSync('python',[getChronologicalAccountPath, dbPath,startTimeStr,endTimeStr,subjectNum,grade]); 
     return getChronologicalAccountProcess.stdout.toString()
   },
-  getTB:async(parent,{projectId},ctx)=>{
+  getTB:async(parent,{projectId,type},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
     if(!project){
       throw new Error("未发现该项目")
+    }
+    const types = ["unAudited","adjustment","audited"]
+    if(types.indexOf(type)!==-1){
+      throw new Error("tb类型错误")
     }
     const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
     const company = await ctx.prisma.project({id:projectId}).company()
@@ -170,7 +174,7 @@ const Query = {
     const startTimeStr = dateToString(new Date(project.startTime))
     const endTimeStr = dateToString(new Date(project.endTime))
     const getTBPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_tb.py') 
-    const getTBProcess = spawnSync('python',[getTBPath, dbPath,startTimeStr,endTimeStr]);
+    const getTBProcess = spawnSync('python',[getTBPath, dbPath,startTimeStr,endTimeStr,type]);
     const tb = getTBProcess.stdout.toString() 
     return tb
   },

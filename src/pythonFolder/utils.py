@@ -107,6 +107,19 @@ def get_subject_num_by_name(subject_name, df_km):
     else:
         return None
 
+def get_subject_name_by_num(subject_num, df_km):
+    '''
+    根据科目名称获取科目编码，如果没有找到返回None
+    :param subject_name:
+    :param df_km:
+    :return:subject_num
+    '''
+    df_km_subject = df_km[df_km["subject_num"] == subject_num]
+    if len(df_km_subject) == 1:
+        return df_km_subject["subject_name"].values[0]
+    else:
+        return None
+
 def get_subject_num_by_similar_name(subject_name, df_km):
     '''
     根据科目名称获取科目编码，如果没有找到返回None

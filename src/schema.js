@@ -14,7 +14,7 @@ const typeDefs = gql`
     checkImportData(projectId:String):Boolean!
     getSubjectBalance(projectId:String):String!
     getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
-    getTB(projectId:String):String!
+    getTB(projectId:String,type:String!):String!
     getSubjects(projectId:String):String!
     getAuxiliaries(projectId:String!):String!
     getAuxiliaryNames(projectId:String!):String!

@@ -10,7 +10,7 @@ from database import AduitAdjustment
 
 def aduit_adjustment(session,end_time,vocher_num):
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
-    aduit_adjustments = session.query(AduitAdjustment).filter(AduitAdjustment.record_time==end_time,AduitAdjustment.vocher_num==vocher_num).all()
+    aduit_adjustments = session.query(AduitAdjustment).filter(AduitAdjustment.record_time==end_time,AduitAdjustment.vocher_num==vocher_num,AduitAdjustment.vocher_type=="审").all()
     for aduit_adjustment in aduit_adjustments:
         session.delete(aduit_adjustment)
     session.commit()

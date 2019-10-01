@@ -13,7 +13,7 @@ def subjects(engine,start_time,end_time):
     # 从数据库读取科目余额表
     df_km = pd.read_sql_table('subjectbalance', engine)
     df_km = df_km[(df_km['start_time'] == start_time) & (df_km['end_time'] == end_time)& (df_km['is_specific'])]
-    df_km_new = df_km[['subject_num', 'subject_name']]
+    df_km_new = df_km[['subject_num', 'subject_name',"direction"]]
     sys.stdout.write(df_km_new.to_json(orient='records'))
 
 

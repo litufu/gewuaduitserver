@@ -345,23 +345,36 @@ def check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion,start_ti
     df_xsz_new = df_xsz_new.reset_index()
     return df_xsz_new
 
-def recaculate_km(df_km, df_xsz):
+def recaculate_km(df_km, df_xsz,type):
     '''
     将利润分配，本年利润和损益表的期初数全部调整为利润分配。
     :param df_km: 科目余额表
     :param df_xsz: 序时账
+    :param type: TB类型，未审TB,调整数TB和审定数TB,unAudited,adjustment,audited
     :return: 新的科目余额表
     '''
     # 获取科目余额表期初数
-    df_km_new = df_km[
-        ["id", "start_time", "end_time", "subject_num", "subject_name",
-         "subject_type", "direction", "is_specific", "subject_gradation","initial_amount"
-         ]
-    ].copy()
+    if type=="unAudited" or type=="audited":
+        df_km_new = df_km[
+            ["id", "start_time", "end_time", "subject_num", "subject_name",
+             "subject_type", "direction", "is_specific", "subject_gradation","initial_amount"
+             ]
+        ].copy()
+    elif type == "adjustment":
+        df_km_new = df_km[
+            ["id", "start_time", "end_time", "subject_num", "subject_name",
+             "subject_type", "direction", "is_specific", "subject_gradation"
+             ]
+        ].copy()
+        df_km_new['initial_amount'] = 0.00
+    else:
+        raise Exception("tb类型错误")
+
     df_km_new['debit_amount'] = 0.00
     df_km_new['credit_amount'] = 0.00
     df_km_new['terminal_amount'] = 0.00
     df_km_new = df_km_new.set_index('subject_num')
+
     # 计算序时账发生额
     df_xsz_pivot = df_xsz.pivot_table(values=['debit', 'credit'], index='subject_num', aggfunc='sum')
     # 重新计算科目余额表
@@ -814,11 +827,12 @@ def parse_df_tb_subject_formula(df_tb, subject):
             formula_str = formula_str + "{}".format(value)
     return eval(formula_str)
 
-def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
+def get_tb(df_km, df_xsz,type, engine, add_suggestion,start_time,end_time):
     '''
     根据科目余额表和序时账填写TB
     :param df_km: 科目余额表
     :param df_xsz: 序时账
+    :param type: TB类型，未审TB,调整数TB和审定数TB,unAudited,adjustment,audited
     :param engine: 数据库engine
     :param add_suggestion: 提建议
     :return: tb
@@ -987,11 +1001,12 @@ def get_origin(start_time,end_time,table_name,value_sign,value_location,value_ty
     }
     return origin
 
-def get_new_km_xsz_df(start_time, end_time, engine, add_suggestion, session):
+def get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session):
     '''
     获取新的科目余额表和序时账
     :param start_time: 2018-1-1
     :param end_time: 2018-12-31
+    :param type: TB类型，未审TB,调整数TB和审定数TB,unAudited,adjustment,audited
     :param engine: 数据库engine
     :param add_suggestion: 添加建议
     :param session: 数据库session
@@ -1012,22 +1027,33 @@ def get_new_km_xsz_df(start_time, end_time, engine, add_suggestion, session):
     # 将不存在的一级科目添加到标准对照表和tb中
     add_std_not_exist_subject(df_km, df_std, session)
     # # 获取序时账
-    df_xsz = pd.read_sql_table('chronologicalaccount', engine)
+    if type=="unAudited":
+        df_xsz = pd.read_sql_table('chronologicalaccount', engine)
+    elif type == "adjustment":
+        df_xsz = pd.read_sql_table('aduitadjustment', engine)
+    elif type == "audited":
+        df_xsz_origin = pd.read_sql_table('chronologicalaccount', engine)
+        df_xsz_adjustment = pd.read_sql_table('aduitadjustment', engine)
+        df_xsz = pd.concat([df_xsz_origin, df_xsz_adjustment],ignore_index=True)
+    else:
+        raise Exception("未识别你要找的tb类型")
+
     df_xsz = df_xsz[(df_xsz['year'] == year) & (df_xsz['month'] >= start_month) & (df_xsz['month'] <= end_month)]
+
     # 为序时账添加所有级别的会计科目编码和名称
     df_xsz = append_all_gradation_subjects(df_km, df_xsz)
     # 检查是否所有的损益类项目的核算都正确,不正确则修改序时账
     df_xsz_new = check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion, start_time, end_time)
     # 根据序时账重新计算科目余额表
-    df_km_new = recaculate_km(df_km, df_xsz_new)
+    df_km_new = recaculate_km(df_km, df_xsz_new,type)
     return df_km_new,df_xsz_new
 
-def recalculation(start_time, end_time, engine, add_suggestion, session):
+def recalculation(start_time, end_time,type, engine, add_suggestion, session):
     # 根据序时账和科目余额表重新计算新的科目余额表和序时账，主要是损益核算方向的检查
-    df_km_new ,df_xsz_new= get_new_km_xsz_df(start_time, end_time, engine, add_suggestion, session)
+    df_km_new ,df_xsz_new= get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session)
     # 根据新的科目余额表计算tb
-    df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion,start_time, end_time)
-    save_tb(start_time,end_time,session,df_tb)
+    df_tb = get_tb(df_km_new, df_xsz_new,type, engine, add_suggestion,start_time, end_time)
+    # save_tb(start_time,end_time,session,df_tb)
     # for obj in gen_df_line(df_tb):
     #     if obj["origin"]:
     #         value = get_tb_origin_value(obj["origin"],df_km_new,df_xsz_new)
@@ -1063,5 +1089,5 @@ if __name__ == '__main__':
     # recalculation(start_time,end_time,engine,add_suggestion,session)
 
 
-    recalculation(start_time=sys.argv[2], end_time=sys.argv[3], engine=engine, session=session,
+    recalculation(start_time=sys.argv[2], end_time=sys.argv[3],type=sys.argv[4], engine=engine, session=session,
                   add_suggestion=add_suggestion)
