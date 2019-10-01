@@ -1036,7 +1036,6 @@ def recalculation(start_time, end_time, engine, add_suggestion, session):
     tb = df_tb.to_json(orient='records')
     sys.stdout.write(tb)
 
-
 def save_tb(start_time,end_time,session,df_tb):
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')

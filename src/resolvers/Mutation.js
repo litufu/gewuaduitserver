@@ -514,6 +514,26 @@ const Mutation = {
       return false
     }
   },
+  addSubject:async(parent,{projectId,record},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const addSubjectPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_subject.py') 
+    const addSubjectProcess = spawnSync('python',[addSubjectPath, dbPath,startTimeStr,endTimeStr,record]);
+    const res = addSubjectProcess.stdout.toString() 
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
 }
 
 module.exports = {

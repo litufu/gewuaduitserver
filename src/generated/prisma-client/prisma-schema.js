@@ -486,6 +486,10 @@ type AggregateProject {
   count: Int!
 }
 
+type AggregateStdSubject {
+  count: Int!
+}
+
 type AggregateSubjectContrast {
   count: Int!
 }
@@ -2167,6 +2171,12 @@ type Mutation {
   upsertProject(where: ProjectWhereUniqueInput!, create: ProjectCreateInput!, update: ProjectUpdateInput!): Project!
   deleteProject(where: ProjectWhereUniqueInput!): Project
   deleteManyProjects(where: ProjectWhereInput): BatchPayload!
+  createStdSubject(data: StdSubjectCreateInput!): StdSubject!
+  updateStdSubject(data: StdSubjectUpdateInput!, where: StdSubjectWhereUniqueInput!): StdSubject
+  updateManyStdSubjects(data: StdSubjectUpdateManyMutationInput!, where: StdSubjectWhereInput): BatchPayload!
+  upsertStdSubject(where: StdSubjectWhereUniqueInput!, create: StdSubjectCreateInput!, update: StdSubjectUpdateInput!): StdSubject!
+  deleteStdSubject(where: StdSubjectWhereUniqueInput!): StdSubject
+  deleteManyStdSubjects(where: StdSubjectWhereInput): BatchPayload!
   createSubjectContrast(data: SubjectContrastCreateInput!): SubjectContrast!
   updateSubjectContrast(data: SubjectContrastUpdateInput!, where: SubjectContrastWhereUniqueInput!): SubjectContrast
   updateManySubjectContrasts(data: SubjectContrastUpdateManyMutationInput!, where: SubjectContrastWhereInput): BatchPayload!
@@ -2473,6 +2483,9 @@ type Query {
   project(where: ProjectWhereUniqueInput!): Project
   projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Project]!
   projectsConnection(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ProjectConnection!
+  stdSubject(where: StdSubjectWhereUniqueInput!): StdSubject
+  stdSubjects(where: StdSubjectWhereInput, orderBy: StdSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [StdSubject]!
+  stdSubjectsConnection(where: StdSubjectWhereInput, orderBy: StdSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): StdSubjectConnection!
   subjectContrast(where: SubjectContrastWhereUniqueInput!): SubjectContrast
   subjectContrasts(where: SubjectContrastWhereInput, orderBy: SubjectContrastOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SubjectContrast]!
   subjectContrastsConnection(where: SubjectContrastWhereInput, orderBy: SubjectContrastOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SubjectContrastConnection!
@@ -2488,6 +2501,126 @@ type Query {
 enum Role {
   ADMIN
   CUSTOMER
+}
+
+type StdSubject {
+  id: ID!
+  code: String!
+  name: String!
+}
+
+type StdSubjectConnection {
+  pageInfo: PageInfo!
+  edges: [StdSubjectEdge]!
+  aggregate: AggregateStdSubject!
+}
+
+input StdSubjectCreateInput {
+  id: ID
+  code: String!
+  name: String!
+}
+
+type StdSubjectEdge {
+  node: StdSubject!
+  cursor: String!
+}
+
+enum StdSubjectOrderByInput {
+  id_ASC
+  id_DESC
+  code_ASC
+  code_DESC
+  name_ASC
+  name_DESC
+}
+
+type StdSubjectPreviousValues {
+  id: ID!
+  code: String!
+  name: String!
+}
+
+type StdSubjectSubscriptionPayload {
+  mutation: MutationType!
+  node: StdSubject
+  updatedFields: [String!]
+  previousValues: StdSubjectPreviousValues
+}
+
+input StdSubjectSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: StdSubjectWhereInput
+  AND: [StdSubjectSubscriptionWhereInput!]
+  OR: [StdSubjectSubscriptionWhereInput!]
+  NOT: [StdSubjectSubscriptionWhereInput!]
+}
+
+input StdSubjectUpdateInput {
+  code: String
+  name: String
+}
+
+input StdSubjectUpdateManyMutationInput {
+  code: String
+  name: String
+}
+
+input StdSubjectWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  code: String
+  code_not: String
+  code_in: [String!]
+  code_not_in: [String!]
+  code_lt: String
+  code_lte: String
+  code_gt: String
+  code_gte: String
+  code_contains: String
+  code_not_contains: String
+  code_starts_with: String
+  code_not_starts_with: String
+  code_ends_with: String
+  code_not_ends_with: String
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [StdSubjectWhereInput!]
+  OR: [StdSubjectWhereInput!]
+  NOT: [StdSubjectWhereInput!]
+}
+
+input StdSubjectWhereUniqueInput {
+  id: ID
+  code: String
+  name: String
 }
 
 type SubjectContrast {
@@ -2717,6 +2850,7 @@ type Subscription {
   holder(where: HolderSubscriptionWhereInput): HolderSubscriptionPayload
   member(where: MemberSubscriptionWhereInput): MemberSubscriptionPayload
   project(where: ProjectSubscriptionWhereInput): ProjectSubscriptionPayload
+  stdSubject(where: StdSubjectSubscriptionWhereInput): StdSubjectSubscriptionPayload
   subjectContrast(where: SubjectContrastSubscriptionWhereInput): SubjectContrastSubscriptionPayload
   tbSubject(where: TbSubjectSubscriptionWhereInput): TbSubjectSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload

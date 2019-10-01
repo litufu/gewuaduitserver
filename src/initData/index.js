@@ -7,6 +7,7 @@ const subjectContrastFile = './src/initData/data/subject_contrast.csv'
 const tbSubjectFile = './src/initData/data/tb.csv'
 const fs2019File = './src/initData/data/fs_2019.csv'
 const fs2018File = './src/initData/data/fs_2018.csv'
+const stdSubjectFile = './src/initData/data/first_class.csv'
 
 const readFile = function (fileName, encode) {
   return new Promise(function (resolve, reject) {
@@ -145,8 +146,33 @@ async function addAccountingFirm() {
   }
 }
 
+// 添加标准会计科目信息
+
+async function addStdSubject() {
+  try {
+    const file = await readFile(stdSubjectFile, 'utf8')
+    const results = await parseCsv(file)
+    for (const value of results.data) {
+      try {
+        const stdSubject = await prisma
+          .createStdSubject({
+            code: value[0],
+            name: value[1],
+          })
+        console.log(stdSubject);
+      } catch (err) {
+        console.log(err)
+        continue
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 // addFs(fs2019File,"2019已执行三个新准则")
 // addFs(fs2018File,"2019未执行三个新准则")
 // addTbSubject()
 // addSubjectContrast()
 // addAccountingFirm()
+addStdSubject()

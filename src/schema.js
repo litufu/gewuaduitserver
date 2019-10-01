@@ -18,6 +18,7 @@ const typeDefs = gql`
     getSubjects(projectId:String):String!
     getAuxiliaries(projectId:String!):String!
     getAduitAdjustments(projectId:String!):String!
+    stdSubjects:[StdSubject]
   }
 
   type Mutation {
@@ -36,6 +37,7 @@ const typeDefs = gql`
     addAduitAdjustment(projectId:String!,record:String!):Boolean!
     deleteAdutiAdjustment(projectId:String!,vocherNum:Int!):Boolean!
     modifyAduitAdjustment(projectId:String!,record:String!,vocherNum:Int!):Boolean!
+    addSubject(projectId:String!,record:String!):Boolean!
   }
 
   input UploadTypeInput{
@@ -171,6 +173,12 @@ const typeDefs = gql`
     uploadTime:DateTime!
     files:[File!]!
     users:[User] #授权使用者
+  }
+
+  type StdSubject{
+    id: ID!
+    code:String!
+    name:String!
   }
   
 `;

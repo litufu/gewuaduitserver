@@ -145,3 +145,9 @@ type FSSubject{
   subject:String!
   direction:String!
 }
+
+type StdSubject{
+  id: ID! @id
+  code:String! @unique
+  name:String! @unique
+}

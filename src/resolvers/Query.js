@@ -237,6 +237,9 @@ const Query = {
     const subjects = getAduitAdjustmentProcess.stdout.toString() 
     return subjects
   },
+  stdSubjects:(parent,args,ctx)=>{
+    return ctx.prisma.stdSubjects()
+  },
 }
 
 module.exports = {

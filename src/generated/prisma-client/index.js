@@ -67,6 +67,10 @@ var models = [
   {
     name: "FSSubject",
     embedded: false
+  },
+  {
+    name: "StdSubject",
+    embedded: false
   }
 ];
 exports.Prisma = prisma_lib_1.makePrismaClientClass({
