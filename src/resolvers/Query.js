@@ -164,7 +164,7 @@ const Query = {
       throw new Error("未发现该项目")
     }
     const types = ["unAudited","adjustment","audited"]
-    if(types.indexOf(type)!==-1){
+    if(types.indexOf(type)===-1){
       throw new Error("tb类型错误")
     }
     const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()

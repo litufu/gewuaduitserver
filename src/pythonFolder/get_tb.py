@@ -430,7 +430,6 @@ def recaculate_km(df_km, df_xsz,type):
     # 检查期末数中的损益是否有数据，如有做一次结转处理。自动结转未结转损益。
 
     df_km_new = df_km_new.reset_index()
-    # 确定期末数，将期末数有余额的部分，结转至年末未分配利润。
     return df_km_new
 
 def get_bad_debt_value_and_origin(start_time, end_time, df_one_line):
@@ -827,7 +826,7 @@ def parse_df_tb_subject_formula(df_tb, subject):
             formula_str = formula_str + "{}".format(value)
     return eval(formula_str)
 
-def get_tb(df_km, df_xsz,type, engine, add_suggestion,start_time,end_time):
+def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
     '''
     根据科目余额表和序时账填写TB
     :param df_km: 科目余额表
@@ -1052,7 +1051,10 @@ def recalculation(start_time, end_time,type, engine, add_suggestion, session):
     # 根据序时账和科目余额表重新计算新的科目余额表和序时账，主要是损益核算方向的检查
     df_km_new ,df_xsz_new= get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session)
     # 根据新的科目余额表计算tb
-    df_tb = get_tb(df_km_new, df_xsz_new,type, engine, add_suggestion,start_time, end_time)
+    df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion,start_time, end_time)
+    df_tb = df_tb.reset_index()
+    df_tb = df_tb[["show","amount","order","direction"]]
+    # print(df_tb[["amount"]][:3])
     # save_tb(start_time,end_time,session,df_tb)
     # for obj in gen_df_line(df_tb):
     #     if obj["origin"]:
@@ -1083,10 +1085,11 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     from utils import add_suggestion
-    companyname = "深圳市众恒世讯科技股份有限公司"
-    start_time = "2016-1-1"
-    end_time = "2016-12-31"
-    # recalculation(start_time,end_time,engine,add_suggestion,session)
+    # companyname = "深圳市众恒世讯科技股份有限公司"
+    # start_time = "2016-1-1"
+    # end_time = "2016-12-31"
+    # type="audited"
+    # recalculation(start_time,end_time,type,engine,add_suggestion,session)
 
 
     recalculation(start_time=sys.argv[2], end_time=sys.argv[3],type=sys.argv[4], engine=engine, session=session,
