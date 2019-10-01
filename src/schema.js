@@ -17,6 +17,7 @@ const typeDefs = gql`
     getTB(projectId:String):String!
     getSubjects(projectId:String):String!
     getAuxiliaries(projectId:String!):String!
+    getAuxiliaryNames(projectId:String!):String!
     getAduitAdjustments(projectId:String!):String!
     stdSubjects:[StdSubject]
   }
@@ -38,6 +39,7 @@ const typeDefs = gql`
     deleteAdutiAdjustment(projectId:String!,vocherNum:Int!):Boolean!
     modifyAduitAdjustment(projectId:String!,record:String!,vocherNum:Int!):Boolean!
     addSubject(projectId:String!,record:String!):Boolean!
+    addAuxiliary(projectId:String!,record:String!):Boolean!
   }
 
   input UploadTypeInput{

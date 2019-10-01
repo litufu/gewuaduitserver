@@ -7,13 +7,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-def auxiliary(engine,start_time,end_time):
+def auxiliary_names(engine,start_time,end_time):
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
     # 从数据库读取科目余额表
-    df_auxiliary = pd.read_sql_table('auxiliary', engine)
-    df_auxiliary = df_auxiliary[(df_auxiliary['start_time'] == start_time) & (df_auxiliary['end_time'] == end_time)]
-    sys.stdout.write(df_auxiliary.to_json(orient='records'))
+    df_km = pd.read_sql_table('auxiliary', engine)
+    df_km = df_km[(df_km['start_time'] == start_time) & (df_km['end_time'] == end_time)]
+    df_km_new = df_km[['type_name', 'name']]
+    sys.stdout.write(df_km_new.to_json(orient='records'))
 
 
 if __name__ == '__main__':
@@ -21,4 +22,4 @@ if __name__ == '__main__':
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    auxiliary(engine,sys.argv[2],sys.argv[3])
+    auxiliary_names(engine,sys.argv[2],sys.argv[3])

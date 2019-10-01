@@ -23,10 +23,10 @@ def aduit_ajustment(session,start_time,end_time,record):
         debit = float(record.get("debit",0.00))
         credit = float(record.get("credit",0.00))
         auxiliary=record.get("auxiliary","").split("_")
-        if len(auxiliary)==4:
+        if len(auxiliary)==2:
             auxiliaryDirection = "借" if abs(debit)>0.00 else "贷"
             auxiliaryAmount = debit if abs(debit)>0.00 else credit
-            auxiliaryStr = "【{}: {} {}  {}】".format(auxiliary[2],auxiliary[3],auxiliaryDirection,auxiliaryAmount)
+            auxiliaryStr = "【{}: {} {}  {}】".format(auxiliary[0],auxiliary[1],auxiliaryDirection,auxiliaryAmount)
         else:
             auxiliaryStr = ""
         foreign_currency = record.get("foreign_currency", 0.00)

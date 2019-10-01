@@ -190,7 +190,7 @@ const Query = {
     const subjects = getSubjectsProcess.stdout.toString() 
     return subjects
   },
-  getAuxiliaries:async(parent,{projectId},ctx)=>{
+  getAuxiliaryNames:async(parent,{projectId},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
     if(!project){
       throw new Error("未发现该项目")
@@ -201,10 +201,10 @@ const Query = {
     const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
     const startTimeStr = dateToString(new Date(project.startTime))
     const endTimeStr = dateToString(new Date(project.endTime))
-    const getAuxiliariesPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_auxiliaries.py') 
-    const getAuxiliariesProcess = spawnSync('python',[getAuxiliariesPath, dbPath,startTimeStr,endTimeStr]);
-    const subjects = getAuxiliariesProcess.stdout.toString() 
-    return subjects
+    const getAuxiliaryNamesPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_auxiliary_names.py') 
+    const getAuxiliaryNamesProcess = spawnSync('python',[getAuxiliaryNamesPath, dbPath,startTimeStr,endTimeStr]);
+    const names = getAuxiliaryNamesProcess.stdout.toString() 
+    return names
   },
   getAuxiliaries:async(parent,{projectId},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
@@ -219,8 +219,8 @@ const Query = {
     const endTimeStr = dateToString(new Date(project.endTime))
     const getAuxiliariesPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_auxiliaries.py') 
     const getAuxiliariesProcess = spawnSync('python',[getAuxiliariesPath, dbPath,startTimeStr,endTimeStr]);
-    const subjects = getAuxiliariesProcess.stdout.toString() 
-    return subjects
+    const auxiliaries = getAuxiliariesProcess.stdout.toString() 
+    return auxiliaries
   },
   getAduitAdjustments:async(parent,{projectId},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})

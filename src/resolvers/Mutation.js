@@ -534,6 +534,26 @@ const Mutation = {
       return false
     }
   },
+  addAuxiliary:async(parent,{projectId,record},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const addAuxiliaryPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_auxiliary.py') 
+    const addAuxiliaryProcess = spawnSync('python',[addAuxiliaryPath, dbPath,startTimeStr,endTimeStr,record]);
+    const res = addAuxiliaryProcess.stdout.toString() 
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
 }
 
 module.exports = {
