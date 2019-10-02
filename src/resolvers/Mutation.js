@@ -322,7 +322,7 @@ const Mutation = {
           console.log(data)
       })
       importDataProcess.stderr.on('data', (data) => {
-        throw new Error(`数据录入失败${data}`)
+        console.log(`数据录入失败${data}`)
       });
       importDataProcess.on('close', (code) => {
         console.log(`数据录入完成 ${code}`);

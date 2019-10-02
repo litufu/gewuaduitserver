@@ -155,19 +155,24 @@ def save_xsz(start_time, end_time, xsz_path,session):
              'credit_number', 'debit_price', 'credit_price', 'currency_type', 'auxiliary'
              ]]
 
-    # 检查是否已经存储序时账
+    # 检查是否已经存储序时账,存储则删除
+    min_month = df.loc[:,'month'].min()
+    max_month = df.loc[:,'month'].max()
+    min_year = df.loc[:,'year'].min()
+    max_year = df.loc[:,'year'].max()
+    if ( min_year!= start_time.year) or (max_year != end_time.year) or  (max_month != end_time.month) :
+        raise Exception("序时账实际期间与上传的数据期间不一致")
 
     xszs = session.query(ChronologicalAccount).filter(
-                                                      ChronologicalAccount.year == start_time.year).all()
+                                                      ChronologicalAccount.year == start_time.year,
+        ChronologicalAccount.month >= min_month,
+        ChronologicalAccount.month <= max_month).all()
+
     if len(xszs) > 0:
-        # choice = input('{}年度已经存在序时账，是否要替换原有数据'.format(year))
-        choice = "yes"
-        if choice == 'yes':
-            for xsz in xszs:
-                session.delete(xsz)
-            session.commit()
-        else:
-            return
+        for xsz in xszs:
+            session.delete(xsz)
+        session.commit()
+
     #     检查借贷方是否相等
     if not math.isclose(df['debit'].map(lambda x: str_to_float(x)).sum(), df['credit'].map(lambda x: str_to_float(x)).sum(), rel_tol=1e-5):
         raise Exception("{}序时账借方发生额和贷方发生额合计不一致")
@@ -358,8 +363,15 @@ def save_to_db(session,start_time,end_time,path,type):
 
 if __name__ == '__main__':
     db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
+
+    # start_time = "2015-1-1"
+    # end_time = "2015-12-31"
+    # path=r"C:\Users\litufu\Desktop\zhsx\pz.xlsx"
+    # type="CHRONOLOGICALACCOUNT"
+    # save_to_db(session,start_time,end_time,path,type)
     save_to_db(session,sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
     print("success")

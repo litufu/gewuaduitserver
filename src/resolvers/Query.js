@@ -178,6 +178,33 @@ const Query = {
     const tb = getTBProcess.stdout.toString() 
     return tb
   },
+  getPreviousTb: async(parent,{projectId,statement},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    
+    const type = "audited"
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTime = new Date(project.startTime)
+    const endTime = new Date(project.endTime)
+    const previousStartTime = new Date(startTime.getFullYear()-1,startTime.getMonth(),startTime.getDate())
+    let previousEndTime
+    if(statement==="资产负债表"){
+      previousEndTime = new Date(endTime.getFullYear()-1,11,31)
+    }else if(statement==="利润表"){
+      previousEndTime = new Date(endTime.getFullYear()-1,endTime.getMonth(),endTime.getDate())
+    }
+    const startTimeStr = dateToString(previousStartTime)
+    const endTimeStr = dateToString(previousEndTime)
+    const getTBPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_tb.py') 
+    const getTBProcess = spawnSync('python',[getTBPath, dbPath,startTimeStr,endTimeStr,type]);
+    const tb = getTBProcess.stdout.toString() 
+    return tb
+  },
   getSubjects: async(parent,{projectId},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
     if(!project){

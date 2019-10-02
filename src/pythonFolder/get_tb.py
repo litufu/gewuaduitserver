@@ -1086,8 +1086,8 @@ if __name__ == '__main__':
     session = DBSession()
     from utils import add_suggestion
     # companyname = "深圳市众恒世讯科技股份有限公司"
-    # start_time = "2016-1-1"
-    # end_time = "2016-12-31"
+    # start_time = "2015-1-1"
+    # end_time = "2015-12-31"
     # type="audited"
     # recalculation(start_time,end_time,type,engine,add_suggestion,session)
 

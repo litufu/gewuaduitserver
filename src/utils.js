@@ -68,7 +68,6 @@ const storeFS = ({ storeFilePath,stream }) => {
       }
         )
       .on('finish', () => {
-        console.log("文件上传成功")
         resolve({ storeFilePath })
       })
   )

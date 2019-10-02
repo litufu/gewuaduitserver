@@ -15,6 +15,7 @@ const typeDefs = gql`
     getSubjectBalance(projectId:String):String!
     getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
     getTB(projectId:String,type:String!):String!
+    getPreviousTb(projectId:String,statement:String!):String!
     getSubjects(projectId:String):String!
     getAuxiliaries(projectId:String!):String!
     getAuxiliaryNames(projectId:String!):String!
