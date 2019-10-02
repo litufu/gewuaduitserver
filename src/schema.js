@@ -20,6 +20,7 @@ const typeDefs = gql`
     getAuxiliaryNames(projectId:String!):String!
     getAduitAdjustments(projectId:String!):String!
     stdSubjects:[StdSubject]
+    getProfitAndLossCarryOverStatus(projectId:String!):String!
   }
 
   type Mutation {
