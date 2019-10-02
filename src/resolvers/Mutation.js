@@ -554,6 +554,26 @@ const Mutation = {
       return false
     }
   },
+  addChangeReason:async(parent,{projectId,record},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const addChangeReasonPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_change_reason.py') 
+    const addChangeReasonProcess = spawnSync('python',[addChangeReasonPath, dbPath,startTimeStr,endTimeStr,record]);
+    const res = addChangeReasonProcess.stdout.toString() 
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
 }
 
 module.exports = {

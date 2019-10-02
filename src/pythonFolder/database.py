@@ -27,6 +27,16 @@ class TBSubject(Base):
     direction = Column(String)
     order = Column(Integer)
 
+class ChangeReason(Base):
+    __tablename__ = 'changereason'
+    id = Column(Integer, primary_key=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    statement = Column(String)
+    audit = Column(String)
+    order = Column(Integer)
+    reason = Column(String)
+
 # 一级会计科目
 class FirstClassSubject(Base):
     __tablename__ = 'firstclasssubject'
@@ -165,6 +175,8 @@ class TB(Base):
     direction = Column(String)
     amount = Column(Float(20,2))
     origin = Column(String)
+
+
 
 # 凭证分类
 class EntryClassify(Base):

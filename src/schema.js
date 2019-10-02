@@ -22,6 +22,7 @@ const typeDefs = gql`
     getAduitAdjustments(projectId:String!):String!
     stdSubjects:[StdSubject]
     getProfitAndLossCarryOverStatus(projectId:String!):String!
+    getChangeReasons(projectId:String!,statement:String!,audit:String!):String!
   }
 
   type Mutation {
@@ -42,6 +43,7 @@ const typeDefs = gql`
     modifyAduitAdjustment(projectId:String!,record:String!,vocherNum:Int!):Boolean!
     addSubject(projectId:String!,record:String!):Boolean!
     addAuxiliary(projectId:String!,record:String!):Boolean!
+    addChangeReason(projectId:String!,record:String!):Boolean!
   }
 
   input UploadTypeInput{
