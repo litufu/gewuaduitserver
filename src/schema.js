@@ -18,7 +18,6 @@ const typeDefs = gql`
     getPreviousTb(projectId:String,statement:String!):String!
     getSubjects(projectId:String):String!
     getAuxiliaries(projectId:String!):String!
-    getAuxiliaryNames(projectId:String!):String!
     getAduitAdjustments(projectId:String!):String!
     stdSubjects:[StdSubject]
     getChangeReasons(projectId:String!,statement:String!,audit:String!):String!

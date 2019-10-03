@@ -221,22 +221,6 @@ const Query = {
     const subjects = getSubjectsProcess.stdout.toString() 
     return subjects
   },
-  getAuxiliaryNames:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
-    const getAuxiliaryNamesPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_auxiliary_names.py') 
-    const getAuxiliaryNamesProcess = spawnSync('python',[getAuxiliaryNamesPath, dbPath,startTimeStr,endTimeStr]);
-    const names = getAuxiliaryNamesProcess.stdout.toString() 
-    return names
-  },
   getAuxiliaries:async(parent,{projectId},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
     if(!project){
