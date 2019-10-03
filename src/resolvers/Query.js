@@ -271,22 +271,6 @@ const Query = {
   stdSubjects:(parent,args,ctx)=>{
     return ctx.prisma.stdSubjects()
   },
-  getProfitAndLossCarryOverStatus:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
-    const checkProfitAndLossCarryOverPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_profit_and_loss_carry_over.py') 
-    const checkProfitAndLossCarryOverProcess = spawnSync('python',[checkProfitAndLossCarryOverPath, dbPath,startTimeStr,endTimeStr]);
-    const res = checkProfitAndLossCarryOverProcess.stdout.toString() 
-    return res
-  },
   getChangeReasons:async(parent,{projectId,statement,audit},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
     if(!project){

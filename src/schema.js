@@ -21,7 +21,6 @@ const typeDefs = gql`
     getAuxiliaryNames(projectId:String!):String!
     getAduitAdjustments(projectId:String!):String!
     stdSubjects:[StdSubject]
-    getProfitAndLossCarryOverStatus(projectId:String!):String!
     getChangeReasons(projectId:String!,statement:String!,audit:String!):String!
     getImportance(projectId:String!):String!
   }
