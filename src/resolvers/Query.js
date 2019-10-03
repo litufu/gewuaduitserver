@@ -1,4 +1,4 @@
-const { getUserId ,dateToString} = require('../utils')
+const { getUserId ,dateToString,companyNature} = require('../utils')
 const _ = require('lodash');
 const {  spawnSync} = require('child_process');
 const path = require('path')
@@ -301,6 +301,24 @@ const Query = {
     const getChangeReasonPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_change_reason.py') 
     const getChangeReasonProcess = spawnSync('python',[getChangeReasonPath, dbPath,startTimeStr,endTimeStr,statement,audit]);
     const res = getChangeReasonProcess.stdout.toString() 
+    return res
+  },
+  getImportance:async(parent,{projectId,statement,audit},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const nature = companyNature[company.nature]
+    const getImportancePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_importance.py') 
+    const getImportanceProcess = spawnSync('python',[getImportancePath, dbPath,startTimeStr,endTimeStr,nature]);
+    const res = getImportanceProcess.stdout.toString() 
     return res
   },
 }

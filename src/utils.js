@@ -7,6 +7,13 @@ const service = "qiye.aliyun"
 
 const APP_SECRET = 'appsecret321'
 
+const companyNature = {
+  "STATEOWNED":"国有企业",
+  "LISTED":"上市公司",
+  "PLANNEDLISTED":"拟上市公司",
+  "OTHER":"其他公司"
+}
+
 class AuthError extends Error {
   constructor() {
     super('Not authorized')
@@ -78,6 +85,7 @@ module.exports = {
   APP_SECRET,
   userMail,
   passMail,
+  companyNature,
   service,
   UPLOAD_DIR,
   storeFS,
