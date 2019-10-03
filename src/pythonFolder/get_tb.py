@@ -1053,7 +1053,7 @@ def recalculation(start_time, end_time,type, engine, add_suggestion, session):
     # 根据新的科目余额表计算tb
     df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion,start_time, end_time)
     df_tb = df_tb.reset_index()
-    df_tb = df_tb[["show","amount","order","direction"]]
+    df_tb = df_tb[["show","amount","order","direction","subject"]]
     # print(df_tb[["amount"]][:3])
     # save_tb(start_time,end_time,session,df_tb)
     # for obj in gen_df_line(df_tb):

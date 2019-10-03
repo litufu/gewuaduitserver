@@ -19,6 +19,7 @@ const typeDefs = gql`
     getAuxiliaries(projectId:String!):String!
     getAduitAdjustments(projectId:String!):String!
     stdSubjects:[StdSubject]
+    getNoComputeTbSubjects:[TbSubject]
     getChangeReasons(projectId:String!,statement:String!,audit:String!):String!
   }
 
@@ -182,6 +183,14 @@ const typeDefs = gql`
     id: ID!
     code:String!
     name:String!
+  }
+
+  type TbSubject{
+    id: ID!
+    show:String!
+    subject:String!
+    direction:String!
+    order:Int!
   }
   
 `;

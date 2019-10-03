@@ -239,6 +239,10 @@ const Query = {
   stdSubjects:(parent,args,ctx)=>{
     return ctx.prisma.stdSubjects()
   },
+  getNoComputeTbSubjects:async (parent,args,ctx)=>{
+    const subjets = await ctx.prisma.tbSubjects()
+    return subjets.filter(s=>(s.subject.indexOf("%")===-1) && (s.subject !== ""))
+  },
   getChangeReasons:async(parent,{projectId,statement,audit},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
     if(!project){
