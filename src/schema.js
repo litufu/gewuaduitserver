@@ -21,6 +21,8 @@ const typeDefs = gql`
     stdSubjects:[StdSubject]
     getNoComputeTbSubjects:[TbSubject]
     getChangeReasons(projectId:String!,statement:String!,audit:String!):String!
+    getEntryClassify(projectId:String!,recompute:String!):String!
+    getChronologicalAccountByEntryNums(projectId:String!,record:String!):String!
   }
 
   type Mutation {

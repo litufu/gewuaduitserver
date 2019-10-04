@@ -186,6 +186,7 @@ class EntryClassify(Base):
     end_time = Column(DateTime)
     step = Column(Integer)
     desc = Column(String)
+    value = Column(Float)
     number = Column(Integer)
     records = Column(String)
 

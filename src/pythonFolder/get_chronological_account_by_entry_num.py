@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import sys
+import json
 import pandas as pd
 from datetime import datetime
 from sqlalchemy import create_engine
@@ -35,7 +36,8 @@ def append_all_gradation_subjects(df_km, df_xsz):
         df_xsz = df_xsz.drop(columns=['std_subject_num'])
     return df_xsz
 
-def chronological_account(engine,start_time,end_time,subject_num,grade):
+def chronological_account_by_entry_num(engine,start_time,end_time,record):
+
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
     check_start_end_date(start_time, end_time)
@@ -50,15 +52,29 @@ def chronological_account(engine,start_time,end_time,subject_num,grade):
     df_xsz = df_xsz[(df_xsz['year'] == year) & (df_xsz['month'] >= start_month) & (df_xsz['month'] <= end_month)]
     # 为序时账添加所有级别的会计科目编码和名称
     df_xsz = append_all_gradation_subjects(df_km, df_xsz)
-    subject_num_grade = "subject_num_{}".format(grade)
-    df_xsz_new = df_xsz[df_xsz[subject_num_grade]==subject_num]
+
+    lookup_entrys = json.loads(record)
+    df2 = pd.DataFrame({
+        'month': [lookup_entry[0] for lookup_entry in lookup_entrys],
+        'vocher_num': [lookup_entry[1] for lookup_entry in lookup_entrys],
+        'vocher_type': [lookup_entry[2] for lookup_entry in lookup_entrys],
+    })
+
+    df_xsz_new = df_xsz.merge(df2,on=["month","vocher_num","vocher_type"])
     df_xsz_new = df_xsz_new[["year","month","vocher_type","vocher_num","subentry_num","description","subject_num","subject_name","debit","credit","auxiliary"]]
     sys.stdout.write(df_xsz_new.to_json(orient='records'))
 
 
 if __name__ == '__main__':
     db_path = sys.argv[1]
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    record = sys.argv[4]
+    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    chronological_account(engine,sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
+    # start_time = "2016-1-1"
+    # end_time = "2016-12-31"
+    # record = "[[12, 198, \"\u8bb0\"]]"
+    chronological_account_by_entry_num(engine,start_time,end_time,record)

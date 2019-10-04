@@ -256,7 +256,39 @@ const Query = {
     const endTimeStr = dateToString(new Date(project.endTime))
     const getChangeReasonPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_change_reason.py') 
     const getChangeReasonProcess = spawnSync('python',[getChangeReasonPath, dbPath,startTimeStr,endTimeStr,statement,audit]);
-    const res = getChangeReasonProcess.stdout.toString() 
+    const res = getChangeReasonProcess.stdout.toString()
+    return res
+  },
+  getEntryClassify:async(parent,{projectId,recompute},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const entryClassifyPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/entry_classify.py') 
+    const entryClassifyProcess = spawnSync('python',[entryClassifyPath, dbPath,startTimeStr,endTimeStr,recompute]);
+    const res = entryClassifyProcess.stdout.toString() 
+    return res
+  },
+  getChronologicalAccountByEntryNums:async(parent,{projectId,record},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const getChronologicalAccountByEntryNumsPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_chronological_account_by_entry_num.py') 
+    const getChronologicalAccountByEntryNumsProcess = spawnSync('python',[getChronologicalAccountByEntryNumsPath, dbPath,startTimeStr,endTimeStr,record]);
+    const res = getChronologicalAccountByEntryNumsProcess.stdout.toString() 
     return res
   },
 }
