@@ -1,21 +1,15 @@
-from collections import defaultdict
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import json
 import math
 import pandas as pd
 from datetime import datetime
-import time
-from src.database import EntryClassify,AuditRecord,OutputTax,TransactionEvent
-from src.get_tb  import get_new_km_xsz_df
-from src.utils import gen_df_line,  get_session_and_engine,parse_auxiliary
-from settings.constant import inventory,long_term_assets,expense,recognition_income_debit,recognition_income_credit,\
-    sale_rate,salary_desc,salary_collection_subjects,subject_descs,tax_payable,other_receivable_natures,other_payable_natures
-
-
-
-
-def cash_flow(company_name,start_time,end_time,session,engine,add_suggestion):
-    df = pd.read_sql_table("transactionevent", con=engine)
-    df.to_csv("xsz_event.csv",encoding="gbk")
+from database import EntryClassify,AuditRecord,OutputTax,TransactionEvent
+from get_tb  import get_new_km_xsz_df
+from utils import gen_df_line,  parse_auxiliary
+from constant import inventory,long_term_assets,expense,recognition_income_debit,recognition_income_credit,\
+    sale_rate,salary_desc,salary_collection_subjects,tax_payable,other_receivable_natures,other_payable_natures,judge_entry_events
+from entry_classify import get_entry_subjects,add_tb_subject_to_xsz
 
 
 def one_to_many_split(df_entry_one,df_entry_many,one_direction):
@@ -137,42 +131,6 @@ def split_entry(df_entry):
     else:
         return [df_entry]
 
-
-def add_event(company_name,start_time,end_time,session,desc,obj):
-    event = TransactionEvent(
-        company_code=obj["company_code"],
-        company_name=company_name,
-        start_time=start_time,
-        end_time=end_time,
-        month=obj["month"],
-        vocher_type=obj["vocher_type"],
-        vocher_num=obj["vocher_num"],
-        subentry_num=obj["subentry_num"],
-        desc=desc,
-        same_subjects=obj["same_subjects"],
-        opposite_subjects=obj["opposite_subjects"],
-        nature=obj["nature"],
-        year=obj["year"],
-        record_time=datetime.fromtimestamp(obj["record_time"]/1000),
-        description=obj["description"],
-        subject_num=obj["subject_num"],
-        subject_name=obj["subject_name"],
-        currency_type=obj["currency_type"],
-        debit=obj["debit"],
-        credit=obj["credit"],
-        debit_foreign_currency=obj["debit_foreign_currency"],
-        credit_foreign_currency=obj["credit_foreign_currency"],
-        debit_number=obj["debit_number"],
-        credit_number=obj["credit_number"],
-        debit_price=obj["debit_price"],
-        credit_price=obj["credit_price"],
-        auxiliary=obj["auxiliary"],
-        tb_subject=obj["tb_subject"],
-        direction=obj["direction"],
-    )
-    session.add(event)
-    session.commit()
-
 def get_account_nature(df_xsz,name):
     '''
     从本年度序时账获取供应商款项性质
@@ -183,7 +141,7 @@ def get_account_nature(df_xsz,name):
     df_tmp_xsz = df_xsz[
         (df_xsz["auxiliary"].str.contains(name)) & (df_xsz["credit"].abs() > 0)]
     if len(df_tmp_xsz) > 0:
-        for obj in gen_df_line(df_tmp_xsz[:1]):
+        for obj in gen_df_line(df_tmp_xsz.tail(1)):
             df_supplier_xsz = df_xsz[
                 (df_xsz["month"] == obj["month"]) &
                 (df_xsz["vocher_type"] == obj["vocher_type"]) &
@@ -216,60 +174,8 @@ def get_supplier_nature(str,df_xsz):
             return nature
     return ""
 
-
-
-def get_nature(tb_subject,df_xsz):
-#     获取应付账款、预付账款、其他应收款、其他应付款和应交税费等款项性质
-    if tb_subject == "应付账款":
-
-        auxiliary = parse_auxiliary(str)
-        supplier = auxiliary.get("供应商")
-        if supplier:
-            nature = get_account_nature(df_xsz, supplier)
-            return nature
-    return ""
-    subjects = get_entry_subjects(df_entry, "subject_name_1")
-    debit_subjects_list = subjects["debit"]
-    credit_subjects_list = subjects["credit"]
-    if len(df_entry[(df_entry["tb_subject"]=="应付账款")&(df_entry["direction"]=="贷")])>0:
-        for i in long_term_assets:
-            if i in debit_subjects_list:
-                return "长期资产"
-        for i in inventory:
-            if i in debit_subjects_list:
-                return "材料费"
-        for i in expense:
-            if i in debit_subjects_list:
-                return "费用"
-
-
-
-
-def check_subject_and_desc_contains(df_one_entry,strs,grades):
-    '''
-    检查凭证摘要或科目中是否包含特定的字符串
-    :param df_one_entry:凭证
-    :param strs:字符串或者列表
-    :param grades:科目级次
-    :return:包含或不包含
-    '''
-    if not isinstance(strs,list):
-        raise Exception("需要传入字符串列表")
-    for obj in gen_df_line(df_one_entry):
-        containers = []
-        desc = obj["description"]
-        containers.append(desc)
-        for grade in range(grades):
-            subject_name = "subject_name_{}".format(grade+1)
-            containers.append(obj[subject_name])
-        for container in containers:
-            for str in strs:
-                if str in container:
-                    return True
-    return False
-
 # 检查科目是否为标准科目
-def check_event_subject_std(company_name,start_time,end_time,df_one_entry,record,session,std_debit_subjects,std_credit_subjects):
+def check_event_subject_std(start_time,end_time,df_one_entry,record,session,std_debit_subjects,std_credit_subjects):
     '''
 
     :param company_name:
@@ -289,11 +195,10 @@ def check_event_subject_std(company_name,start_time,end_time,df_one_entry,record
     for debit_subject in subjects["debit"]:
         if not debit_subject in std_debit_subjects:
             audit_record = AuditRecord(
-                company_name=company_name,
                 start_time=start_time,
                 end_time=end_time,
-                problem="记账凭证借方为非标准记账凭证,凭证包含科目{}，{}-{}-{}".format(debit_subject,record['month'],
-                                                                  record['vocher_type'], record['vocher_num'])
+                voucher="{}-{}-{}".format(record['month'],record['vocher_type'], record['vocher_num']),
+                problem="记账凭证借方为非标准记账凭证"
             )
             session.add(audit_record)
             session.commit()
@@ -301,11 +206,10 @@ def check_event_subject_std(company_name,start_time,end_time,df_one_entry,record
     for credit_subject in subjects["credit"]:
         if not credit_subject in std_credit_subjects:
             audit_record = AuditRecord(
-                company_name=company_name,
                 start_time=start_time,
                 end_time=end_time,
-                problem="记账凭证贷方为非标准记账凭证,凭证包含科目{}，{}-{}-{}".format(credit_subject, record['month'], record['vocher_type'],
-                                                                  record['vocher_num'])
+                voucher="{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num']),
+                problem="记账凭证贷方为非标准记账凭证,凭证包含科目"
             )
             session.add(audit_record)
             session.commit()
@@ -328,7 +232,7 @@ def get_expected_rates(year,month):
     raise Exception("日期在1994-1-1之前，没有增值税暂行条例呢")
 
 
-def aduit_recognition_income(company_name,start_time,end_time,df_one_entry,record,session):
+def aduit_recognition_income(start_time,end_time,df_one_entry,record,session):
     '''
     # 审计程序：
     # a/检查判断是否执行建造合同准则，
@@ -347,7 +251,7 @@ def aduit_recognition_income(company_name,start_time,end_time,df_one_entry,recor
         return
 
     # 程序2：检查凭证是否标准
-    check_event_subject_std(company_name, start_time, end_time, df_one_entry, record, session, recognition_income_debit,
+    check_event_subject_std(start_time, end_time, df_one_entry, record, session, recognition_income_debit,
                             recognition_income_credit)
 
     # 程序3：检查增值税销项税率是否符合税法规定
@@ -365,7 +269,7 @@ def aduit_recognition_income(company_name,start_time,end_time,df_one_entry,recor
         expected_tax_rate = 1.0
         difference = True
 
-    output_tax = OutputTax(company_name=company_name,
+    output_tax = OutputTax(
                            start_time=start_time,
                            end_time=end_time,
                            month=record["month"],
@@ -423,10 +327,9 @@ def get_not_through_salary_entry(df_xsz,grades,start_time,end_time):
                        content="存在未通过应付职工薪酬核算的职工薪酬，建议所有职工薪酬项目应经过职工薪酬。如{}".format(results),
                        start_time=start_time,
                        end_time=end_time,
-                       company_name=company_name
+                       session=session
                        )
     return results
-
 
 def entry_contain_subject(df_entry,subject):
     '''
@@ -442,20 +345,92 @@ def entry_subject_direction(df_entry,subject):
     返回科目所在的方向
     :param df_entry:凭证
     :param subject: 科目
-    :return: "借""贷""双向"
+    :return: "借方""贷方""双向"
 
     '''
 
     df_subject = df_entry[df_entry["tb_subject"]==subject].drop_duplicates("direction")
     if len(df_subject) == 1:
         if abs(df_subject["debit"].sum()) > 1e-5:
-            return "借"
+            return "借方"
         else:
-            return "贷"
+            return "贷方"
     else:
         return  "双向"
 
-def add_entry_desc(company_name, start_time, end_time, session,df_entry,desc):
+def is_same_subjects_only_one(debit_subjects_list,credit_subjects_list,subject_direction):
+    '''
+    判断科目是否为该方向唯一的科目
+    :param debit_subjects_list: 借方科目列表
+    :param credit_subjects_list: 贷方科目列表
+    :param subject_direciton: 科目方向
+    :return: 是否唯一
+    '''
+    if subject_direction == "借方":
+        if len(debit_subjects_list) == 1:
+            return True
+        else:
+            return False
+    elif subject_direction == "贷方":
+        if len(credit_subjects_list) == 1:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def get_opposite_subjects_list(debit_subjects_list,credit_subjects_list,subject_direction):
+    '''
+    获取科目对方科目名称列表
+    :param debit_subjects_list: 借方列表
+    :param credit_subjects_list: 贷方列表
+    :param subject_direction: 科目所在方向
+    :return:
+    '''
+    if subject_direction == "借方":
+        return credit_subjects_list
+    elif subject_direction == "贷方":
+        return debit_subjects_list
+    else:
+        return []
+
+
+def is_opposite_subjects_contain(opposite_subjects_list,judge_opposite_subjects):
+    '''
+    判断对方科目是否全部包含在期望的科目列表中
+    :param opposite_subjects_list: 对方科目列表
+    :param opposite_subjects: 期望科目列表
+    :return: True or False
+    '''
+    if isinstance(judge_opposite_subjects,list):
+        return len([False for subject in opposite_subjects_list if subject not in judge_opposite_subjects]) == 0
+    else:
+        raise Exception("参数错误")
+
+def check_subject_and_desc_contains(df_one_entry,strs,grades):
+    '''
+    检查凭证摘要或科目中是否包含特定的字符串
+    :param df_one_entry:凭证
+    :param strs:字符串或者列表
+    :param grades:科目级次
+    :return:包含或不包含
+    '''
+    if not isinstance(strs,list):
+        raise Exception("需要传入字符串列表")
+    for obj in gen_df_line(df_one_entry):
+        containers = []
+        desc = obj["description"]
+        containers.append(desc)
+        for grade in range(grades):
+            subject_name = "subject_name_{}".format(grade+1)
+            containers.append(obj[subject_name])
+        for container in containers:
+            for str in strs:
+                if str in container:
+                    return True
+    return False
+
+def add_entry_desc(start_time, end_time, session, df_entry, desc):
     '''
     为凭证所有的分录添加相同的描述
     :param company_name: 公司名
@@ -467,12 +442,48 @@ def add_entry_desc(company_name, start_time, end_time, session,df_entry,desc):
     :return: 向数据库添加该凭证的描述
     '''
     for obj in gen_df_line(df_entry):
-        add_event(company_name, start_time, end_time, session, desc,obj)
+        add_event(start_time, end_time, session, desc, obj)
+    session.commit()
 
-def add_audit_record(company_name,start_time,end_time,session,problem):
+def add_event(start_time, end_time, session, desc, obj):
+    event = TransactionEvent(
+        start_time=start_time,
+        end_time=end_time,
+        month=obj["month"],
+        vocher_type=obj["vocher_type"],
+        vocher_num=obj["vocher_num"],
+        subentry_num=obj["subentry_num"],
+        desc=desc,
+        same_subjects=obj["same_subjects"],
+        opposite_subjects=obj["opposite_subjects"],
+        nature=obj["nature"],
+        year=obj["year"],
+        record_time=datetime.fromtimestamp(obj["record_time"] / 1000),
+        description=obj["description"],
+        subject_num=obj["subject_num"],
+        subject_name=obj["subject_name"],
+        currency_type=obj["currency_type"],
+        debit=obj["debit"],
+        credit=obj["credit"],
+        debit_foreign_currency=obj["debit_foreign_currency"],
+        credit_foreign_currency=obj["credit_foreign_currency"],
+        debit_number=obj["debit_number"],
+        credit_number=obj["credit_number"],
+        debit_price=obj["debit_price"],
+        credit_price=obj["credit_price"],
+        auxiliary=obj["auxiliary"],
+        tb_subject=obj["tb_subject"],
+        direction=obj["direction"],
+        entry_desc=obj["entry_desc"],
+        transaction_volume=obj["transaction_volume"],
+        entry_classify_count=obj["entry_classify_count"],
+    )
+    session.add(event)
+
+
+def add_audit_record(start_time,end_time,session,problem,voucher):
     '''
     添加审核记录
-    :param company_name: 公司名
     :param start_time: 开始时间
     :param end_time: 结束时间
     :param session: 数据库session
@@ -480,166 +491,15 @@ def add_audit_record(company_name,start_time,end_time,session,problem):
     :return: 向数据库添加审核记录
     '''
     audit_record = AuditRecord(
-        company_name=company_name,
         start_time=start_time,
         end_time=end_time,
-        problem=problem
+        problem=problem,
+        voucher=voucher
     )
     session.add(audit_record)
     session.commit()
 
-def opposite_subjects_contain(opposite_subjects_list,opposite_subjects):
-    '''
-    判断对方科目是否全部包含在期望的科目列表中
-    :param opposite_subjects_list: 对方科目列表
-    :param opposite_subjects: 期望科目列表
-    :return: True or False
-    '''
-    if isinstance(opposite_subjects,list):
-        return len([False for subject in opposite_subjects_list if subject not in opposite_subjects]) == 0
-    elif isinstance(opposite_subjects,str):
-        if  opposite_subjects=="all":
-            return True
-        else:
-            return False
-    else:
-        raise Exception("参数错误")
-
-
-def opposite_contains(opposite_subjects_list,direction_descs,df_entry,record,han_direction,subject_name, opposite_subject_desc,start_time, end_time, session):
-    '''
-    根据对方科目判断
-    :param opposite_subjects_list:
-    :param direction_descs:
-    :param df_entry:
-    :param record:
-    :param han_direction:
-    :param subject_name:
-    :param opposite_subject_desc:
-    :return:
-    '''
-    contains = [opposite_subjects_contain(opposite_subjects_list, direction_desc["opposite"]) for direction_desc in
-                direction_descs]
-    if True in contains:
-        contain_index = contains.index(True)
-        direction_desc = direction_descs[contain_index]
-        event_desc = direction_desc["event"]
-        problem_desc = direction_desc["problem"]
-        add_entry_desc(company_name, start_time, end_time, session, df_entry, event_desc)
-        if problem_desc:
-            problem = "{}，凭证见{}-{}-{}".format(problem_desc, record['month'],
-                                              record['vocher_type'],
-                                              record['vocher_num'])
-            add_audit_record(company_name, start_time, end_time, session, problem)
-    else:
-        add_entry_desc(company_name, start_time, end_time, session, df_entry,
-                       "{}{}-非标准-{}".format(han_direction, subject_name, opposite_subject_desc))
-        problem = "记账凭证为非标准记账凭证,{}未发现对方科目，凭证见{}-{}-{}".format(subject_name, record['month'],
-                                                              record['vocher_type'],
-                                                              record['vocher_num'])
-        add_audit_record(company_name, start_time, end_time, session, problem)
-
-def entry_contains(direction_descs,df_entry,record,han_direction,subject_name, opposite_subject_desc,grades,start_time, end_time, session):
-    '''
-    根据凭证摘要、明细科目判断
-    :param opposite_subjects_list:
-    :param direction_descs:
-    :param df_entry:
-    :param record:
-    :param han_direction:
-    :param subject_name:
-    :param opposite_subject_desc:
-    :return:
-    '''
-    contains = [check_subject_and_desc_contains(df_entry, direction_desc["keywords"], grades) for direction_desc in
-                direction_descs]
-    if True in contains:
-        contain_index = contains.index(True)
-        direction_desc = direction_descs[contain_index]
-        event_desc = direction_desc["contain_event"]
-        problem_desc = direction_desc["problem"]
-        add_entry_desc(company_name, start_time, end_time, session, df_entry, event_desc)
-        if problem_desc:
-            problem = "{}，凭证见{}-{}-{}".format(problem_desc, record['month'],
-                                              record['vocher_type'],
-                                              record['vocher_num'])
-            add_audit_record(company_name, start_time, end_time, session, problem)
-    else:
-        add_entry_desc(company_name, start_time, end_time, session, df_entry,
-                       "{}{}-非标准-{}".format(han_direction, subject_name, opposite_subject_desc))
-        problem = "记账凭证为非标准记账凭证,{}未发现对方科目，凭证见{}-{}-{}".format(subject_name, record['month'],
-                                                              record['vocher_type'],
-                                                              record['vocher_num'])
-        add_audit_record(company_name, start_time, end_time, session, problem)
-
-def handle_keywords_dict(direction_descs,df_entry,grades,opposite_subjects_list,record,han_direction,subject_name,opposite_subject_desc,start_time, end_time, session):
-    #处理包含关键词的数据结构
-    keywords = direction_descs["keywords"]
-    contain_descs = direction_descs["contain_event"]
-    not_contain_descs = direction_descs["not_contain_event"]
-    if check_subject_and_desc_contains(df_entry, keywords, grades):
-        if isinstance(contain_descs, str):
-            add_entry_desc(company_name, start_time, end_time, session, df_entry, contain_descs)
-        elif isinstance(contain_descs, list):
-            opposite_contains(opposite_subjects_list, contain_descs, df_entry, record, han_direction, subject_name,
-                         opposite_subject_desc,start_time, end_time, session)
-    else:
-        if isinstance(not_contain_descs, str):
-            add_entry_desc(company_name, start_time, end_time, session, df_entry, not_contain_descs)
-        elif isinstance(not_contain_descs, list):
-            opposite_contains(opposite_subjects_list, not_contain_descs, df_entry, record, han_direction, subject_name,
-                         opposite_subject_desc,start_time, end_time, session)
-
-
-
-def add_entry_event_desc(diretciton_subject_desc,direction,df_entry,record,opposite_subjects_list,subject_name,
-                         opposite_subject_desc,grades,start_time, end_time, session):
-    '''
-    获取凭证所代表的业务描述，一是通过关键词判断，而是通过对方科目判断，三是通过一个关键词判断后再通过对方科目判断
-    :param diretciton_subject_desc: 所有科目的描述
-    :param direction: 借贷方向：debit credit
-    :param df_entry: 凭证df
-    :param record: 凭证记录
-    :param opposite_subjects_list: 对方科目列表
-    :param subject_name: 科目名称
-    :param opposite_subject_desc: 对方科目描述
-    :param grades: 科目级次
-    :return: 添加审核记录和事项描述
-    '''
-    han_direction = ""
-    if direction == "debit":
-        han_direction = "借方"
-    elif direction == "credit":
-        han_direction = "贷方"
-    elif direction == "two_way":
-        han_direction = "双向"
-
-    if direction not in diretciton_subject_desc:
-        add_entry_desc(company_name, start_time, end_time, session, df_entry,
-                       "{}{}-非标准-{}".format(han_direction, subject_name, opposite_subject_desc))
-        problem = "记账凭证为非标准记账凭证,{}未发现对方科目，凭证见{}-{}-{}".format(subject_name, record['month'],
-                                                              record['vocher_type'],
-                                                              record['vocher_num'])
-        add_audit_record(company_name, start_time, end_time, session, problem)
-    else:
-        direction_descs = diretciton_subject_desc[direction]
-        if isinstance(direction_descs,dict):
-            # 根据关键字判断后再根据对方科目判断，仅限一个关键词组
-            handle_keywords_dict(direction_descs, df_entry, grades, opposite_subjects_list, record, han_direction,
-                                 subject_name, opposite_subject_desc,start_time, end_time, session)
-        elif isinstance(direction_descs,list):
-            # 判断是否为包含关键词的dict
-            if "keywords" in direction_descs[0]:
-                # 根据凭证中包含的关键词判断凭证性质
-                entry_contains(direction_descs, df_entry, record, han_direction, subject_name, opposite_subject_desc,
-                               grades,start_time, end_time, session)
-            elif "opposite" in direction_descs[0]:
-                # 根据对方会计科目判断凭证性质
-                opposite_contains(opposite_subjects_list, direction_descs, df_entry, record, han_direction, subject_name,
-                             opposite_subject_desc,start_time, end_time, session)
-
-
-def handle_entry(df_entry,record,subject_descs,grades,start_time, end_time, session):
+def handle_entry(df_entry,record,grades,start_time, end_time, session):
     # 获取凭证科目名称
     subjects = get_entry_subjects(df_entry, "subject_name_1")
     debit_subjects_list = subjects["debit"]
@@ -647,55 +507,62 @@ def handle_entry(df_entry,record,subject_descs,grades,start_time, end_time, sess
     # 合并科目名称
     debit_subject_desc = "%".join(debit_subjects_list)
     credit_subjects_desc = "%".join(credit_subjects_list)
+    for judge_entry_event in judge_entry_events:
+        subject = judge_entry_event["subject"]
+        if entry_contain_subject(df_entry, subject):
+            subject_direction = entry_subject_direction(df_entry,subject)
+            same_subjects_only_one_judge = is_same_subjects_only_one(debit_subjects_list,credit_subjects_list,subject_direction)
+            opposite_subjects_list = get_opposite_subjects_list(debit_subjects_list,credit_subjects_list,subject_direction)
+            judges = judge_entry_event["judge"]
+            for judge in judges:
+                logic = judge.get("logic","and")
+                event = judge.get("event", "")
+                problem = judge.get("problem", None)
+                conditions = judge.get("condition",None)
+                condition_judges = []
 
-    for subject_desc in subject_descs:
-        subject_name = subject_desc["subject"]
-        if entry_contain_subject(df_entry,subject_name):
-            # 检查科目是否在借方
-            direction = entry_subject_direction(df_entry,subject_name)
-            if direction == "借":
-                debit_only_one = subject_desc["debit_only_one"]
-                if debit_only_one:
-                    if len(debit_subjects_list) > 1:
-                        add_entry_desc(company_name, start_time, end_time, session, df_entry,
-                                       "{}借方不唯一借方{}-贷方{}".format(subject_name,debit_subject_desc,credit_subjects_desc))
-                        problem = "记账凭证为非标准记账凭证,{}借方含有其他科目，凭证见{}-{}-{}".format(subject_name,record['month'],
-                                                                                   record['vocher_type'],
-                                                                                   record['vocher_num'])
-                        add_audit_record(company_name, start_time, end_time, session, problem)
-                    else:
-                        add_entry_event_desc(subject_desc, "debit", df_entry, record, credit_subjects_list,
-                                           subject_name, credit_subjects_desc,grades,start_time, end_time, session)
-                else:
-                    add_entry_event_desc(subject_desc, "debit", df_entry, record, credit_subjects_list,
-                                       subject_name, credit_subjects_desc,grades,start_time, end_time, session)
-            elif direction == "贷":
-                credit_only_one = subject_desc["credit_only_one"]
-                if credit_only_one:
-                    if len(credit_subjects_list) > 1:
-                        add_entry_desc(company_name, start_time, end_time, session, df_entry,
-                                       "{}贷方不唯一借方{}-贷方{}".format(subject_name,debit_subject_desc,credit_subjects_desc))
-                        problem = "记账凭证为非标准记账凭证,{}贷方含有其他科目，凭证见{}-{}-{}".format(subject_name,record['month'],
-                                                                                   record['vocher_type'],
-                                                                                   record['vocher_num'])
-                        add_audit_record(company_name, start_time, end_time, session, problem)
-
-                    else:
-                        add_entry_event_desc(subject_desc, "credit", df_entry, record, debit_subjects_list,
-                                           subject_name, debit_subject_desc,grades,start_time, end_time, session)
-
-                else:
-                    add_entry_event_desc(subject_desc, "credit", df_entry, record, debit_subjects_list,
-                                       subject_name, debit_subject_desc,grades,start_time, end_time, session)
-            elif direction == "双向":
-                if len(debit_subjects_list)<=1 and len(credit_subjects_list)<=1:
-                    add_entry_desc(company_name, start_time, end_time, session, df_entry,
-                                   "{}内部结转".format(subject_name))
-
-                else:
-                    add_entry_event_desc(subject_desc, "two_way", df_entry, record, debit_subjects_list,
-                                         subject_name, debit_subject_desc, grades, start_time, end_time, session)
-            break
+                for condition in conditions:
+                    # 判断是否要求科目唯一
+                    same_subjects_only_one = condition.get("same_subjects_only_one",None)
+                    if same_subjects_only_one != None:
+                        condition_judges.append(same_subjects_only_one_judge)
+                    # 判断科目方向是否正确
+                    expected_subject_direction = condition.get("subject_direction",None)
+                    if expected_subject_direction != None:
+                        if expected_subject_direction == subject_direction:
+                            subject_direction_judge = True
+                        else:
+                            subject_direction_judge = False
+                        condition_judges.append(subject_direction_judge)
+                    judge_opposite_subjects = condition.get("opposite_subjects",None)
+                    # 判断对方科目是否包含
+                    if judge_opposite_subjects != None:
+                        opposite_subjects_contain_judge = is_opposite_subjects_contain(opposite_subjects_list,judge_opposite_subjects)
+                        condition_judges.append(opposite_subjects_contain_judge)
+                    entry_keywords = condition.get("entry_keywords",None)
+                    # 判断凭证是否包含关键词
+                    if entry_keywords != None:
+                        contain_entry_keywords_judge = check_subject_and_desc_contains(df_entry,entry_keywords,grades)
+                        condition_judges.append(contain_entry_keywords_judge)
+                if logic == "and":
+                    condition_judges_set = set(condition_judges)
+                    if (len(condition_judges_set) == 1) and (True in condition_judges_set):
+                        add_entry_desc(start_time, end_time, session, df_entry, event)
+                        if problem != None:
+                            voucher = "{}-{}-{}".format(record['month'],record['vocher_type'],record['vocher_num'])
+                            add_audit_record(start_time, end_time, session, problem,voucher)
+                        return
+                elif logic == "or":
+                    if True in condition_judges:
+                        add_entry_desc(start_time, end_time, session, df_entry, event)
+                        if problem != None:
+                            voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
+                            add_audit_record(start_time, end_time, session, problem,voucher)
+                        return
+            add_entry_desc(start_time, end_time, session, df_entry, "非标准-{}借方{}-贷方{}".format(subject,debit_subject_desc,credit_subjects_desc))
+            voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
+            problem = "{}，记账凭证为非标准记账凭证".format(subject)
+            add_audit_record(start_time, end_time, session, problem,voucher)
 
 
 def get_subject_nature(obj,debit_subjects_list,credit_subjects_list,df_entry,grades):
@@ -748,19 +615,23 @@ def get_subject_nature(obj,debit_subjects_list,credit_subjects_list,df_entry,gra
                 return nature
     return ""
 
-
-def add_same_and_opposite_subjects(df_xsz,records,grades):
+def add_same_and_opposite_subjects_nature_transactionvolume(df_xsz,records,grades,start_time,end_time):
     '''
-    在序时账中添加对方科目和相同方科目
+    在序时账中添加对方科目/相同方科目/款项性质/交易金额（借方合计数）/合并借贷方名称/交易凭证发生次数合计
     :param df_xsz:序时账
     :param records:所有凭证记录
-    :return:序时账中添加same_subjects（相同方科目名称）和opposite_subjects（对方科目名称）
+    :return:
     '''
+
+    start_time = datetime.strptime(start_time, '%Y-%m-%d')
+    end_time = datetime.strptime(end_time, '%Y-%m-%d')
 
     df_xsz_new = df_xsz.copy().set_index(['month', 'vocher_type', 'vocher_num', 'subentry_num'])
     df_xsz_new["same_subjects"] = ""
     df_xsz_new["opposite_subjects"] = ""
-    df_xsz_new["nature"] = ""
+    df_xsz_new["entry_desc"] = ""
+    df_xsz_new["transaction_volume"] = 0.00
+    df_xsz_new["entry_classify_count"] = 0
 
     for record in records:
         df_tmp = df_xsz[(df_xsz["month"] == record["month"])
@@ -768,13 +639,27 @@ def add_same_and_opposite_subjects(df_xsz,records,grades):
                         & (df_xsz["vocher_type"] == record["vocher_type"])
                         ]
         subjects = get_entry_subjects(df_tmp, "tb_subject")
+        transaction_volume = df_tmp["debit"].sum()
         debit_subjects_list = subjects["debit"]
         credit_subjects_list = subjects["credit"]
+        # 合并科目名称
+        debit_subject_desc = "%".join(debit_subjects_list)
+        credit_subjects_desc = "%".join(credit_subjects_list)
+        entry_desc = debit_subject_desc + "@" + credit_subjects_desc
+        entry_classify = session.query(EntryClassify).filter(EntryClassify.start_time == start_time,
+                                            EntryClassify.end_time == end_time,
+                                            EntryClassify.desc == entry_desc,
+                                            ).one()
+        entry_classify_count = entry_classify.number
+
         df_entry_debit = df_tmp[df_tmp["direction"] == "借"]
         df_entry_credit = df_tmp[df_tmp["direction"] == "贷"]
         for obj in gen_df_line(df_entry_debit):
             df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'], obj['subentry_num']), 'same_subjects'] = json.dumps(debit_subjects_list,ensure_ascii=False)
             df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'], obj['subentry_num']), 'opposite_subjects'] = json.dumps(credit_subjects_list,ensure_ascii=False)
+            df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'], obj['subentry_num']), 'transaction_volume'] = transaction_volume
+            df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'], obj['subentry_num']), 'entry_desc'] = entry_desc
+            df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'], obj['subentry_num']), 'entry_classify_count'] = entry_classify_count
             if obj["tb_subject"] in ["其他应收款","其他应付款","应交税费"] :
                 nature = get_subject_nature(obj, debit_subjects_list, credit_subjects_list, df_tmp, grades)
                 df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'],
@@ -785,6 +670,12 @@ def add_same_and_opposite_subjects(df_xsz,records,grades):
             df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'],
                             obj['subentry_num']), 'opposite_subjects'] = json.dumps(debit_subjects_list,
                                                                                     ensure_ascii=False)
+            df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'],
+                            obj['subentry_num']), 'transaction_volume'] = transaction_volume
+            df_xsz_new.loc[
+                (obj['month'], obj['vocher_type'], obj['vocher_num'], obj['subentry_num']), 'entry_desc'] = entry_desc
+            df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'],
+                            obj['subentry_num']), 'entry_classify_count'] = entry_classify_count
             if obj["tb_subject"] in ["应付账款","预付款项","其他应收款","其他应付款","应交税费"] :
                 nature = get_subject_nature(obj, debit_subjects_list, credit_subjects_list, df_tmp, grades)
                 df_xsz_new.loc[(obj['month'], obj['vocher_type'], obj['vocher_num'],
@@ -792,27 +683,45 @@ def add_same_and_opposite_subjects(df_xsz,records,grades):
 
     return df_xsz_new.reset_index()
 
-def aduit_entry(company_name,start_time,end_time,session,engine,add_suggestion,subject_descs):
+def add_han_direction_to_xsz(df_xsz):
+    '''
+    向序时账中添加借贷方向“借”“贷”
+    :param df_xsz:
+    :return: df_xsz
+    '''
+    df_xsz["direction"] = df_xsz["debit"].apply(lambda x: "借" if abs(x) > 0 else "贷")
+    return df_xsz
+
+def get_df_one_entry(df_xsz,record):
+    '''
+    根据月度、凭证号、凭证类型搜索出该笔凭证
+    :param df_xsz:
+    :param record:
+    :return:
+    '''
+    df_tmp = df_xsz[(df_xsz["month"] == record["month"])
+                    & (df_xsz["vocher_num"] == record["vocher_num"])
+                    & (df_xsz["vocher_type"] == record["vocher_type"])
+                    ]
+    return df_tmp
+
+def aduit_entry(start_time,end_time,session,engine,add_suggestion):
     # 获取科目余额表和序时账
-    df_km, df_xsz = get_new_km_xsz_df(company_name, start_time, end_time, engine, add_suggestion, session)
+    df_km, df_xsz = get_new_km_xsz_df(start_time, end_time,"unAudited", engine, add_suggestion, session)
     # 获取科目级次
     df_km_gradation = df_km.drop_duplicates('subject_gradation', keep='first')
     grades = len(df_km_gradation)
-    # 合并序时账和标准科目对照表
-    df_std = pd.read_sql_table('subjectcontrast', engine)
-    df_std = df_std[["origin_subject","tb_subject"]]
-    df_xsz = pd.merge(df_xsz,df_std,how="left",left_on="subject_name_1",right_on="origin_subject")
-    df_xsz["tb_subject"].fillna(df_xsz["subject_name_1"],inplace=True)
-    df_xsz["direction"] = df_xsz["debit"].apply(lambda x: "借" if abs(x)>0 else "贷" )
-
-    # df_xsz["nature"] = df_xsz["auxiliary"].apply(get_supplier_nature, args=(df_xsz,))
-    # df_xsz["subject_name_nature"] = df_xsz["tb_subject"] + df_xsz["nature"]
     # 获取所有的凭证记录
     df_xsz_record = df_xsz[["month", "vocher_num", "vocher_type"]].drop_duplicates()
     records = df_xsz_record.to_dict('records')
-    # 添加相同方向会计科目和对方会计科目
-    df_xsz = add_same_and_opposite_subjects(df_xsz,records,grades)
-
+    # 向序时账中添加tb_subject
+    df_xsz = add_tb_subject_to_xsz(df_xsz,engine)
+    # 向序时账中添加借贷方向
+    df_xsz = add_han_direction_to_xsz(df_xsz)
+    # 首先给所有的供应商添加款项性质
+    df_xsz["nature"] = df_xsz["auxiliary"].apply(get_supplier_nature, args=(df_xsz,))
+    # 向序时账中添加相同方向会计科目和对方会计科目、款项性质、交易金额
+    df_xsz = add_same_and_opposite_subjects_nature_transactionvolume(df_xsz, records, grades,start_time,end_time)
     # 获取每一笔凭证
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
@@ -822,60 +731,41 @@ def aduit_entry(company_name,start_time,end_time,session,engine,add_suggestion,s
 
     for record in records:
         # 获取单笔凭证
-        # if record["month"] != 1 and record["vocher_num"]!=178:
-        #     continue
-        df_tmp = df_xsz[(df_xsz["month"] == record["month"])
-                        & (df_xsz["vocher_num"] == record["vocher_num"])
-                        & (df_xsz["vocher_type"] == record["vocher_type"])
-                        ]
+        df_tmp = get_df_one_entry(df_xsz,record)
         # 处理没有通过应付职工薪酬核算的职工薪酬
         if len(not_through_salary_entries) > 0:
             res = "{}-{}-{}".format(record["month"], record["vocher_type"], record["vocher_num"])
             if res in not_through_salary_entries:
                 for obj in gen_df_line(df_tmp):
-                    add_event(company_name, start_time, end_time, session, "职工薪酬-未通过应付职工薪酬核算",obj)
+                    add_event(start_time, end_time, session, "职工薪酬-未通过应付职工薪酬核算",obj)
+                session.commit()
                 continue
         # 处理其他凭证
         df_split_entries = split_entry(df_tmp)
         for df_split_entry in df_split_entries:
-            print(df_split_entry)
-            handle_entry(df_split_entry, record, subject_descs,grades,start_time, end_time, session)
+            handle_entry(df_split_entry, record, grades,start_time, end_time, session)
 
 
-def get_entry_subjects(df_one_entry,subject_name_grade):
-    '''
-    获取凭证的借贷方科目
-    :param df_one_entry: 一笔凭证
-    :return: 借方科目列表和贷方科目列表组成的字典{"debit":debit_subjects_list,"credit":credit_subjects_list}
-    '''
-    debit_subjects = set()
-    credit_subjects = set()
-    # 获取凭证的借贷方
-    for obj in gen_df_line(df_one_entry):
-        if obj["debit"] > 1e-5:
-            debit_subjects.add(obj[subject_name_grade])
-        else:
-            credit_subjects.add((obj[subject_name_grade]))
 
-    debit_subjects_list = list(debit_subjects)
-    credit_subjects_list = list(credit_subjects)
-    debit_subjects_list.sort()
-    credit_subjects_list.sort()
 
-    return {"debit":debit_subjects_list,"credit":credit_subjects_list}
+
+
 
 
 
 
 if __name__ == '__main__':
-    from src.utils import add_suggestion
-    session, engine = get_session_and_engine()
-    company_name = "深圳市众恒世讯科技股份有限公司"
+    # db_path = sys.argv[1]
+    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    from utils import add_suggestion
     start_time = "2016-1-1"
     end_time = "2016-12-31"
     # df_km, df_xsz = get_new_km_xsz_df(company_name, start_time, end_time, engine, add_suggestion, session)
     # df_xsz_new = df_xsz[(df_xsz["month"]==1) & (df_xsz["vocher_num"]==178)]
     # res = split_entry(df_xsz_new)
     # print(res)
-    aduit_entry(company_name, start_time, end_time, session, engine, add_suggestion,subject_descs)
+    aduit_entry(start_time, end_time, session, engine, add_suggestion)
     # cash_flow(company_name, start_time, end_time, session, engine, add_suggestion)

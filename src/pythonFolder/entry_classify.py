@@ -11,6 +11,17 @@ from database import EntryClassify
 from get_tb  import get_new_km_xsz_df
 from utils import gen_df_line
 
+def add_tb_subject_to_xsz(df_xsz,engine):
+    '''
+    在序时账中添加tb_subject,tb中的科目名称
+    :param df_xsz:
+    :return:
+    '''
+    df_std = pd.read_sql_table('subjectcontrast', engine)
+    df_std = df_std[["origin_subject", "tb_subject"]]
+    df_xsz = pd.merge(df_xsz, df_std, how="left", left_on="subject_name_1", right_on="origin_subject")
+    df_xsz["tb_subject"].fillna(df_xsz["subject_name_1"], inplace=True)
+    return df_xsz
 
 def get_entry_subjects(df_one_entry,subject_name_grade):
     '''
@@ -22,7 +33,7 @@ def get_entry_subjects(df_one_entry,subject_name_grade):
     credit_subjects = set()
     # 获取凭证的借贷方
     for obj in gen_df_line(df_one_entry):
-        if obj["debit"] > 1e-5:
+        if abs(obj["debit"]) > 1e-5:
             debit_subjects.add(obj[subject_name_grade])
         else:
             credit_subjects.add((obj[subject_name_grade]))
@@ -48,6 +59,7 @@ def output_entryclassify(engine,start_time,end_time):
 def compute(start_time,end_time,session,engine,add_suggestion):
     # 获取科目余额表和序时账
     df_km, df_xsz = get_new_km_xsz_df(start_time, end_time,"unAudited", engine, add_suggestion, session)
+    df_xsz = add_tb_subject_to_xsz(df_xsz,engine)
     # 获取所有的凭证记录
     df_xsz_record = df_xsz[["month", "vocher_num", "vocher_type"]].drop_duplicates()
     records = df_xsz_record.to_dict('records')
@@ -62,7 +74,7 @@ def compute(start_time,end_time,session,engine,add_suggestion):
                         ]
         value = df_tmp["debit"].sum()
         # 获取凭证的借方和贷方一级科目名称
-        subjects = get_entry_subjects(df_tmp, "subject_name_1")
+        subjects = get_entry_subjects(df_tmp, "tb_subject")
         debit_subjects_list = subjects["debit"]
         credit_subjects_list = subjects["credit"]
         # 合并科目名称
@@ -113,21 +125,20 @@ def analyse_entry(start_time,end_time,session,engine,add_suggestion,recompute):
 
 
 if __name__ == '__main__':
-    db_path = sys.argv[1]
-    start_time = sys.argv[2]
-    end_time = sys.argv[3]
-    recompute=sys.argv[4]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # db_path = sys.argv[1]
+    # start_time = sys.argv[2]
+    # end_time = sys.argv[3]
+    # recompute=sys.argv[4]
+    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     from utils import add_suggestion
 
     # companyname = "深圳市众恒世讯科技股份有限公司"
-    # start_time = "2016-1-1"
-    # end_time = "2016-12-31"
-    # recompute="no"
-    # recalculation(start_time,end_time,type,engine,add_suggestion,session)
+    start_time = "2016-1-1"
+    end_time = "2016-12-31"
+    recompute="yes"
 
     analyse_entry(start_time,end_time,session,engine,add_suggestion,recompute)
 

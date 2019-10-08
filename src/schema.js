@@ -23,6 +23,7 @@ const typeDefs = gql`
     getChangeReasons(projectId:String!,statement:String!,audit:String!):String!
     getEntryClassify(projectId:String!,recompute:String!):String!
     getChronologicalAccountByEntryNums(projectId:String!,record:String!):String!
+    getCheckEntry(projectId:String!,ratio:Float,num:Int,integerNum:Int,recompute:String!):String!
   }
 
   type Mutation {
@@ -44,6 +45,7 @@ const typeDefs = gql`
     addSubject(projectId:String!,record:String!):Boolean!
     addAuxiliary(projectId:String!,record:String!):Boolean!
     addChangeReason(projectId:String!,record:String!):Boolean!
+    
   }
 
   input UploadTypeInput{

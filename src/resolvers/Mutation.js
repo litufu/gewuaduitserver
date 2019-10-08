@@ -6,7 +6,7 @@ const mkdirp = require('mkdirp')
 const path = require('path')
 const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
-const { APP_SECRET, getUserId,storeFS,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,delDir } = require('../utils')
+const { APP_SECRET, getUserId,storeFS,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,companyNature } = require('../utils')
 const emailGenerator = require('../emailGenerator');
 
 mkdirp.sync(UPLOAD_DIR)
@@ -295,6 +295,7 @@ const Mutation = {
     if(!company){
       throw new Error("公司名称不正确")
     }
+    const companyType = companyNature[company.nature]
 
     const db_name = `${accountingFirm.id}-${company.id}.sqlite`
     const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
@@ -317,7 +318,7 @@ const Mutation = {
     //  读取文件并存储到数据库
       const importDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/import_data.py') 
       const uploadType = upload.type
-      const importDataProcess = spawn('python',[importDataPath, dbPath,startTimeStr,endTimeStr,storeFilePath,uploadType]); 
+      const importDataProcess = spawn('python',[importDataPath, dbPath,startTimeStr,endTimeStr,storeFilePath,uploadType,companyType]); 
       importDataProcess.stdout.on('data', async (data) => {
           console.log(data)
       })

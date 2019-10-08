@@ -222,6 +222,11 @@ class TransactionEvent(Base):
     auxiliary = Column(String)
     tb_subject = Column(String)
     direction = Column(String)
+    entry_desc = Column(String)
+    transaction_volume =  Column(Float(20, 2))
+    entry_classify_count = Column(Integer)
+    is_check = Column(Boolean)
+    check_reason = Column(String)
 
 # 审计过程问题记录
 class AuditRecord(Base):
@@ -230,6 +235,7 @@ class AuditRecord(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     problem = Column(String)
+    voucher = Column(String)
     handle = Column(String)
 
 # 增值税销项税底稿

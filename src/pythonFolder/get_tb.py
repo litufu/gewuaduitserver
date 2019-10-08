@@ -1089,6 +1089,7 @@ if __name__ == '__main__':
     # start_time = "2015-1-1"
     # end_time = "2015-12-31"
     # type="audited"
+    # get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session)
     # recalculation(start_time,end_time,type,engine,add_suggestion,session)
 
 

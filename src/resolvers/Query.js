@@ -291,6 +291,23 @@ const Query = {
     const res = getChronologicalAccountByEntryNumsProcess.stdout.toString() 
     return res
   },
+  getCheckEntry:async(parent,{projectId,ratio,num,integerNum,recompute},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const companyType = companyNature[company.nature]
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const checkEntryPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_entry.py') 
+    const checkEntryProcess = spawnSync('python',[checkEntryPath, dbPath,startTimeStr,endTimeStr,ratio,num,integerNum,recompute,companyType]);
+    const res = checkEntryProcess.stdout.toString() 
+    return res
+  }
 }
 
 module.exports = {

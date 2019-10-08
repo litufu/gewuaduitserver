@@ -80,8 +80,7 @@ def get_session_and_engine():
     session = DBSession()
     return session,engine
 
-def add_suggestion(kind,content,start_time,end_time):
-    session,_ = get_session_and_engine()
+def add_suggestion(kind,content,start_time,end_time,session):
     suggestions = session.query(Suggestion).filter(
                                                    Suggestion.start_time==start_time,
                                                    Suggestion.end_time == end_time,

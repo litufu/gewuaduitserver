@@ -9,9 +9,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import math
 from database import Auxiliary, SubjectBalance, ChronologicalAccount
-from utils import str_to_float,check_start_end_date,get_session_and_engine
-from init_data import add_fs_subject,add_first_class_subject
-
+from utils import str_to_float,check_start_end_date
+from supplier_natrue import add_supplier_nature
+from entry_classify import analyse_entry
+from entry_test import aduit_entry
+from check_entry import check_entry
+from importance import get_actual_importance_level
 
 
 def save_km(start_time, end_time, km_path,session):
@@ -95,7 +98,7 @@ def save_km(start_time, end_time, km_path,session):
         km = SubjectBalance(start_time=start_time,
                             end_time=end_time,
                             subject_num=subject_num, subject_name=subject_name, subject_type=subject_type,
-                            direction=direction, is_specific=is_specific, subject_gradation=subject_gradation,
+                            direction=direction, is_specific=is_specific, subject_gradation=int(subject_gradation),
                             initial_amount=initial_amount, debit_amount=debit_amount, credit_amount=credit_amount,
                             terminal_amount=terminal_amount
                             )
@@ -206,8 +209,8 @@ def save_xsz(start_time, end_time, xsz_path,session):
         currency_type = currency_type if currency_type else "人民币"
         auxiliary = df.iat[i, 18]
         auxiliary = auxiliary if auxiliary else ""
-        chronologicalaccount = ChronologicalAccount(year=year,
-                                                    month=month, record_time=record_time, vocher_type=vocher_type,
+        chronologicalaccount = ChronologicalAccount(year=int(year),
+                                                    month=int(month), record_time=record_time, vocher_type=vocher_type,
                                                     vocher_num=vocher_num, subentry_num=subentry_num,
                                                     description=description, subject_num=subject_num,
                                                     subject_name=subject_name, currency_type=currency_type, debit=debit,
@@ -367,11 +370,26 @@ if __name__ == '__main__':
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    path=sys.argv[4]
+    type=sys.argv[5]
+    company_type = sys.argv[6]
+    from utils import add_suggestion
 
     # start_time = "2015-1-1"
     # end_time = "2015-12-31"
     # path=r"C:\Users\litufu\Desktop\zhsx\pz.xlsx"
     # type="CHRONOLOGICALACCOUNT"
     # save_to_db(session,start_time,end_time,path,type)
-    save_to_db(session,sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
+    save_to_db(session,start_time,end_time,path,type)
+    # 向辅助核算中添加供应商款项性质
+    add_supplier_nature(start_time, end_time, session, engine)
+    # 分析凭证分类
+    analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
+    # 凭证测试
+    aduit_entry(start_time, end_time, session, engine, add_suggestion)
+    # 抽查凭证
+    actual_importance_level = get_actual_importance_level(company_type,start_time,end_time,engine,session,add_suggestion)
+    check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
     print("success")
