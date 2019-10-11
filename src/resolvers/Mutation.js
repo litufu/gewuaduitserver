@@ -6,10 +6,11 @@ const mkdirp = require('mkdirp')
 const path = require('path')
 const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
-const { APP_SECRET, getUserId,storeFS,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,companyNature } = require('../utils')
+const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,companyNature } = require('../utils')
 const emailGenerator = require('../emailGenerator');
 
 mkdirp.sync(UPLOAD_DIR)
+mkdirp.sync(DB_DIR)
 
 const Mutation = {
   signup: async (parent, { name, email, password }, ctx) => {

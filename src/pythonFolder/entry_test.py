@@ -283,7 +283,7 @@ def aduit_recognition_income(start_time,end_time,df_one_entry,record,session):
     session.add(output_tax)
     session.commit()
 
-def get_not_through_salary_entry(df_xsz,grades,start_time,end_time):
+def get_not_through_salary_entry(df_xsz,grades,start_time,end_time,add_suggestion,session):
     # 获取未通过职工薪酬核算的凭证
     # 获取职工薪酬类科目
     # 有些企业直接支付职工薪酬，未通过职工薪酬核算
@@ -615,7 +615,7 @@ def get_subject_nature(obj,debit_subjects_list,credit_subjects_list,df_entry,gra
                 return nature
     return ""
 
-def add_same_and_opposite_subjects_nature_transactionvolume(df_xsz,records,grades,start_time,end_time):
+def add_same_and_opposite_subjects_nature_transactionvolume(session,df_xsz,records,grades,start_time,end_time):
     '''
     在序时账中添加对方科目/相同方科目/款项性质/交易金额（借方合计数）/合并借贷方名称/交易凭证发生次数合计
     :param df_xsz:序时账
@@ -705,7 +705,18 @@ def get_df_one_entry(df_xsz,record):
                     ]
     return df_tmp
 
+def check_is_exist(start_time,end_time,session):
+    start_time = datetime.strptime(start_time, '%Y-%m-%d')
+    end_time = datetime.strptime(end_time, '%Y-%m-%d')
+    events = session.query(TransactionEvent).filter(TransactionEvent.start_time ==start_time,TransactionEvent.end_time==end_time)
+    if len(events)>0:
+        for event in events:
+            session.delete(event)
+            session.commit()
+
 def aduit_entry(start_time,end_time,session,engine,add_suggestion):
+    # 检查是否已经分析过了
+    check_is_exist(start_time, end_time, session)
     # 获取科目余额表和序时账
     df_km, df_xsz = get_new_km_xsz_df(start_time, end_time,"unAudited", engine, add_suggestion, session)
     # 获取科目级次
@@ -721,13 +732,13 @@ def aduit_entry(start_time,end_time,session,engine,add_suggestion):
     # 首先给所有的供应商添加款项性质
     df_xsz["nature"] = df_xsz["auxiliary"].apply(get_supplier_nature, args=(df_xsz,))
     # 向序时账中添加相同方向会计科目和对方会计科目、款项性质、交易金额
-    df_xsz = add_same_and_opposite_subjects_nature_transactionvolume(df_xsz, records, grades,start_time,end_time)
+    df_xsz = add_same_and_opposite_subjects_nature_transactionvolume(session,df_xsz, records, grades,start_time,end_time)
     # 获取每一笔凭证
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
 
     # 获取可能未通过应付职工薪酬核算的职工薪酬项目
-    not_through_salary_entries = get_not_through_salary_entry(df_xsz,grades,start_time,end_time)
+    not_through_salary_entries = get_not_through_salary_entry(df_xsz,grades,start_time,end_time,add_suggestion,session)
 
     for record in records:
         # 获取单笔凭证

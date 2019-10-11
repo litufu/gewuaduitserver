@@ -5,7 +5,7 @@ import sys
 import pandas as pd
 from datetime import datetime
 from decimal import Decimal
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,and_
 from sqlalchemy.orm import sessionmaker
 import math
 from database import Auxiliary, SubjectBalance, ChronologicalAccount
@@ -159,18 +159,14 @@ def save_xsz(start_time, end_time, xsz_path,session):
              ]]
 
     # 检查是否已经存储序时账,存储则删除
-    min_month = df.loc[:,'month'].min()
-    max_month = df.loc[:,'month'].max()
-    min_year = df.loc[:,'year'].min()
-    max_year = df.loc[:,'year'].max()
+    min_month = int(df.loc[:,'month'].min())
+    max_month = int(df.loc[:,'month'].max())
+    min_year = int(df.loc[:,'year'].min())
+    max_year = int(df.loc[:,'year'].max())
     if ( min_year!= start_time.year) or (max_year != end_time.year) or  (max_month != end_time.month) :
         raise Exception("序时账实际期间与上传的数据期间不一致")
 
-    xszs = session.query(ChronologicalAccount).filter(
-                                                      ChronologicalAccount.year == start_time.year,
-        ChronologicalAccount.month >= min_month,
-        ChronologicalAccount.month <= max_month).all()
-
+    xszs = session.query(ChronologicalAccount).filter(ChronologicalAccount.year == start_time.year,ChronologicalAccount.month>=min_month,ChronologicalAccount.month<=max_month).all()
     if len(xszs) > 0:
         for xsz in xszs:
             session.delete(xsz)
@@ -275,7 +271,6 @@ def save_hs(start_time, end_time, hs_path,session):
         choice = "yes"
         # choice = input('已经存在科目余额表，是否要替换')
         if choice == "yes":
-            print('开始删除')
             for h in hs:
                 session.delete(h)
             session.commit()
@@ -365,23 +360,23 @@ def save_to_db(session,start_time,end_time,path,type):
 
 
 if __name__ == '__main__':
-    db_path = sys.argv[1]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # db_path = sys.argv[1]
+    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    start_time = sys.argv[2]
-    end_time = sys.argv[3]
-    path=sys.argv[4]
-    type=sys.argv[5]
-    company_type = sys.argv[6]
+    # start_time = sys.argv[2]
+    # end_time = sys.argv[3]
+    # path=sys.argv[4]
+    # type=sys.argv[5]
+    # company_type = sys.argv[6]
     from utils import add_suggestion
 
-    # start_time = "2015-1-1"
-    # end_time = "2015-12-31"
-    # path=r"C:\Users\litufu\Desktop\zhsx\pz.xlsx"
-    # type="CHRONOLOGICALACCOUNT"
-    # save_to_db(session,start_time,end_time,path,type)
+    start_time = "2016-1-1"
+    end_time = "2016-12-31"
+    path=r"C:\Users\litufu\Desktop\zhsx\pz.xlsx"
+    type="CHRONOLOGICALACCOUNT"
+    company_type = "其他企业"
     save_to_db(session,start_time,end_time,path,type)
     # 向辅助核算中添加供应商款项性质
     add_supplier_nature(start_time, end_time, session, engine)

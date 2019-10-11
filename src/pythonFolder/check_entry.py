@@ -208,7 +208,7 @@ def check_last_two_num_after_dot(x):
     '''
     return str(Decimal.from_float(x).quantize(Decimal('0.0000')))[-4:] == "0000"
 
-def output_check_entry(start_time,end_time):
+def output_check_entry(start_time,end_time,engine):
     year = start_time.year
     start_month = start_time.month
     end_month = end_time.month
@@ -236,16 +236,16 @@ def check_entry(start_time,end_time,actual_importance_level,ratio,num,integer_nu
             get_none_frequent_event(session,df_xsz,actual_importance_level,ratio,num)
             not_pass_payable_account(session, df_xsz, actual_importance_level, ratio)
             integer_bussiness(session, df_xsz, actual_importance_level, ratio, integer_num)
-            output_check_entry(start_time,end_time)
+            output_check_entry(start_time,end_time,engine)
         else:
-            output_check_entry(start_time, end_time)
+            output_check_entry(start_time, end_time,engine)
     else:
         clean_check(session, df_xsz)
         deduction_events(session, df_xsz)
         get_none_frequent_event(session, df_xsz, actual_importance_level, ratio, num)
         not_pass_payable_account(session, df_xsz, actual_importance_level, ratio)
         integer_bussiness(session, df_xsz, actual_importance_level, ratio, integer_num)
-        output_check_entry(start_time, end_time)
+        output_check_entry(start_time, end_time,engine)
 
 
 

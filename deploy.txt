@@ -1,0 +1,35 @@
+服务器端
+1、启动docker数据库服务
+docker-compose up -d
+2、修改prisma.yml
+将endpoint改为：localhost:4466
+3、根据datamodel.prisma修改数据库结构
+prisma deploy
+4、安装包
+npm install
+5、开启apollo server服务器
+pm2 start src/index.js
+6、在安全组规则中打开对应的服务器端口
+7、初始化数据
+npm run initData
+8、下载anacod并安装
+bash Anaconda3-2019.07-Linux-x86_64.sh
+9、设置环境变量
+sudo vim /etc/profile
+export PATH=/home/install/anaconda3/bin:$PATH
+source /etc/profile
+10、安装所需包
+conda install 
+11、pm2 中不能执行child_process.spawn
+因此只能使用node执行
+
+前段：
+1、复制
+git clone git@github.com:litufu/gewuaduitfront.git
+2、安装
+yarn install
+3、修改服务器地址
+4、导出
+npm run build
+5、将build文件夹放到node_server中
+cp -r /home/gewuaduitfront/build /home/node_server
