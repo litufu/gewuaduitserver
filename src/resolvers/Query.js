@@ -307,7 +307,41 @@ const Query = {
     const checkEntryProcess = spawnSync('python',[checkEntryPath, dbPath,startTimeStr,endTimeStr,ratio,num,integerNum,recompute,companyType]);
     const res = checkEntryProcess.stdout.toString() 
     return res
-  }
+  },
+  getSupplierAnalysis:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const companyType = companyNature[company.nature]
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const supplierPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/supplier.py') 
+    const supplierProcess = spawnSync('python',[supplierPath, dbPath,startTimeStr,endTimeStr]);
+    const res = supplierProcess.stdout.toString() 
+    return res
+  },
+  getCustomerAnalysis:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const companyType = companyNature[company.nature]
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const customerPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/customer.py') 
+    const customerProcess = spawnSync('python',[customerPath, dbPath,startTimeStr,endTimeStr]);
+    const res = customerProcess.stdout.toString() 
+    return res
+  },
 }
 
 module.exports = {

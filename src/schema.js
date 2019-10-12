@@ -24,6 +24,8 @@ const typeDefs = gql`
     getEntryClassify(projectId:String!,recompute:String!):String!
     getChronologicalAccountByEntryNums(projectId:String!,record:String!):String!
     getCheckEntry(projectId:String!,ratio:Float,num:Int,integerNum:Int,recompute:String!):String!
+    getSupplierAnalysis(projectId:String!):String!
+    getCustomerAnalysis(projectId:String!):String!
   }
 
   type Mutation {

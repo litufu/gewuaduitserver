@@ -15,6 +15,8 @@ from entry_classify import analyse_entry
 from entry_test import aduit_entry
 from check_entry import check_entry
 from importance import get_actual_importance_level
+from supplier import save_supplier_to_db
+from customer import save_customer_to_db
 
 
 def save_km(start_time, end_time, km_path,session):
@@ -365,18 +367,18 @@ if __name__ == '__main__':
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    # start_time = sys.argv[2]
-    # end_time = sys.argv[3]
-    # path=sys.argv[4]
-    # type=sys.argv[5]
-    # company_type = sys.argv[6]
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    path=sys.argv[4]
+    type=sys.argv[5]
+    company_type = sys.argv[6]
     from utils import add_suggestion
 
-    start_time = "2016-1-1"
-    end_time = "2016-12-31"
-    path=r"C:\Users\litufu\Desktop\zhsx\pz.xlsx"
-    type="CHRONOLOGICALACCOUNT"
-    company_type = "其他企业"
+    # start_time = "2016-1-1"
+    # end_time = "2016-12-31"
+    # path=r"C:\Users\litufu\Desktop\zhsx\pz.xlsx"
+    # type="CHRONOLOGICALACCOUNT"
+    # company_type = "其他企业"
     save_to_db(session,start_time,end_time,path,type)
     # 向辅助核算中添加供应商款项性质
     add_supplier_nature(start_time, end_time, session, engine)
@@ -387,4 +389,8 @@ if __name__ == '__main__':
     # 抽查凭证
     actual_importance_level = get_actual_importance_level(company_type,start_time,end_time,engine,session,add_suggestion)
     check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
+    # 供应商分析
+    save_supplier_to_db(session, start_time, end_time)
+    # 客户分析
+    save_customer_to_db(session, start_time, end_time)
     print("success")

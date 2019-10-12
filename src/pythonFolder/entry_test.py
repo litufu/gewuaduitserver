@@ -708,7 +708,7 @@ def get_df_one_entry(df_xsz,record):
 def check_is_exist(start_time,end_time,session):
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
-    events = session.query(TransactionEvent).filter(TransactionEvent.start_time ==start_time,TransactionEvent.end_time==end_time)
+    events = session.query(TransactionEvent).filter(TransactionEvent.start_time ==start_time,TransactionEvent.end_time==end_time).all()
     if len(events)>0:
         for event in events:
             session.delete(event)

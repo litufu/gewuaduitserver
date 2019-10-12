@@ -228,6 +228,46 @@ class TransactionEvent(Base):
     is_check = Column(Boolean)
     check_reason = Column(String)
 
+class SupplierAnalysis(Base):
+    __tablename__ = 'supplieranalysis'
+    id = Column(Integer, primary_key=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    name = Column(String)
+    purchase_amount = Column(Float(20,2))
+    payment_amount = Column(Float(20,2))
+    purchase_times = Column(Integer)
+    payment_times = Column(Integer)
+    purchase_method = Column(String)
+    purchase_amount_per_month = Column(Float(20,2))
+    payment_amount_per_month = Column(Float(20,2))
+    consumption_per_month_average = Column(Float(20,2))
+    consumption_per_month_var = Column(Float(20,2))
+    payment_term_average = Column(Float(20,2))
+    payment_term_var = Column(Float(20,2))
+    payment_balance_average = Column(Float(20,2))
+    payment_balance_var = Column(Float(20,2))
+
+class CustomerAnalysis(Base):
+    __tablename__ = 'customeranalysis'
+    id = Column(Integer, primary_key=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    name = Column(String)
+    sale_amount = Column(Float(20,2))
+    receivable_amount = Column(Float(20,2))
+    sale_times = Column(Integer)
+    receivable_times = Column(Integer)
+    receivable_method = Column(String)
+    sale_amount_per_month = Column(Float(20,2))
+    receivable_amount_per_month = Column(Float(20,2))
+    customer_consumption_per_month_average = Column(Float(20,2))
+    customer_consumption_per_month_var = Column(Float(20,2))
+    receivable_term_average = Column(Float(20,2))
+    receivable_term_var = Column(Float(20,2))
+    receivable_balance_average = Column(Float(20,2))
+    receivable_balance_var = Column(Float(20,2))
+
 # 审计过程问题记录
 class AuditRecord(Base):
     __tablename__ = 'auditrecord'
@@ -256,8 +296,8 @@ class OutputTax(Base):
 
       
 if __name__ == "__main__":
-    db_path = sys.argv[1]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # db_path = sys.argv[1]
+    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     Base.metadata.create_all(engine)
     print("success")
