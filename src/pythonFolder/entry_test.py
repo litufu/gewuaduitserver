@@ -425,6 +425,8 @@ def check_subject_and_desc_contains(df_one_entry,strs,grades):
             subject_name = "subject_name_{}".format(grade+1)
             containers.append(obj[subject_name])
         for container in containers:
+            if container == None:
+                continue
             for str in strs:
                 if str in container:
                     return True
@@ -627,6 +629,7 @@ def add_same_and_opposite_subjects_nature_transactionvolume(session,df_xsz,recor
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
 
     df_xsz_new = df_xsz.copy().set_index(['month', 'vocher_type', 'vocher_num', 'subentry_num'])
+    df_xsz_new = df_xsz_new.sort_index()
     df_xsz_new["same_subjects"] = ""
     df_xsz_new["opposite_subjects"] = ""
     df_xsz_new["entry_desc"] = ""
@@ -712,7 +715,7 @@ def check_is_exist(start_time,end_time,session):
     if len(events)>0:
         for event in events:
             session.delete(event)
-            session.commit()
+        session.commit()
 
 def aduit_entry(start_time,end_time,session,engine,add_suggestion):
     # 检查是否已经分析过了
@@ -755,11 +758,6 @@ def aduit_entry(start_time,end_time,session,engine,add_suggestion):
         df_split_entries = split_entry(df_tmp)
         for df_split_entry in df_split_entries:
             handle_entry(df_split_entry, record, grades,start_time, end_time, session)
-
-
-
-
-
 
 
 

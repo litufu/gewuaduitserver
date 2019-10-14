@@ -241,7 +241,7 @@ def append_all_gradation_subjects(df_km, df_xsz):
         df_xsz = df_xsz.drop(columns=['std_subject_num'])
     return df_xsz
 
-def check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
+def check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion,start_time,end_time,session):
     '''
     检查序时账中的损益科目是否核算方向正确，不正确的调整方向
     :param df_km: 科目余额表
@@ -317,6 +317,7 @@ def check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion,start_ti
                                        obj['year'], obj['month'], obj['vocher_type'], obj['vocher_num']),
                                    start_time=start_time,
                                    end_time=end_time,
+                                   session=session
                                    )
                 elif obj['direction'] == "贷" and abs(obj['debit']) > 1e-5:
                     # 借贷方金额互换
@@ -341,6 +342,7 @@ def check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion,start_ti
                                        obj['year'], obj['month'], obj['vocher_type'], obj['vocher_num']),
                                    start_time=start_time,
                                    end_time=end_time,
+                                   session=session
                                    )
     df_xsz_new = df_xsz_new.reset_index()
     return df_xsz_new
@@ -432,31 +434,14 @@ def recaculate_km(df_km, df_xsz,type):
     df_km_new = df_km_new.reset_index()
     return df_km_new
 
-def get_bad_debt_value_and_origin(start_time, end_time, df_one_line):
-    location = {"subject_num": df_one_line["subject_num"].values[0],
-                "subject_name": df_one_line["subject_name"].values[0]}
+def get_bad_debt_value_and_origin(df_one_line):
     if df_one_line["direction"].values[0] == "借":
         # 获取应收账款坏账准备金额
         value = -df_one_line["terminal_amount"].values[0]
-        # 获取应收账款坏账准备来源
-        if math.isclose(value,0.00,rel_tol=1e-5):
-            origin = json.dumps([])
-        else:
-            data_origin = get_origin(start_time, end_time, "km", "-", location, "terminal_amount")
-            data_origins = [data_origin]
-            origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
     else:
         # 获取应收账款坏账准备金额
         value = df_one_line["terminal_amount"].values[0]
-        # 获取应收账款坏账准备来源
-        if math.isclose(value,0.00,rel_tol=1e-5):
-            origin = json.dumps([])
-        else:
-            data_origin = get_origin(start_time, end_time,  "km", "+", location, "terminal_amount")
-            data_origins = [data_origin]
-            origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
-
-    return value,origin
+    return value,""
 
 def get_bad_debt(df_km, add_suggestion,start_time,end_time):
     '''
@@ -484,19 +469,17 @@ def get_bad_debt(df_km, add_suggestion,start_time,end_time):
             # 其他应收款坏账准备
             df_km_bad_debt_or = df_km_bad_debt[df_km_bad_debt["subject_name"].str.contains("其他应收")]
             if len(df_km_bad_debt_ar) == 1:
-                value,origin = get_bad_debt_value_and_origin(start_time,end_time,df_km_bad_debt_ar)
+                value,origin = get_bad_debt_value_and_origin(df_km_bad_debt_ar)
                 bad_debt_ar["value"] = value
                 bad_debt_ar["origin"] = origin
-
             if len(df_km_bad_debt_or) == 1:
-                value, origin = get_bad_debt_value_and_origin(start_time, end_time, df_km_bad_debt_or)
+                value, origin = get_bad_debt_value_and_origin(df_km_bad_debt_or)
                 bad_debt_or["value"] = value
                 bad_debt_or["origin"] = origin
-
             if bad_debt_ar["value"] + bad_debt_or["value"] == bad_debt:
                 return bad_debt_ar, bad_debt_or
             else:
-                value, origin = get_bad_debt_value_and_origin(start_time, end_time,bad_debt_df)
+                value, origin = get_bad_debt_value_and_origin(bad_debt_df)
                 bad_debt_ar["value"] = value
                 bad_debt_ar["origin"] = origin
                 return bad_debt_ar, bad_debt_or
@@ -507,32 +490,17 @@ def get_bad_debt(df_km, add_suggestion,start_time,end_time):
                 start_time=start_time,
                 end_time=end_time,
             )
-            value, origin = get_bad_debt_value_and_origin(start_time, end_time,  bad_debt_df)
+            value, origin = get_bad_debt_value_and_origin(bad_debt_df)
             bad_debt_ar["value"] = value
             bad_debt_ar["origin"] = origin
             return bad_debt_ar, bad_debt_or
 
-def get_df_km_occurrence_value_and_origin(start_time, end_time, df_one_line,direction):
-    location = {"subject_num": df_one_line["subject_num"].values[0],
-                "subject_name": df_one_line["subject_name"].values[0]}
+def get_df_km_occurrence_value_and_origin(df_one_line,direction):
     if direction == "借":
         value = df_one_line["debit_amount"].values[0]
-        if math.isclose(value,0.00,rel_tol=1e-5):
-            origin = json.dumps([])
-        else:
-            data_origin = get_origin(start_time, end_time, "km", "+", location, "debit_amount")
-            data_origins = [data_origin]
-            origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
     else:
         value = df_one_line["credit_amount"].values[0]
-        # 获取应收账款坏账准备来源
-        if math.isclose(value,0.00,rel_tol=1e-5):
-            origin = json.dumps([])
-        else:
-            data_origin = get_origin(start_time, end_time, "km", "+", location, "credit_amount")
-            data_origins = [data_origin]
-            origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
-    return value,origin
+    return value,""
 
 def get_reserve_fund_provision(df_km, add_suggestion,start_time,end_time):
     '''
@@ -585,7 +553,7 @@ def get_reserve_fund_provision(df_km, add_suggestion,start_time,end_time):
         # 通过利润分配确认盈余公积明细表
         df_profit_distribution_detail = get_detail_subject_df("利润分配", df_km)
         if len(df_profit_distribution_detail) == 0:
-            value,origin = get_df_km_occurrence_value_and_origin(start_time,end_time,df_reserve_fund,"贷")
+            value,origin = get_df_km_occurrence_value_and_origin(df_reserve_fund,"贷")
             legal_reserve["value"] = value
             legal_reserve["origin"] = origin
             return legal_reserve, discretionary_surplus_reserve, legal_public_welfare_fund, reserve_fund, enterprise_development_fund, profit_return_investment
@@ -593,49 +561,20 @@ def get_reserve_fund_provision(df_km, add_suggestion,start_time,end_time):
             for obj in gen_df_line(df_profit_distribution_detail):
                 # 获取数据源
                 value = obj["debit_amount"]
-                if math.isclose(value,0.00,rel_tol=1e-5):
-                    origin = json.dumps([])
-                else:
-                    location = {"subject_num":obj["subject_num"],"subject_name":obj["subject_name"]}
-                    data_origin = get_origin(start_time, end_time, "km", "+", location, "debit_amount")
-                    data_origins = [data_origin]
-                    origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
                 for name in match_table:
                     if name in obj["subject_name"]:
-                        match_table[name]["origin"] = origin
+                        match_table[name]["origin"] = ""
                         match_table[name]["value"] = value
     else:
         for obj in gen_df_line(df_reserve_fund_detail):
             value = obj["credit_amount"]
-            if math.isclose(value, 0.00, rel_tol=1e-5):
-                origin = json.dumps([])
-            else:
-                location = {"subject_num": obj["subject_num"], "subject_name": obj["subject_name"]}
-                data_origin = get_origin(start_time, end_time,  "km", "+", location, "credit_amount")
-                data_origins = [data_origin]
-                origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
             for name in match_table:
                 if name in obj["subject_name"]:
-                    match_table[name]["origin"] = origin
+                    match_table[name]["origin"] = ""
                     match_table[name]["value"] = value
     return legal_reserve, discretionary_surplus_reserve, legal_public_welfare_fund, reserve_fund, enterprise_development_fund, profit_return_investment
 
-def get_profit_distribution_xsz_origin(start_time, end_time,df):
-    data_origins = []
-    for obj in gen_df_line(df):
-        location = {"month": obj["month"],
-                    "vocher_type": obj["vocher_type"],
-                    "vocher_num": obj["vocher_num"],
-                    "subentry_num": obj["subentry_num"]
-                    }
-        data_origin_1 = get_origin(start_time, end_time,"xsz", "+", location, "debit")
-        data_origin_2 = get_origin(start_time, end_time, "xsz", "-", location, "credit")
-        data_origins.append(data_origin_1)
-        data_origins.append(data_origin_2)
-    origin = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
-    return origin
-
-def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
+def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,session):
     '''
     分析利润分配科目
     :param df_km:
@@ -663,6 +602,7 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
                        content="利润分配账户下应当分别设“提取法定盈余公积”“提取任意盈余公积”“应付现金股利(或利润)”“转作股本的股利”“盈余公积补亏”和“未分配利润”等进行明细核算",
                        start_time=start_time,
                        end_time=end_time,
+                       session=session
                        )
     # 分析序时账分别填列
     # 获取利润分配的所有明细账
@@ -696,11 +636,7 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
         df_xsz_capital = get_xsz_by_subject_num(df_profit_xsz, grade=1, subject_num=subject_num_capital)
         df_profit_xsz_capital = df_xsz_capital[df_xsz_capital["subject_name_1"] == "利润分配"]
         value = df_profit_xsz_capital["debit"].sum() - df_profit_xsz_capital["credit"].sum()
-        if math.isclose(value, 0.00, rel_tol=1e-5):
-            origin = json.dumps([])
-        else:
-            origin = get_profit_distribution_xsz_origin(start_time, end_time, df_profit_xsz_capital)
-        convert_to_capital["origin"] = origin
+        convert_to_capital["origin"] = ""
         convert_to_capital["value"] = value
 
         # 分配股利
@@ -719,11 +655,7 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
             (df_xsz_dividend["subject_name_2"].str.contains("优先股"))]
         if len(df_preferred_dividend)>0:
             value = df_preferred_dividend["debit"].sum() - df_preferred_dividend["credit"].sum()
-            if math.isclose(value, 0.00, rel_tol=1e-5):
-                origin = json.dumps([])
-            else:
-                origin = get_profit_distribution_xsz_origin(start_time, end_time, df_preferred_dividend)
-            preferred_dividend["origin"] = origin
+            preferred_dividend["origin"] = ""
             preferred_dividend["value"] = value
         #     普通股股利
         df_profit_xsz_dividend = df_xsz_dividend[(df_xsz_dividend["subject_name_1"] == "利润分配") &
@@ -731,11 +663,7 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
         ]
         if len(df_profit_xsz_dividend)>0:
             value = df_profit_xsz_dividend["debit"].sum() - df_profit_xsz_dividend["credit"].sum()
-            if math.isclose(value, 0.00, rel_tol=1e-5):
-                origin = json.dumps([])
-            else:
-                origin = get_profit_distribution_xsz_origin(start_time, end_time, df_profit_xsz_dividend)
-            dividend["origin"] = origin
+            dividend["origin"] = ""
             dividend["value"] = value
 
         #     以前年度损益调整
@@ -747,12 +675,12 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
             df_profit_xsz_adjustment = df_xsz_adjustment[df_xsz_adjustment["subject_name_1"] == "以前年度损益调整"]
             if len(df_profit_xsz_adjustment) > 0:
                 value = df_profit_xsz_adjustment["debit"].sum() - df_profit_xsz_adjustment["credit"].sum()
-                if math.isclose(value, 0.00, rel_tol=1e-5):
-                    origin = json.dumps([])
-                else:
-                    origin = get_profit_distribution_xsz_origin(start_time, end_time, df_profit_xsz_adjustment)
-                adjustment_profit["origin"] = origin
+                adjustment_profit["origin"] = ""
                 adjustment_profit["value"] = value
+
+        # 未通过损益表项目直接计入本年利润
+        not_throgh_profit_and_loss_to_this_year_profit = get_not_through_profit_and_loss_to_this_year_profit(df_km,df_xsz,start_time,end_time,add_suggestion,session)
+        adjustment_profit["value"] = adjustment_profit["value"] + not_throgh_profit_and_loss_to_this_year_profit
 
         # 本年利润
         subject_num_this_year_profit = get_subject_num_by_name("本年利润", df_km)
@@ -771,7 +699,7 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
 
         if len(df_tmp) > 0:
             # 扣除掉对方科目是损益类的科目
-            profit_and_loss = df_tmp[df_tmp["subject_num"].str.contains("6")]
+            profit_and_loss = df_tmp[df_tmp["subject_num"].str.startswith("6")]
             for obj in gen_df_line(profit_and_loss):
                 df_tmp = df_tmp[~((df_tmp["month"] == obj["month"]) & (df_tmp["vocher_num"] == obj["vocher_num"]) & (
                         df_tmp["vocher_type"] == obj["vocher_type"]))]
@@ -781,32 +709,56 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time):
                 content="涉及到以前年度损益调整项目通过“以前年度损益调整”科目核算后再转入利润分配科目。",
                 start_time=start_time,
                 end_time=end_time,
+                session=session
             )
             if len(df_rest_profit)>0:
                 if len(df_xsz_adjustment) > 0:
                     df_profit_xsz_adjustment = df_xsz_adjustment[df_xsz_adjustment["subject_name_1"] == "以前年度损益调整"]
                     df_profit_and_other_xsz_adjustment = pd.concat([df_rest_profit,df_profit_xsz_adjustment])
                     value = df_profit_and_other_xsz_adjustment["debit"].sum() - df_profit_and_other_xsz_adjustment["credit"].sum()
-                    if math.isclose(value, 0.00, rel_tol=1e-5):
-                        origin = json.dumps([])
-                    else:
-                        origin = get_profit_distribution_xsz_origin(start_time, end_time,
-                                                                df_profit_and_other_xsz_adjustment)
-                    adjustment_profit["origin"] = origin
+                    adjustment_profit["origin"] = ""
                     adjustment_profit["value"] = value
                 else:
                     value = df_rest_profit["debit"].sum() - df_rest_profit["credit"].sum()
-                    if math.isclose(value, 0.00, rel_tol=1e-5):
-                        origin = json.dumps([])
-                    else:
-                        origin = get_profit_distribution_xsz_origin(start_time, end_time, df_rest_profit)
-                    adjustment_profit["origin"] = origin
+                    adjustment_profit["origin"] = ""
                     adjustment_profit["value"] = value
     else:
         raise Exception("公司没有设置利润分配科目")
 
     result = [convert_to_capital, preferred_dividend, dividend, adjustment_profit, *reserves]
     return tuple(result)
+
+def get_not_through_profit_and_loss_to_this_year_profit(df_km,df_xsz,start_time,end_time,add_suggestion,session):
+    '''
+    计算直接计入本年利润的资产负债项目调整。
+    :param df_km:
+    :param df_xsz:
+    :param start_time:
+    :param end_time:
+    :param session:
+    :return:
+    '''
+    subject_num_this_year_profit = get_subject_num_by_name("本年利润", df_km)
+    if subject_num_this_year_profit:
+        df_xsz_this_year_profit = get_xsz_by_subject_num(df_xsz, grade=1,
+                                                         subject_num=subject_num_this_year_profit)
+        df_none_profit_and_loss_xsz = df_xsz_this_year_profit[~(df_xsz_this_year_profit["subject_num"].str.contains("6"))&
+                                                               (df_xsz_this_year_profit["subject_name_1"] != "本年利润")&
+                                                           (df_xsz_this_year_profit["subject_name_1"] != "利润分配")]
+
+        if len(df_none_profit_and_loss_xsz) > 0:
+            value = df_none_profit_and_loss_xsz["debit"].sum() - df_none_profit_and_loss_xsz[
+                "credit"].sum()
+            add_suggestion(
+                kind="会计处理",
+                content="涉及到损益类科目核算应通过利润表科目再转入“本年利润”,不应直接计入本年利润。",
+                start_time=start_time,
+                end_time=end_time,
+                session=session
+            )
+            return value
+    return 0.00
+
 
 def parse_df_tb_subject_formula(df_tb, subject):
     '''
@@ -826,7 +778,7 @@ def parse_df_tb_subject_formula(df_tb, subject):
             formula_str = formula_str + "{}".format(value)
     return eval(formula_str)
 
-def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
+def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time,session):
     '''
     根据科目余额表和序时账填写TB
     :param df_km: 科目余额表
@@ -836,6 +788,8 @@ def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
     :param add_suggestion: 提建议
     :return: tb
     '''
+    start_time = datetime.strptime(start_time, '%Y-%m-%d')
+    end_time = datetime.strptime(end_time, '%Y-%m-%d')
     df_km = df_km.copy()
     df_xsz = df_xsz.copy()
     # 标准科目对照表和标准tb科目表,准备空白TB
@@ -852,7 +806,7 @@ def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
     bad_debt_ar, bad_debt_or = get_bad_debt(df_km, add_suggestion,start_time,end_time)
     # 获取利润分配项目
     convert_to_capital, preferred_dividend, dividend, adjustment_profit, legal_reserve, discretionary_surplus_reserve, legal_public_welfare_fund, reserve_fund, enterprise_development_fund, profit_return_investment = get_profit_distribution(
-        df_km, df_xsz, add_suggestion,start_time,end_time)
+        df_km, df_xsz, add_suggestion,start_time,end_time,session)
     subject_match = {
         "坏账准备--应收账款": bad_debt_ar,
         "坏账准备--其他应收款": bad_debt_or,
@@ -891,46 +845,32 @@ def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
                 if df_km_first_subject_match.at[subject, 'direction_x'] == df_km_first_subject_match.at[
                     subject, 'direction_y']:
                     # 添加数据源
-                    data_origin = get_origin(start_time,end_time,"km","+",location,"terminal_amount")
-                    data_origins = [data_origin]
-                    df_tb.at[subject,"origin"] = json.dumps(data_origins,ensure_ascii=False,cls=CJsonEncoder)
+                    df_tb.at[subject,"origin"] = ""
                     # 添加数据结果
                     df_tb.at[subject, "amount"] = df_km_first_subject_match.at[subject, 'terminal_amount']
                 else:
                     # 添加数据源
-                    data_origin = get_origin(start_time, end_time, "km", "-", location, "terminal_amount")
-                    data_origins = [data_origin]
-                    df_tb.at[subject, "origin"] = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
+                    df_tb.at[subject, "origin"] = ""
                     # 添加数据结果
                     df_tb.at[subject, "amount"] = -df_km_first_subject_match.at[subject, 'terminal_amount']
             else:
                 # 如果是利润表项目，则取发生额
                 if df_tb.at[subject,"direction"] == "借":
                     # 添加数据源
-                    data_origin = get_origin(start_time, end_time,  "km", "+", location, "debit_amount")
-                    data_origins = [data_origin]
-                    df_tb.at[subject, "origin"] = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
+                    df_tb.at[subject, "origin"] = ""
                     # 添加数据结果
                     df_tb.at[subject, "amount"] = df_km_first_subject_match.at[subject, 'debit_amount']
                 else:
                     # 添加数据源
-                    data_origin = get_origin(start_time, end_time,  "km", "+", location, "credit_amount")
-                    data_origins = [data_origin]
-                    df_tb.at[subject, "origin"] = json.dumps(data_origins, ensure_ascii=False, cls=CJsonEncoder)
+                    df_tb.at[subject, "origin"] = ""
                     # 添加数据结果
                     df_tb.at[subject, "amount"] = df_km_first_subject_match.at[subject, 'credit_amount']
         elif subject in subject_match:
             df_tb.at[subject, "amount"] = subject_match[subject]["value"]
-            df_tb.at[subject, "origin"] = subject_match[subject]["origin"]
+            df_tb.at[subject, "origin"] = ""
         elif subject == "年初未分配利润":
             # 利润分配+本年利润+损益类科目贷方-损益类科目借方+年初调整数
-            location = {"subject_num":df_km_first_subject_not_match.at["利润分配", 'subject_num'],
-                        "subject_name":"利润分配",
-                        }
-            data_origin = get_origin(start_time, end_time, "km", "+", location, "initial_amount")
-            adjustment_profit_origin = json.loads(adjustment_profit["origin"])
-            adjustment_profit_origin.append(data_origin)
-            df_tb.at[subject, "origin"] = json.dumps(adjustment_profit_origin, ensure_ascii=False, cls=CJsonEncoder)
+            df_tb.at[subject, "origin"] = ""
             df_tb.at[subject, "amount"] = df_km_first_subject_not_match.at["利润分配", 'initial_amount'] + adjustment_profit["value"]
 
     # 最后计算公式
@@ -944,61 +884,12 @@ def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time):
     total_assets = df_tb[df_tb["show"].str.strip() == "资产总计"]["amount"].values[0]
     liabilities_and_shareholders_equity = df_tb[df_tb["show"].str.strip() == "负债和股东权益总计"]["amount"].values[0]
     df_tb = df_tb.sort_values(by="order")
+    df_tb.to_csv("tb.csv",encoding="utf_8_sig")
     if math.isclose(total_assets, liabilities_and_shareholders_equity, rel_tol=1e-5):
         return df_tb
     else:
         raise Exception("试算平衡表不平，请重新检查")
 
-def get_origin(start_time,end_time,table_name,value_sign,value_location,value_type):
-    '''
-    生成单个数据源
-    :param start_time: 开始时间
-    :param end_time: 结束时间
-    :param table_name: 表，科目余额表/序时账
-    :param value_sign: 符号 + ，-
-    :param value_location: 定位科目余额表：{科目编码，科目名称}，序时账：{月份，凭证号/分录号/}
-    :param value_type: 类型：借方发生额/贷方发生额/期初数/期末数
-    :return:
-    '''
-
-    if not( table_name  in ["km","xsz"]):
-        raise Exception("table_name表面必须为km或xsz")
-    if not (value_sign  in ["+","-"]):
-        raise Exception("value_sign必须为+或-")
-    if not isinstance(value_location,dict):
-        raise Exception("value_location必须为字典")
-    else:
-        if table_name == "km":
-            if not ("subject_num"  in value_location):
-                raise Exception("km表必须包含subject_num")
-            elif not ("subject_name"  in value_location):
-                raise Exception("km表必须包含subject_name")
-        elif table_name == "xsz":
-            if not ("month"  in value_location):
-                raise Exception("xsz表必须包含month")
-            elif not ("vocher_num"  in value_location):
-                raise Exception("xsz表必须包含vocher_num")
-            elif not ("vocher_type" in value_location):
-                raise Exception("xsz表必须包含vocher_type")
-            elif not ("subentry_num" in value_location):
-                raise Exception("xsz表必须包含subentry_num")
-    if table_name == "km":
-        if not (value_type in ["initial_amount","debit_amount","credit_amount","terminal_amount"]):
-            raise Exception("value_type must be [initial_amount/ debit_amount/credit_amount/terminal_amount]")
-    elif table_name == "xsz":
-        if not (value_type in ["debit", "credit", "debit_foreign_currency", "credit_foreign_currency"]):
-            raise Exception("value_type must be [debit/ credit/debit_foreign_currency/credit_foreign_currency]")
-
-    origin = {
-        "table_name": table_name,
-        "start_time": start_time,
-        "end_time": end_time,
-        "values": {"sign": value_sign,
-             "location": value_location,
-             "value_type": value_type
-             }
-    }
-    return origin
 
 def get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session):
     '''
@@ -1042,44 +933,40 @@ def get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session
     # 为序时账添加所有级别的会计科目编码和名称
     df_xsz = append_all_gradation_subjects(df_km, df_xsz)
     # 检查是否所有的损益类项目的核算都正确,不正确则修改序时账
-    df_xsz_new = check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion, start_time, end_time)
+    df_xsz_new = check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion, start_time, end_time,session)
     # 根据序时账重新计算科目余额表
     df_km_new = recaculate_km(df_km, df_xsz_new,type)
     return df_km_new,df_xsz_new
 
 def recalculation(start_time, end_time,type, engine, add_suggestion, session):
     # 根据序时账和科目余额表重新计算新的科目余额表和序时账，主要是损益核算方向的检查
+
     df_km_new ,df_xsz_new= get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session)
     # 根据新的科目余额表计算tb
-    df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion,start_time, end_time)
+    df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion,start_time, end_time,session)
     df_tb = df_tb.reset_index()
     df_tb = df_tb[["show","amount","order","direction","subject"]]
-    # print(df_tb[["amount"]][:3])
-    # save_tb(start_time,end_time,session,df_tb)
-    # for obj in gen_df_line(df_tb):
-    #     if obj["origin"]:
-    #         value = get_tb_origin_value(obj["origin"],df_km_new,df_xsz_new)
-    #         if not math.isclose(obj["amount"] ,value,rel_tol=1e-5):
-    #             raise Exception("数值来源计算错误")
     tb = df_tb.to_json(orient='records')
     sys.stdout.write(tb)
 
 def save_tb(start_time,end_time,session,df_tb):
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
-    df_tb = df_tb[['show', 'direction', 'amount', 'origin']]
+    df_tb = df_tb[['show', 'direction', 'amount']]
     for i in range(len(df_tb)):
         show = df_tb.iat[i, 0]
         direction = df_tb.iat[i, 1]
         amount = df_tb.iat[i, 2]
-        origin = df_tb.iat[i, 3]
-        tb_item = TB(start_time=start_time,end_time=end_time,subject_name=show,direction=direction,amount=amount,origin=origin)
+        tb_item = TB(start_time=start_time,end_time=end_time,subject_name=show,direction=direction,amount=amount,origin="")
         session.add(tb_item)
     session.commit()
 
 
 if __name__ == '__main__':
     db_path = sys.argv[1]
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    type = sys.argv[4]
     # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
@@ -1093,5 +980,5 @@ if __name__ == '__main__':
     # recalculation(start_time,end_time,type,engine,add_suggestion,session)
 
 
-    recalculation(start_time=sys.argv[2], end_time=sys.argv[3],type=sys.argv[4], engine=engine, session=session,
+    recalculation(start_time, end_time,type, engine=engine, session=session,
                   add_suggestion=add_suggestion)

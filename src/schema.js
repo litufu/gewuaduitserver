@@ -38,6 +38,7 @@ const typeDefs = gql`
     updatePassword(oldPassword: String, newPassword: String!): User!
     contactToAccountingFirm(accountingFirmName:String!):User!
     createCustomer(name:String!,type:CompanyType!,nature:CompanyNature!):Company!
+    updateCompanyDataSettings(companyName:String!):Boolean!
     uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):[File]
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project

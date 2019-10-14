@@ -63,6 +63,7 @@ async function addTbSubject() {
   try {
     const file = await readFile(tbSubjectFile, 'utf8')
     const results = await parseCsv(file)
+    await prisma.deleteManyTbSubjects()
     for (const value of results.data) {
       if(value[0]==="tb_show"){
         continue
@@ -92,6 +93,7 @@ async function addSubjectContrast() {
   try {
     const file = await readFile(subjectContrastFile, 'utf8')
     const results = await parseCsv(file)
+    await prisma.deleteManySubjectContrasts()
     for (const value of results.data) {
       if(value[0]==="origin"){
         continue
@@ -152,8 +154,10 @@ async function addStdSubject() {
   try {
     const file = await readFile(stdSubjectFile, 'utf8')
     const results = await parseCsv(file)
+    await prisma.deleteManyStdSubjects()
     for (const value of results.data) {
       try {
+        
         const stdSubject = await prisma
           .createStdSubject({
             code: value[0],
@@ -172,7 +176,7 @@ async function addStdSubject() {
 
 // addFs(fs2019File,"2019已执行三个新准则")
 // addFs(fs2018File,"2019未执行三个新准则")
-// addTbSubject()
+addTbSubject()
 // addSubjectContrast()
 // addAccountingFirm()
-addStdSubject()
+// addStdSubject()

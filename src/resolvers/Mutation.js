@@ -157,6 +157,55 @@ const Mutation = {
     
     return newUser
   },
+  updateCompanyDataSettings:async (parent, { companyName }, ctx) => {
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 检查用户是否已经关联了会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if (!accountingFirm){
+      throw new Error("尚未关联会计师事务所，请在个人设置中关联会计师事务所")
+    }
+    // 检查会计师事务所是否已经有了该客户
+    const company = await ctx.prisma.company({name:companyName})
+    if (!company){
+      throw new Error("未发现该公司")
+    }
+    // 建立公司数据库
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const databasePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/database.py')
+    // 2/初始化数据库
+    const subjectContrasts = await ctx.prisma.subjectContrasts()
+    const tbSubjects = await ctx.prisma.tbSubjects()
+    const fSSubjects = await ctx.prisma.fSSubjects()
+    const subjectContrastsJson = JSON.stringify(subjectContrasts)
+    const tbSubjectsJson = JSON.stringify(tbSubjects)
+    const fSSubjectsJson = JSON.stringify(fSSubjects)
+    const initDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/init_data_from_server.py')
+    const initDataStructureProcess  = spawn('python',[initDataPath]);
+    initDataStructureProcess.stdout.on('data', (data) => {
+      if(_.trim(data.toString())==="success"){
+        console.log("数据库初始化成功,下一步可以导入数据")
+      }
+    });
+    initDataStructureProcess.stderr.on('data', (data) => {
+      throw new Error(`初始数据失败${data}`)
+    });
+    
+    initDataStructureProcess.stdin.write(JSON.stringify(dbPath));
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.write(subjectContrastsJson);
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.write(tbSubjectsJson);
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.write(fSSubjectsJson);
+    initDataStructureProcess.stdin.write(`\n`);
+    initDataStructureProcess.stdin.end();
+    return true
+  },
   createCustomer:async (parent, { name,type,nature }, ctx) => {
     
     const userId = getUserId(ctx)

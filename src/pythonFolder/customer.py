@@ -71,7 +71,7 @@ def get_customers_name(session,start_time,end_time):
     return customers
 
 
-def get_transaction_events(engine,start_time,end_time):
+def get_transaction_events(engine,session,start_time,end_time):
     '''
     获取本期的凭证分析序时账
     :param engine:
@@ -252,7 +252,7 @@ def get_receivable_balance(df_customer_entries,customer_name,receivable_times):
         return 0,0
 
 
-def save_customer_to_db(session,start_time,end_time):
+def save_customer_to_db(engine,session,start_time,end_time):
     '''
     存储客户分析到数据库
     :param session:
@@ -275,7 +275,7 @@ def save_customer_to_db(session,start_time,end_time):
         session.commit()
 
     customers = get_customers_name(session,start_time,end_time)
-    df_transaction_events = get_transaction_events(engine,start_time,end_time)
+    df_transaction_events = get_transaction_events(engine,session,start_time,end_time)
     for customer_name in set(customers):
         df_customer_entries = get_customer_entry(df_transaction_events, customer_name)
         sale_amount = get_sale_amount(df_customer_entries,customer_name)

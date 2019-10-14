@@ -104,7 +104,7 @@ def get_actual_importance_level(company_type,start_time,end_time,engine,session,
     '''
     df_km_new, df_xsz_new = get_new_km_xsz_df(start_time, end_time, "audited", engine, add_suggestion, session)
     # 根据新的科目余额表计算tb
-    df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion, start_time, end_time)
+    df_tb = get_tb(df_km_new, df_xsz_new, engine, add_suggestion, start_time, end_time,session)
     df_tb["subject"] = df_tb["show"].apply(lambda x:x.strip())
     pre_tax_profit = df_tb[df_tb["subject"].str.contains("四、利润总额")]["amount"].values[0]
     income = df_tb[df_tb["subject"].str.contains("一、营业总收入")]["amount"].values[0]

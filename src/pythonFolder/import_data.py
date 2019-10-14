@@ -45,16 +45,10 @@ def save_km(start_time, end_time, km_path,session):
                                                SubjectBalance.end_time == end_time).all()
     #如果已经存储了，则替代原来的
     if len(kms) > 0:
-        choice = "yes"
-        # choice = input('已经存在科目余额表，是否要替换')
-        if choice == "yes":
-            print('开始删除')
-            for km in kms:
-                session.delete(km)
-            session.commit()
-        else:
-            return
-    # 读取科目余额表
+        print('开始删除')
+        for km in kms:
+            session.delete(km)
+        session.commit()
     print('开始存储')
 
     # 重新索引
@@ -270,14 +264,9 @@ def save_hs(start_time, end_time, hs_path,session):
                                           Auxiliary.end_time == end_time).all()
     # 如果已经存储了，则替代原来的
     if len(hs) > 0:
-        choice = "yes"
-        # choice = input('已经存在科目余额表，是否要替换')
-        if choice == "yes":
-            for h in hs:
-                session.delete(h)
-            session.commit()
-        else:
-            return
+        for h in hs:
+            session.delete(h)
+        session.commit()
     # 开始存储
     if "initial_num" in df.columns:
         df = df[['subject_name', 'subject_num', 'type_num', 'type_name', 'code', 'name', 'direction', 'initial_amount',
@@ -367,30 +356,29 @@ if __name__ == '__main__':
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    start_time = sys.argv[2]
-    end_time = sys.argv[3]
-    path=sys.argv[4]
-    type=sys.argv[5]
-    company_type = sys.argv[6]
+    # start_time = sys.argv[2]
+    # end_time = sys.argv[3]
+    # path=sys.argv[4]
+    # type=sys.argv[5]
+    # company_type = sys.argv[6]
     from utils import add_suggestion
 
-    # start_time = "2016-1-1"
-    # end_time = "2016-12-31"
-    # path=r"C:\Users\litufu\Desktop\zhsx\pz.xlsx"
-    # type="CHRONOLOGICALACCOUNT"
-    # company_type = "其他企业"
-    save_to_db(session,start_time,end_time,path,type)
+    start_time = "2013-1-1"
+    end_time = "2013-12-31"
+    # path=r"D:\zhxs\2014\km.xlsx"
+    # type="SUBJECTBALANCE"
+    company_type = "其他企业"
+    # save_to_db(session,start_time,end_time,path,type)
     # 向辅助核算中添加供应商款项性质
-    add_supplier_nature(start_time, end_time, session, engine)
-    # 分析凭证分类
-    analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
-    # 凭证测试
+    # add_supplier_nature(start_time, end_time, session, engine)
+    # # 分析凭证分类
+    # analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
+    # # 凭证测试
     aduit_entry(start_time, end_time, session, engine, add_suggestion)
-    # 抽查凭证
-    actual_importance_level = get_actual_importance_level(company_type,start_time,end_time,engine,session,add_suggestion)
-    check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
-    # 供应商分析
-    save_supplier_to_db(session, start_time, end_time)
+    # # 抽sx l_importance_level = get_actual_importance_level(company_type,start_time,end_time,engine,session,add_suggestion)
+    # check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
+    # # 供应商分析
+    # save_supplier_to_db(engine,session, start_time, end_time)
     # 客户分析
-    save_customer_to_db(session, start_time, end_time)
+    # save_customer_to_db(engine,session, start_time, end_time)
     print("success")

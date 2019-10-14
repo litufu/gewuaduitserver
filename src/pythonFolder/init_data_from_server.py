@@ -26,6 +26,11 @@ def add_fs_subject(session,lines):
     # 报表对照表
     fs_subjects = json.loads(lines[3].strip())
 
+    # 删除对照表
+    for obj in session.query(SubjectContrast).all():
+        session.delete(obj)
+    session.commit()
+
     for item in subject_contrasts:
         print(item)
         origin_subject = item["origin"]
@@ -40,6 +45,10 @@ def add_fs_subject(session,lines):
                         )
         session.add(subjectcontrast)
     session.commit()
+    # 删除TB对照表
+    for obj in session.query(TBSubject).all():
+        session.delete(obj)
+    session.commit()
     # TB对照表   
     for item in tb_subjects:
         print(item)
@@ -51,7 +60,10 @@ def add_fs_subject(session,lines):
         session.add(tbsubject)
     session.commit()
     # 添加报表对照项目
-
+    # 删除报表对照表
+    for obj in session.query(FSSubject).all():
+        session.delete(obj)
+    session.commit()
     for item in fs_subjects:
         print(item)
         name = item["name"]
@@ -81,6 +93,9 @@ def bad_filename(filename):
     return temp.decode('gbk')
 
 if __name__ == '__main__':
+    # db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     lines = sys.stdin.readlines()
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(json.loads(lines[0].strip())))
     DBSession = sessionmaker(bind=engine)

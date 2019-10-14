@@ -46,7 +46,7 @@ def add_nature(auxiliaries,df_xsz_last,session):
                     (df_xsz_last["debit"].abs() > 0)
                     ]
                 auxiliary.nature = get_nature(df_supplier_xsz)
-                session.commit()
+            session.commit()
 
 def add_supplier_nature(start_time,end_time,session,engine):
     '''

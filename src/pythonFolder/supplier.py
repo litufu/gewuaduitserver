@@ -53,7 +53,7 @@ from database import Auxiliary,SupplierAnalysis,TransactionEvent
 # 付款差额方差 = sum(（付款差额-平均值）**2)/(付款次数-1）
 
 
-def get_suppliers_name(session,start_time,end_time):
+def get_suppliers_name(engine,session,start_time,end_time):
     '''
     2.1从辅助核算中获取供应商名录
     :param session:
@@ -69,7 +69,7 @@ def get_suppliers_name(session,start_time,end_time):
     return suppliers
 
 
-def get_transaction_events(engine,start_time,end_time):
+def get_transaction_events(engine,session,start_time,end_time):
     '''
     获取本期的凭证分析序时账
     :param engine:
@@ -249,7 +249,7 @@ def get_payment_balance(df_supplier_entries,supplier_name,payment_times):
         return 0,0
 
 
-def save_supplier_to_db(session,start_time,end_time):
+def save_supplier_to_db(engine,session,start_time,end_time):
     '''
     存储供应商分析到数据库
     :param session:
@@ -273,8 +273,8 @@ def save_supplier_to_db(session,start_time,end_time):
 
 
 
-    suppliers = get_suppliers_name(session,start_time,end_time)
-    df_transaction_events = get_transaction_events(engine,start_time,end_time)
+    suppliers = get_suppliers_name(engine,session,start_time,end_time)
+    df_transaction_events = get_transaction_events(engine,session,start_time,end_time)
     for supplier_name in set(suppliers):
         df_supplier_entries = get_supplier_entry(df_transaction_events, supplier_name)
         purchase_amount = get_puchase_amount(df_supplier_entries,supplier_name)
