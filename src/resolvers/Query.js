@@ -342,6 +342,40 @@ const Query = {
     const res = customerProcess.stdout.toString() 
     return res
   },
+  getAgeSetting:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const companyType = companyNature[company.nature]
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const getAgeSettingPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_age_setting.py') 
+    const getAgeSettingProcess = spawnSync('python',[getAgeSettingPath, dbPath,startTimeStr,endTimeStr]);
+    const res = getAgeSettingProcess.stdout.toString() 
+    return res
+  },
+  getCustomerAndSupplierSameCompany:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const companyType = companyNature[company.nature]
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const getCustomerAndSupplierSameCompanyPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_customer_and_supplier_same_company.py') 
+    const getCustomerAndSupplierSameCompanyProcess = spawnSync('python',[getCustomerAndSupplierSameCompanyPath, dbPath,startTimeStr,endTimeStr]);
+    const res = getCustomerAndSupplierSameCompanyProcess.stdout.toString() 
+    return res
+  },
 }
 
 module.exports = {

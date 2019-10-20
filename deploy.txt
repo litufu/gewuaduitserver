@@ -6,6 +6,7 @@ docker-compose up -d
 将endpoint改为：localhost:4466
 3、根据datamodel.prisma修改数据库结构
 prisma deploy
+修改generated下面的网址：198.168.0.101为localhost
 4、安装包
 npm install
 5、开启apollo server服务器

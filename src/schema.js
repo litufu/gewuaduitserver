@@ -26,6 +26,8 @@ const typeDefs = gql`
     getCheckEntry(projectId:String!,ratio:Float,num:Int,integerNum:Int,recompute:String!):String!
     getSupplierAnalysis(projectId:String!):String!
     getCustomerAnalysis(projectId:String!):String!
+    getAgeSetting(projectId:String!):String!
+    getCustomerAndSupplierSameCompany(projectId:String!):String!
   }
 
   type Mutation {
@@ -48,6 +50,7 @@ const typeDefs = gql`
     addSubject(projectId:String!,record:String!):Boolean!
     addAuxiliary(projectId:String!,record:String!):Boolean!
     addChangeReason(projectId:String!,record:String!):Boolean!
+    ageSetting(projectId:String!,years:Int!,months:Int!,oneYear:Boolean!):Boolean!
     
   }
 

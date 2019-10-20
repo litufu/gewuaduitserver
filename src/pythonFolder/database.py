@@ -294,6 +294,15 @@ class OutputTax(Base):
     difference = Column(Boolean)
     desc = Column(String)
 
+class AgeSetting(Base):
+    __tablename__ = 'agesetting'
+    id = Column(Integer, primary_key=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    years = Column(Integer)
+    months = Column(String)
+    one_year = Column(Boolean)
+
       
 if __name__ == "__main__":
     # db_path = sys.argv[1]
