@@ -27,7 +27,6 @@ const typeDefs = gql`
     getSupplierAnalysis(projectId:String!):String!
     getCustomerAnalysis(projectId:String!):String!
     getAgeSetting(projectId:String!):String!
-    getCustomerAndSupplierSameCompany(projectId:String!):String!
   }
 
   type Mutation {
