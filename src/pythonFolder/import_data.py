@@ -17,6 +17,7 @@ from check_entry import check_entry
 from importance import get_actual_importance_level
 from supplier import save_supplier_to_db
 from customer import save_customer_to_db
+# from current_account_age import save_account_occur_times_to_db
 
 
 def save_km(start_time, end_time, km_path,session):
@@ -368,17 +369,20 @@ if __name__ == '__main__':
     # path=r"D:\zhxs\2014\km.xlsx"
     # type="SUBJECTBALANCE"
     company_type = "其他企业"
-    # save_to_db(session,start_time,end_time,path,type)
+    save_to_db(session,start_time,end_time,path,type)
     # 向辅助核算中添加供应商款项性质
-    # add_supplier_nature(start_time, end_time, session, engine)
+    add_supplier_nature(start_time, end_time, session, engine)
     # # 分析凭证分类
-    # analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
+    analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
     # # 凭证测试
     aduit_entry(start_time, end_time, session, engine, add_suggestion)
-    # # 抽sx l_importance_level = get_actual_importance_level(company_type,start_time,end_time,engine,session,add_suggestion)
-    # check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
+    # 凭证抽查
+    actual_importance_level = get_actual_importance_level(company_type,start_time,end_time,engine,session,add_suggestion)
+    check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
     # # 供应商分析
-    # save_supplier_to_db(engine,session, start_time, end_time)
+    save_supplier_to_db(engine,session, start_time, end_time)
     # 客户分析
-    # save_customer_to_db(engine,session, start_time, end_time)
+    save_customer_to_db(engine,session, start_time, end_time)
+    # 计算往来款发生明细
+    # save_account_occur_times_to_db(session,start_time,end_time)
     print("success")

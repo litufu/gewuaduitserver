@@ -86,6 +86,23 @@ class SubjectBalance(Base):
     credit_amount = Column(Float(20,4))
     terminal_amount = Column(Float(20,4))
 
+class AccountAge(Base):
+    __tablename__ = 'accountage'
+    id = Column(Integer, primary_key=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    subject_num = Column(String)
+    origin_subject=Column(String)
+    subject_name = Column(String)
+    source = Column(String)
+    direction = Column(String)
+    initial_amount = Column(Float(20, 4))
+    debit_amount = Column(Float(20, 4))
+    credit_amount = Column(Float(20, 4))
+    terminal_amount = Column(Float(20, 4))
+    terminal_value = Column(Float(20, 4))
+    occour_times = Column(String)
+
 # 序时账
 # 会计年	会计月	记账时间	凭证编号	凭证种类	编号	业务说明	科目编号	科目名称	借方发生额	贷方发生额	借方发生额_外币	贷方发生额_外币
 #  借方数量	贷方数量	借方单价	贷方单价 货币种类 核算项目名称

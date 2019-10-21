@@ -27,6 +27,7 @@ const typeDefs = gql`
     getSupplierAnalysis(projectId:String!):String!
     getCustomerAnalysis(projectId:String!):String!
     getAgeSetting(projectId:String!):String!
+    getAccountAge(projectId:String!):String!
   }
 
   type Mutation {
@@ -50,6 +51,7 @@ const typeDefs = gql`
     addAuxiliary(projectId:String!,record:String!):Boolean!
     addChangeReason(projectId:String!,record:String!):Boolean!
     ageSetting(projectId:String!,years:Int!,months:Int!,oneYear:Boolean!):Boolean!
+    computeAccountAge(projectId:String!):Boolean!
     
   }
 

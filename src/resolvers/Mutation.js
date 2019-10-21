@@ -646,6 +646,27 @@ const Mutation = {
       return false
     }
   },
+  computeAccountAge:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const computeAccountAgePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/compute_current_account_age.py') 
+    
+    const computeAccountAgeProcess = spawnSync('python',[computeAccountAgePath, dbPath,startTimeStr,endTimeStr]);
+    const res = computeAccountAgeProcess.stdout.toString() 
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
 }
 
 module.exports = {
