@@ -65,19 +65,10 @@ def get_subject_detail(session,start_time,end_time,subjects):
         df_auxiliary_new["source"] = "hesuan"
         df_subject_detail = df_subject_balance_new.append(df_auxiliary_new, ignore_index=True)
         df_subject_detail["terminal_value"] = df_subject_detail["direction"].apply(lambda x:1 if x=="借" else -1) * df_subject_detail["terminal_amount"]
+        df_subject_detail["search_name"] = df_subject_detail['subject_name'].str.replace(r'[\(\)]+', '')
         return df_subject_detail
     else:
         return  pd.DataFrame()
-
-
-def get_df_intersection(df1,df2):
-    if len(df1)== 0 or len(df2) == 0:
-        return []
-    else:
-        df1_subject_names = set(df1["subject_name"].to_list())
-        df2_subject_names = set(df2["subject_name"].to_list())
-        intersection_names = list(df1_subject_names.intersection(df2_subject_names))
-        return intersection_names
 
 def get_occours(df_obj_xsz,abs_terminal_value,direction):
     sum = 0.0
@@ -98,9 +89,10 @@ def get_occours(df_obj_xsz,abs_terminal_value,direction):
 def get_occour_times(obj,df_xsz):
     # 对序时账按照记账时间降序排列
 
+    df_xsz = df_xsz.copy()
     terminal_value = obj["terminal_value"]
     abs_terminal_value = abs(terminal_value)
-    subject_name = obj["subject_name"]
+    search_name = obj["search_name"]
     subject_num = obj["subject_num"]
 
     if obj["source"] == "kemu":
@@ -115,13 +107,13 @@ def get_occour_times(obj,df_xsz):
             return occurs
     elif obj["source"] == "hesuan":
         if terminal_value > 0.0:
-            df_obj_xsz = df_xsz[(df_xsz["subject_num"] == subject_num) & (df_xsz["auxiliary"].str.contains(subject_name)) & (df_xsz["debit"].abs()>0.0) ]
+            df_obj_xsz = df_xsz[(df_xsz["subject_num"] == subject_num) & (df_xsz["search_auxiliary"].str.contains(search_name)) & (df_xsz["debit"].abs()>0.0) ]
             occurs = get_occours(df_obj_xsz, abs_terminal_value, "debit")
             return occurs
         else:
             df_obj_xsz = df_xsz[
                 (df_xsz["subject_num"] == subject_num) &
-                (df_xsz["auxiliary"].str.contains(subject_name)) &
+                (df_xsz["search_auxiliary"].str.contains(search_name)) &
                 (df_xsz["credit"].abs() > 0.0)
                 ]
             occurs = get_occours(df_obj_xsz, abs_terminal_value, "credit")
@@ -156,7 +148,8 @@ def save_account_occur_times_to_db(engine,session,start_time,end_time):
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
     deleteAccountAge(session, start_time, end_time)
     df_xsz = pd.read_sql_table('chronologicalaccount', engine)
-    df_xsz = df_xsz.sort_values(by=['record_time'], ascending=False)
+    df_xsz = df_xsz.sort_values(by=['record_time','vocher_num'], ascending=False)
+    df_xsz["search_auxiliary"] = df_xsz["auxiliary"].str.replace(r'[\(\)]+', '')
     for setting in settings:
         df_detail = get_subject_detail(session,start_time,end_time,setting["values"])
         df_detail["origin_subject"] = setting["name"]
@@ -184,12 +177,12 @@ def save_account_occur_times_to_db(engine,session,start_time,end_time):
 
 
 if __name__ == '__main__':
-    db_path = sys.argv[1]
-    start_time = sys.argv[2]
-    end_time = sys.argv[3]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
-    # start_time = "2016-1-1"
-    # end_time = "2016-12-31"
+    # db_path = sys.argv[1]
+    # start_time = sys.argv[2]
+    # end_time = sys.argv[3]
+    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    start_time = "2016-1-1"
+    end_time = "2016-12-31"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()

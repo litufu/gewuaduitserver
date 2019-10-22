@@ -359,6 +359,23 @@ const Query = {
     const res = getAgeSettingProcess.stdout.toString() 
     return res
   },
+  getAccountAge:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const companyType = companyNature[company.nature]
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const getAccountAgePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_current_account_age.py') 
+    const getAccountAgeProcess = spawnSync('python',[getAccountAgePath, dbPath,startTimeStr,endTimeStr]);
+    const res = getAccountAgeProcess.stdout.toString() 
+    return res
+  },
 }
 
 module.exports = {
