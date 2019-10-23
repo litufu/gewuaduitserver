@@ -352,23 +352,23 @@ def save_to_db(session,start_time,end_time,path,type):
 
 
 if __name__ == '__main__':
-    # db_path = sys.argv[1]
-    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    # start_time = sys.argv[2]
-    # end_time = sys.argv[3]
-    # path=sys.argv[4]
-    # type=sys.argv[5]
-    # company_type = sys.argv[6]
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    path=sys.argv[4]
+    type=sys.argv[5]
+    company_type = sys.argv[6]
     from utils import add_suggestion
 
-    start_time = "2013-1-1"
-    end_time = "2013-12-31"
+    # start_time = "2013-1-1"
+    # end_time = "2013-12-31"
     # path=r"D:\zhxs\2014\km.xlsx"
     # type="SUBJECTBALANCE"
-    company_type = "其他企业"
+    # company_type = "其他企业"
     save_to_db(session,start_time,end_time,path,type)
     # 向辅助核算中添加供应商款项性质
     add_supplier_nature(start_time, end_time, session, engine)

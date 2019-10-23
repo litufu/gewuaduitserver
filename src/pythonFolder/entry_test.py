@@ -1,3 +1,4 @@
+import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import json
@@ -764,8 +765,8 @@ def aduit_entry(start_time,end_time,session,engine,add_suggestion):
 
 
 if __name__ == '__main__':
-    # db_path = sys.argv[1]
-    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()

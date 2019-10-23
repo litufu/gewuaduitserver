@@ -326,8 +326,8 @@ class AgeSetting(Base):
 
       
 if __name__ == "__main__":
-    # db_path = sys.argv[1]
-    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     Base.metadata.create_all(engine)
     print("success")

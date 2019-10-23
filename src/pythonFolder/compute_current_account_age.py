@@ -270,12 +270,12 @@ def save_account_occur_times_to_db(engine,session,start_time,end_time):
 
 
 if __name__ == '__main__':
-    # db_path = sys.argv[1]
-    # start_time = sys.argv[2]
-    # end_time = sys.argv[3]
-    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
-    start_time = "2016-1-1"
-    end_time = "2016-12-31"
+    db_path = sys.argv[1]
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # start_time = "2016-1-1"
+    # end_time = "2016-12-31"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
