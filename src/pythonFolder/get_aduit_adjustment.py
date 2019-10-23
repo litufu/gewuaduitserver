@@ -11,8 +11,8 @@ def aduit_adjustment(engine,end_time):
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
     # 从数据库读取科目余额表
     df_adjustment = pd.read_sql_table('aduitadjustment', engine)
-    df_adjustment = df_adjustment[(df_adjustment['record_time'] == end_time)&(df_adjustment['vocher_type'] == "审")]
-    df_adjustment_new = df_adjustment[['vocher_num',"subentry_num",'description','subject_num','subject_name', 'debit',"credit","auxiliary"]]
+    df_adjustment = df_adjustment[(df_adjustment['year'] == end_time.year)&(df_adjustment['month'] == end_time.month)&(df_adjustment['vocher_type'].isin(["审","冲"]))]
+    df_adjustment_new = df_adjustment[['vocher_num',"vocher_type","subentry_num",'description','subject_num','subject_name', 'debit',"credit","auxiliary"]]
     sys.stdout.write(df_adjustment_new.to_json(orient='records'))
 
 

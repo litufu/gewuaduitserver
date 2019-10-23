@@ -10,12 +10,12 @@ from database import AduitAdjustment
 from utils import get_subject_name_by_num,get_subject_num_by_name
 
 
-def aduit_ajustment(session,engine,start_time,end_time,record):
+def aduit_ajustment(session,engine,start_time,end_time,record,vocher_type="审"):
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
     records = json.loads(record)
     # 从数据库读取科目余额表
-    aduit_adjustments = session.query(AduitAdjustment).filter((AduitAdjustment.record_time == end_time)&(AduitAdjustment.vocher_type == "审")).all()
+    aduit_adjustments = session.query(AduitAdjustment).filter((AduitAdjustment.record_time == end_time)&(AduitAdjustment.vocher_type == vocher_type)).all()
     is_profit_and_loss_subject = False
     for i,record in enumerate(records):
         subject =record.get("subject","").split("_")
@@ -50,8 +50,8 @@ def aduit_ajustment(session,engine,start_time,end_time,record):
         aduit_adjustment = AduitAdjustment(
             year=start_time.year,
             month=end_time.month,
-            record_time=end_time,
-            vocher_type="审",
+            record_time=datetime.strptime(record.get("record_time"), '%Y-%m-%d'),
+            vocher_type=vocher_type,
             vocher_num=vocher_num,
             subentry_num=i+1,
             description=record.get("description",""),
@@ -234,7 +234,6 @@ def aduit_ajustment(session,engine,start_time,end_time,record):
             )
             session.add(undistributed_profit_previous_year_profit)
             session.commit()
-    sys.stdout.write("success")
 
 
 if __name__ == '__main__':
@@ -250,3 +249,4 @@ if __name__ == '__main__':
 
     # aduit_ajustment(session,engine,start_time,end_time,record)
     aduit_ajustment(session,engine,sys.argv[2],sys.argv[3],sys.argv[4])
+    sys.stdout.write("success")

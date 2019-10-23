@@ -13,7 +13,12 @@ def modify_aduit_ajustment(session,start_time,end_time,record,vocher_num):
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
     records = json.loads(record)
     # 从数据库读取原来的分录,并删除
-    aduit_adjustments = session.query(AduitAdjustment).filter(AduitAdjustment.record_time == end_time,AduitAdjustment.vocher_num==vocher_num).all()
+    aduit_adjustments = session.query(AduitAdjustment).filter(
+        AduitAdjustment.year == end_time.year,
+        AduitAdjustment.month==end_time.month,
+        AduitAdjustment.vocher_num==vocher_num,
+        AduitAdjustment.vocher_type=="审"
+    ).all()
     if len(aduit_adjustments)==0:
         raise Exception("未找到对应的分录")
     for aduit_adjustment in aduit_adjustments:
@@ -48,7 +53,7 @@ def modify_aduit_ajustment(session,start_time,end_time,record,vocher_num):
         aduit_adjustment = AduitAdjustment(
             year=start_time.year,
             month=end_time.month,
-            record_time=end_time,
+            record_time= datetime.strptime(record.get("record_time"), '%Y-%m-%d'),
             vocher_type="审",
             vocher_num=vocher_num,
             subentry_num=i+1,

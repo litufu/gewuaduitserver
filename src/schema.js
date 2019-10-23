@@ -45,13 +45,15 @@ const typeDefs = gql`
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
     addAduitAdjustment(projectId:String!,record:String!):Boolean!
-    deleteAdutiAdjustment(projectId:String!,vocherNum:Int!):Boolean!
+    deleteAdutiAdjustment(projectId:String!,vocherNum:Int!,vocherType:String!):Boolean!
     modifyAduitAdjustment(projectId:String!,record:String!,vocherNum:Int!):Boolean!
     addSubject(projectId:String!,record:String!):Boolean!
     addAuxiliary(projectId:String!,record:String!):Boolean!
     addChangeReason(projectId:String!,record:String!):Boolean!
     ageSetting(projectId:String!,years:Int!,months:Int!,oneYear:Boolean!):Boolean!
+    currentAccountHedging(projectId:String!):Boolean!
     computeAccountAge(projectId:String!):Boolean!
+
     
   }
 

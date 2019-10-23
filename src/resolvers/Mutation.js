@@ -526,7 +526,7 @@ const Mutation = {
       return false
     }
   },
-  deleteAdutiAdjustment:async(parent,{projectId,vocherNum},ctx)=>{
+  deleteAdutiAdjustment:async(parent,{projectId,vocherNum,vocherType},ctx)=>{
     const project = await ctx.prisma.project({id:projectId})
     if(!project){
       throw new Error("未发现该项目")
@@ -537,7 +537,7 @@ const Mutation = {
     const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
     const endTimeStr = dateToString(new Date(project.endTime))
     const deleteAdutiAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/delete_aduit_adjustment.py') 
-    const deleteAdutiAdjustmentProcess = spawnSync('python',[deleteAdutiAdjustmentPath, dbPath,endTimeStr,vocherNum]);
+    const deleteAdutiAdjustmentProcess = spawnSync('python',[deleteAdutiAdjustmentPath, dbPath,endTimeStr,vocherNum,vocherType]);
     const res = deleteAdutiAdjustmentProcess.stdout.toString() 
     if(res==="success"){
       return true
@@ -640,6 +640,26 @@ const Mutation = {
     
     const ageSettingProcess = spawnSync('python',[ageSettingPath, dbPath,startTimeStr,endTimeStr,years,months,oneYear]);
     const res = ageSettingProcess.stdout.toString() 
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+  },
+  currentAccountHedging:async(parent,{projectId},ctx)=>{
+    const project = await ctx.prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
+    const company = await ctx.prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    const currentAccountHedgingPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/current_account_hedging.py') 
+    const currentAccountHedgingProcess = spawnSync('python',[currentAccountHedgingPath, dbPath,startTimeStr,endTimeStr]);
+    const res = currentAccountHedgingProcess.stdout.toString() 
     if(res==="success"){
       return true
     }else{
