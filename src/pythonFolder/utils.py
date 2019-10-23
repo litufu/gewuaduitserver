@@ -266,8 +266,9 @@ def parse_auxiliary(auxiliary_str):
     :param auxiliary_str: 辅助核算字符串 "【供应商:惠州乐庭电子线缆有限公司 借 9699.00】"
     :return: dict {'供应商': '惠州乐庭电子线缆有限公司'}
     '''
+    res = {}
     if auxiliary_str:
-        res = {}
+
         res0 = auxiliary_str.split("【")
         pattern = re.compile('\s+[借贷].*?】')
         for i in res0:
@@ -277,7 +278,7 @@ def parse_auxiliary(auxiliary_str):
                 res1 = re.sub(pattern,"",i.strip())
                 res2 = res1.split(":")
                 res[res2[0]] = res2[1]
-        return res
+    return res
 
 
 

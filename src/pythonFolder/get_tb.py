@@ -372,6 +372,9 @@ def recaculate_km(df_km, df_xsz,type):
     else:
         raise Exception("tb类型错误")
 
+    df_km_new["origin_debit"] = df_km["debit_amount"]
+    df_km_new["origin_credit"] = df_km["credit_amount"]
+    df_km_new["origin_terminal"] = df_km["terminal_amount"]
     df_km_new['debit_amount'] = 0.00
     df_km_new['credit_amount'] = 0.00
     df_km_new['terminal_amount'] = 0.00
