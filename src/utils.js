@@ -30,7 +30,7 @@ function getUserId(context) {
 }
 
 const UPLOAD_DIR = './uploads'
-const DB_DIR = './db'
+const DB_DIR = '../db'
 const ALLOW_UPLOAD_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "application/vnd.ms-excel"
