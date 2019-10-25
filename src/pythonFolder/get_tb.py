@@ -971,19 +971,19 @@ def save_tb(start_time,end_time,session,df_tb):
 
 
 if __name__ == '__main__':
-    # db_path = sys.argv[1]
-    # start_time = sys.argv[2]
-    # end_time = sys.argv[3]
-    # type = sys.argv[4]
-    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    db_path = sys.argv[1]
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    type = sys.argv[4]
+    # db_path = "D:\gewuaduit\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     from utils import add_suggestion
     # companyname = "深圳市众恒世讯科技股份有限公司"
-    start_time = "2015-1-1"
-    end_time = "2015-12-31"
-    type="adjustment"
+    # start_time = "2016-1-1"
+    # end_time = "2016-12-31"
+    # type="unAudited"
     # get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session)
     # recalculation(start_time,end_time,type,engine,add_suggestion,session)
 

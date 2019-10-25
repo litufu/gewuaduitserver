@@ -6,7 +6,7 @@ const mkdirp = require('mkdirp')
 const path = require('path')
 const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
-const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,companyNature } = require('../utils')
+const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,companyNature,getProjectDBPathStartTimeEndtime } = require('../utils')
 const emailGenerator = require('../emailGenerator');
 
 mkdirp.sync(UPLOAD_DIR)
@@ -175,7 +175,7 @@ const Mutation = {
     }
     // 建立公司数据库
     const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const dbPath = path.join(path.resolve(__dirname, '../../../db'), `./${db_name}`)
     const databasePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/database.py')
     // 2/初始化数据库
     const subjectContrasts = await ctx.prisma.subjectContrasts()
@@ -232,7 +232,7 @@ const Mutation = {
     })
     // 建立公司数据库
     const db_name = `${accountingFirm.id}-${newcompany.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const dbPath = path.join(path.resolve(__dirname, '../../../db'), `./${db_name}`)
     const databasePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/database.py')
     // 1/创建数据库
     const initDataBaseProcess = spawn('python',[databasePath, dbPath]);
@@ -348,7 +348,7 @@ const Mutation = {
     const companyType = companyNature[company.nature]
 
     const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const dbPath = path.join(path.resolve(__dirname, '../../../db'), `./${db_name}`)
     const files = []
     for(const upload of uploads){
       // 解析上传文件
@@ -507,16 +507,7 @@ const Mutation = {
     }
   },
   addAduitAdjustment:async(parent,{projectId,record},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const addAduitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_aduit_adjustment.py') 
     const addAduitAdjustmentProcess = spawnSync('python',[addAduitAdjustmentPath, dbPath,startTimeStr,endTimeStr,record]);
     const res = addAduitAdjustmentProcess.stdout.toString() 
@@ -527,15 +518,7 @@ const Mutation = {
     }
   },
   deleteAdutiAdjustment:async(parent,{projectId,vocherNum,vocherType},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const deleteAdutiAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/delete_aduit_adjustment.py') 
     const deleteAdutiAdjustmentProcess = spawnSync('python',[deleteAdutiAdjustmentPath, dbPath,endTimeStr,vocherNum,vocherType]);
     const res = deleteAdutiAdjustmentProcess.stdout.toString() 
@@ -546,16 +529,7 @@ const Mutation = {
     }
   },
   modifyAduitAdjustment:async(parent,{projectId,record,vocherNum},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const modifyAduitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/modify_aduit_adjustment.py') 
     const modifyAduitAdjustmentProcess = spawnSync('python',[modifyAduitAdjustmentPath, dbPath,startTimeStr,endTimeStr,record,vocherNum]);
     const res = modifyAduitAdjustmentProcess.stdout.toString() 
@@ -566,16 +540,7 @@ const Mutation = {
     }
   },
   addSubject:async(parent,{projectId,record},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const addSubjectPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_subject.py') 
     const addSubjectProcess = spawnSync('python',[addSubjectPath, dbPath,startTimeStr,endTimeStr,record]);
     const res = addSubjectProcess.stdout.toString() 
@@ -586,16 +551,7 @@ const Mutation = {
     }
   },
   addAuxiliary:async(parent,{projectId,record},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const addAuxiliaryPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_auxiliary.py') 
     const addAuxiliaryProcess = spawnSync('python',[addAuxiliaryPath, dbPath,startTimeStr,endTimeStr,record]);
     const res = addAuxiliaryProcess.stdout.toString() 
@@ -606,16 +562,7 @@ const Mutation = {
     }
   },
   addChangeReason:async(parent,{projectId,record},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const addChangeReasonPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_change_reason.py') 
     const addChangeReasonProcess = spawnSync('python',[addChangeReasonPath, dbPath,startTimeStr,endTimeStr,record]);
     const res = addChangeReasonProcess.stdout.toString() 
@@ -626,16 +573,7 @@ const Mutation = {
     }
   },
   ageSetting:async(parent,{projectId,years,months,oneYear},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const ageSettingPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/age_settiing.py') 
     
     const ageSettingProcess = spawnSync('python',[ageSettingPath, dbPath,startTimeStr,endTimeStr,years,months,oneYear]);
@@ -647,16 +585,7 @@ const Mutation = {
     }
   },
   currentAccountHedging:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const currentAccountHedgingPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/current_account_hedging.py') 
     const currentAccountHedgingProcess = spawnSync('python',[currentAccountHedgingPath, dbPath,startTimeStr,endTimeStr]);
     const res = currentAccountHedgingProcess.stdout.toString() 
@@ -667,16 +596,7 @@ const Mutation = {
     }
   },
   computeAccountAge:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const computeAccountAgePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/compute_current_account_age.py') 
     
     const computeAccountAgeProcess = spawnSync('python',[computeAccountAgePath, dbPath,startTimeStr,endTimeStr]);

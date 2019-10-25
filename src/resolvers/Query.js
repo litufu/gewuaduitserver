@@ -1,4 +1,4 @@
-const { getUserId ,dateToString,companyNature} = require('../utils')
+const { getUserId ,dateToString,companyNature,getProjectDBPathStartTimeEndtime} = require('../utils')
 const _ = require('lodash');
 const {  spawnSync} = require('child_process');
 const path = require('path')
@@ -109,16 +109,7 @@ const Query = {
     return projects
   },
   checkImportData:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     // 检查数据路数的正确性
     const checkImportDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_import_data.py') 
     const checkImportDataProcess = spawnSync('python',[checkImportDataPath, dbPath,startTimeStr,endTimeStr]); 
@@ -128,67 +119,33 @@ const Query = {
     return false
   },
   getSubjectBalance:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     // 检查数据路数的正确性
     const getSubjectBalancePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_subject_balance.py') 
     const getSubjectBalanceProcess = spawnSync('python',[getSubjectBalancePath, dbPath,startTimeStr,endTimeStr]); 
     return getSubjectBalanceProcess.stdout.toString()
   },
   getChronologicalAccount:async(parent,{projectId,subjectNum,grade},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getChronologicalAccountPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_chronological_account.py') 
     const getChronologicalAccountProcess = spawnSync('python',[getChronologicalAccountPath, dbPath,startTimeStr,endTimeStr,subjectNum,grade]); 
     return getChronologicalAccountProcess.stdout.toString()
   },
   getTB:async(parent,{projectId,type},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
     const types = ["unAudited","adjustment","audited"]
     if(types.indexOf(type)===-1){
       throw new Error("tb类型错误")
     }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getTBPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_tb.py') 
     const getTBProcess = spawnSync('python',[getTBPath, dbPath,startTimeStr,endTimeStr,type]);
     const tb = getTBProcess.stdout.toString() 
     return tb
   },
   getPreviousTb: async(parent,{projectId,statement},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    
     const type = "audited"
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const {dbPath,project,company} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma) 
+    
     const startTime = new Date(project.startTime)
     const endTime = new Date(project.endTime)
     const previousStartTime = new Date(startTime.getFullYear()-1,startTime.getMonth(),startTime.getDate())
@@ -206,31 +163,14 @@ const Query = {
     return tb
   },
   getAuxiliaries:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getAuxiliariesPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_auxiliaries.py') 
     const getAuxiliariesProcess = spawnSync('python',[getAuxiliariesPath, dbPath,startTimeStr,endTimeStr]);
     const auxiliaries = getAuxiliariesProcess.stdout.toString() 
     return auxiliaries
   },
   getAduitAdjustments:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getAduitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_aduit_adjustment.py') 
     const getAduitAdjustmentProcess = spawnSync('python',[getAduitAdjustmentPath, dbPath,endTimeStr]);
     const subjects = getAduitAdjustmentProcess.stdout.toString() 
@@ -244,133 +184,61 @@ const Query = {
     return subjets.filter(s=>(s.subject.indexOf("%")===-1) && (s.subject !== ""))
   },
   getChangeReasons:async(parent,{projectId,statement,audit},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getChangeReasonPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_change_reason.py') 
     const getChangeReasonProcess = spawnSync('python',[getChangeReasonPath, dbPath,startTimeStr,endTimeStr,statement,audit]);
     const res = getChangeReasonProcess.stdout.toString()
     return res
   },
   getEntryClassify:async(parent,{projectId,recompute},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const entryClassifyPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/entry_classify.py') 
     const entryClassifyProcess = spawnSync('python',[entryClassifyPath, dbPath,startTimeStr,endTimeStr,recompute]);
     const res = entryClassifyProcess.stdout.toString() 
     return res
   },
   getChronologicalAccountByEntryNums:async(parent,{projectId,record},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getChronologicalAccountByEntryNumsPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_chronological_account_by_entry_num.py') 
     const getChronologicalAccountByEntryNumsProcess = spawnSync('python',[getChronologicalAccountByEntryNumsPath, dbPath,startTimeStr,endTimeStr,record]);
     const res = getChronologicalAccountByEntryNumsProcess.stdout.toString() 
     return res
   },
   getCheckEntry:async(parent,{projectId,ratio,num,integerNum,recompute},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const companyType = companyNature[company.nature]
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    // ratio:起始执行点占实际执行重要性水平的比例
+    // num :非经常业务是指少于num笔的业务
+    // integerNum:整数发生位数，如整万的交易、整千的交易
+    // recompute：重算
+    const {dbPath,startTimeStr,endTimeStr,company} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const companyType = company.type
     const checkEntryPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_entry.py') 
     const checkEntryProcess = spawnSync('python',[checkEntryPath, dbPath,startTimeStr,endTimeStr,ratio,num,integerNum,recompute,companyType]);
     const res = checkEntryProcess.stdout.toString() 
     return res
   },
   getSupplierAnalysis:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const companyType = companyNature[company.nature]
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const supplierPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/supplier.py') 
     const supplierProcess = spawnSync('python',[supplierPath, dbPath,startTimeStr,endTimeStr]);
     const res = supplierProcess.stdout.toString() 
     return res
   },
   getCustomerAnalysis:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const companyType = companyNature[company.nature]
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const customerPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/customer.py') 
     const customerProcess = spawnSync('python',[customerPath, dbPath,startTimeStr,endTimeStr]);
     const res = customerProcess.stdout.toString() 
     return res
   },
   getAgeSetting:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const companyType = companyNature[company.nature]
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getAgeSettingPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_age_setting.py') 
     const getAgeSettingProcess = spawnSync('python',[getAgeSettingPath, dbPath,startTimeStr,endTimeStr]);
     const res = getAgeSettingProcess.stdout.toString() 
     return res
   },
   getAccountAge:async(parent,{projectId},ctx)=>{
-    const project = await ctx.prisma.project({id:projectId})
-    if(!project){
-      throw new Error("未发现该项目")
-    }
-    const accountingFirm = await ctx.prisma.project({id:projectId}).accountingFirm()
-    const company = await ctx.prisma.project({id:projectId}).company()
-    const companyType = companyNature[company.nature]
-    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
-    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
-    const startTimeStr = dateToString(new Date(project.startTime))
-    const endTimeStr = dateToString(new Date(project.endTime))
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getAccountAgePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_current_account_age.py') 
     const getAccountAgeProcess = spawnSync('python',[getAccountAgePath, dbPath,startTimeStr,endTimeStr]);
     const res = getAccountAgeProcess.stdout.toString() 

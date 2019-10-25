@@ -1,5 +1,6 @@
 const { verify } = require('jsonwebtoken')
 const fs = require('fs')
+const path = require('path')
 // 企业邮箱
 const userMail = "aduit@gewu.org.cn"
 const passMail = "litufu001!2"
@@ -81,6 +82,20 @@ const storeFS = ({ storeFilePath,stream }) => {
   )
 }
 
+const  getProjectDBPathStartTimeEndtime = async (projectId,prisma)=>{
+  const project = await prisma.project({id:projectId})
+    if(!project){
+      throw new Error("未发现该项目")
+    }
+    const accountingFirm = await prisma.project({id:projectId}).accountingFirm()
+    const company = await prisma.project({id:projectId}).company()
+    const db_name = `${accountingFirm.id}-${company.id}.sqlite`
+    const dbPath = path.join(path.resolve(__dirname, '../../db'), `./${db_name}`)
+    const startTimeStr = dateToString(new Date(project.startTime))
+    const endTimeStr = dateToString(new Date(project.endTime))
+    return {dbPath,startTimeStr,endTimeStr,project,company}
+}
+
 module.exports = {
   getUserId,
   APP_SECRET,
@@ -93,5 +108,6 @@ module.exports = {
   storeFS,
   ALLOW_UPLOAD_TYPES,
   dateToString,
-  delDir
+  delDir,
+  getProjectDBPathStartTimeEndtime
 }
