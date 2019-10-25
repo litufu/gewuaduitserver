@@ -380,59 +380,60 @@ def recaculate_km(df_km, df_xsz,type):
     df_km_new['terminal_amount'] = 0.00
     df_km_new = df_km_new.set_index('subject_num')
 
-    # 计算序时账发生额
-    df_xsz_pivot = df_xsz.pivot_table(values=['debit', 'credit'], index='subject_num', aggfunc='sum')
-    # 重新计算科目余额表
-    # 重算期初数
-    # 首先计算年初未分配利润
-    initial_credit = df_km_new[df_km_new.index.str.startswith("6") &
-                               (df_km_new["direction"] == "贷") &
-                               (df_km_new["is_specific"])]["initial_amount"].sum()
-    initial_debit = df_km_new[df_km_new.index.str.startswith("6")&
-                              (df_km_new["direction"] == "借") &
-                              (df_km_new["is_specific"])]["initial_amount"].sum()
-    profit_dividend = df_km_new[df_km_new["subject_name"]=="利润分配"]["initial_amount"].sum()
-    profit_this_year = df_km_new[df_km_new["subject_name"]=="本年利润"]["initial_amount"].sum()
+    if len(df_xsz)>0:
+        # 计算序时账发生额
+        df_xsz_pivot = df_xsz.pivot_table(values=['debit', 'credit'], index='subject_num', aggfunc='sum')
+        # 重新计算科目余额表
+        # 重算期初数
+        # 首先计算年初未分配利润
+        initial_credit = df_km_new[df_km_new.index.str.startswith("6") &
+                                   (df_km_new["direction"] == "贷") &
+                                   (df_km_new["is_specific"])]["initial_amount"].sum()
+        initial_debit = df_km_new[df_km_new.index.str.startswith("6")&
+                                  (df_km_new["direction"] == "借") &
+                                  (df_km_new["is_specific"])]["initial_amount"].sum()
+        profit_dividend = df_km_new[df_km_new["subject_name"]=="利润分配"]["initial_amount"].sum()
+        profit_this_year = df_km_new[df_km_new["subject_name"]=="本年利润"]["initial_amount"].sum()
 
-    # 确定借方发生额/贷方发生额，损益类科目结转分录中应该减去期初自动结转的部分。
-    for i in range(len(df_km_new)):
-        subject_num = df_km_new.index[i]
-        # 确定利润分配期初数=本年利润+利润分配+损益类科目期初数
-        if df_km_new.at[subject_num,"subject_name"] == "利润分配":
-            df_km_new.at[subject_num, "initial_amount"] = profit_dividend + profit_this_year + initial_credit - initial_debit
-        # 序时账透视表中筛选出所有科目和子科目
-        df_xsz_pivot_tmp = df_xsz_pivot.loc[df_xsz_pivot.index.str.startswith(subject_num)]
-        # 期初数
-        initial_amount = df_km_new.at[subject_num, "initial_amount"]
-        # 序时账借方合计
-        debit = df_xsz_pivot_tmp['debit'].sum()
-        # 序时账贷方合计
-        credit = df_xsz_pivot_tmp['credit'].sum()
-        # 因为上面利润分配期初数确认时将本年利润和损益类科目的期初数结转了一次，在本年度做一次冲销处理。将损益类科目的期初数从本年结转发生额中减去，
-        if (str(subject_num).startswith("6") and abs(initial_amount)>0.00) or (
-                df_km_new.at[subject_num, "subject_name"] == "本年利润" and abs(initial_amount) > 0.00) :
-            if df_km_new.at[subject_num, "direction"] == "借":
+        # 确定借方发生额/贷方发生额，损益类科目结转分录中应该减去期初自动结转的部分。
+        for i in range(len(df_km_new)):
+            subject_num = df_km_new.index[i]
+            # 确定利润分配期初数=本年利润+利润分配+损益类科目期初数
+            if df_km_new.at[subject_num,"subject_name"] == "利润分配":
+                df_km_new.at[subject_num, "initial_amount"] = profit_dividend + profit_this_year + initial_credit - initial_debit
+            # 序时账透视表中筛选出所有科目和子科目
+            df_xsz_pivot_tmp = df_xsz_pivot.loc[df_xsz_pivot.index.str.startswith(subject_num)]
+            # 期初数
+            initial_amount = df_km_new.at[subject_num, "initial_amount"]
+            # 序时账借方合计
+            debit = df_xsz_pivot_tmp['debit'].sum()
+            # 序时账贷方合计
+            credit = df_xsz_pivot_tmp['credit'].sum()
+            # 因为上面利润分配期初数确认时将本年利润和损益类科目的期初数结转了一次，在本年度做一次冲销处理。将损益类科目的期初数从本年结转发生额中减去，
+            if (str(subject_num).startswith("6") and abs(initial_amount)>0.00) or (
+                    df_km_new.at[subject_num, "subject_name"] == "本年利润" and abs(initial_amount) > 0.00) :
+                if df_km_new.at[subject_num, "direction"] == "借":
+                    df_km_new.at[subject_num, "debit_amount"] = debit
+                    df_km_new.at[subject_num, "credit_amount"] = credit - initial_amount
+                    df_km_new.at[subject_num, "initial_amount"] = 0.00
+                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                       subject_num, "initial_amount"] + debit - credit
+                elif df_km_new.at[subject_num, "direction"] == "贷":
+                    df_km_new.at[subject_num, "debit_amount"] = debit - initial_amount
+                    df_km_new.at[subject_num, "credit_amount"] = credit
+                    df_km_new.at[subject_num, "initial_amount"] = 0.00
+                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                       subject_num, "initial_amount"] - debit + credit
+            else:
                 df_km_new.at[subject_num, "debit_amount"] = debit
-                df_km_new.at[subject_num, "credit_amount"] = credit - initial_amount
-                df_km_new.at[subject_num, "initial_amount"] = 0.00
-                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                   subject_num, "initial_amount"] + debit - credit
-            elif df_km_new.at[subject_num, "direction"] == "贷":
-                df_km_new.at[subject_num, "debit_amount"] = debit - initial_amount
                 df_km_new.at[subject_num, "credit_amount"] = credit
-                df_km_new.at[subject_num, "initial_amount"] = 0.00
-                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                   subject_num, "initial_amount"] - debit + credit
-        else:
-            df_km_new.at[subject_num, "debit_amount"] = debit
-            df_km_new.at[subject_num, "credit_amount"] = credit
-            if df_km_new.at[subject_num, "direction"] == "借":
-                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                    subject_num, "initial_amount"] + debit - credit
-            elif df_km_new.at[subject_num, "direction"] == "贷":
-                df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                    subject_num, "initial_amount"] - debit + credit
-    # 检查期末数中的损益是否有数据，如有做一次结转处理。自动结转未结转损益。
+                if df_km_new.at[subject_num, "direction"] == "借":
+                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                        subject_num, "initial_amount"] + debit - credit
+                elif df_km_new.at[subject_num, "direction"] == "贷":
+                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
+                                                                        subject_num, "initial_amount"] - debit + credit
+        # 检查期末数中的损益是否有数据，如有做一次结转处理。自动结转未结转损益。
 
     df_km_new = df_km_new.reset_index()
     return df_km_new
@@ -874,7 +875,11 @@ def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time,session):
         elif subject == "年初未分配利润":
             # 利润分配+本年利润+损益类科目贷方-损益类科目借方+年初调整数
             df_tb.at[subject, "origin"] = ""
-            df_tb.at[subject, "amount"] = df_km_first_subject_not_match.at["利润分配", 'initial_amount'] + adjustment_profit["value"]
+            if "利润分配" in df_km_first_subject_not_match.index:
+                df_tb.at[subject, "amount"] = df_km_first_subject_not_match.at["利润分配", 'initial_amount'] + adjustment_profit["value"]
+            else:
+                df_tb.at[subject, "amount"] = 0.00 + adjustment_profit["value"]
+
 
     # 最后计算公式
     # 如果是公式的话，则按照公式进行匹配
@@ -966,22 +971,22 @@ def save_tb(start_time,end_time,session,df_tb):
 
 
 if __name__ == '__main__':
-    db_path = sys.argv[1]
-    start_time = sys.argv[2]
-    end_time = sys.argv[3]
-    type = sys.argv[4]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # db_path = sys.argv[1]
+    # start_time = sys.argv[2]
+    # end_time = sys.argv[3]
+    # type = sys.argv[4]
+    db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     from utils import add_suggestion
     # companyname = "深圳市众恒世讯科技股份有限公司"
-    # start_time = "2015-1-1"
-    # end_time = "2015-12-31"
-    # type="audited"
+    start_time = "2015-1-1"
+    end_time = "2015-12-31"
+    type="adjustment"
     # get_new_km_xsz_df(start_time, end_time,type, engine, add_suggestion, session)
     # recalculation(start_time,end_time,type,engine,add_suggestion,session)
 
 
-    recalculation(start_time, end_time,type, engine=engine, session=session,
-                  add_suggestion=add_suggestion)
+    recalculation(start_time, end_time,type, engine=engine, session=session,add_suggestion=add_suggestion)
+
