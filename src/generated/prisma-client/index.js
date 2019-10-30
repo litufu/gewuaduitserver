@@ -25,11 +25,23 @@ var models = [
     embedded: false
   },
   {
+    name: "NoneCompany",
+    embedded: false
+  },
+  {
     name: "Company",
     embedded: false
   },
   {
+    name: "MainMember",
+    embedded: false
+  },
+  {
     name: "Holder",
+    embedded: false
+  },
+  {
+    name: "RelatedParty",
     embedded: false
   },
   {

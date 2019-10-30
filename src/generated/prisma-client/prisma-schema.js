@@ -478,11 +478,23 @@ type AggregateHolder {
   count: Int!
 }
 
+type AggregateMainMember {
+  count: Int!
+}
+
 type AggregateMember {
   count: Int!
 }
 
+type AggregateNoneCompany {
+  count: Int!
+}
+
 type AggregateProject {
+  count: Int!
+}
+
+type AggregateRelatedParty {
   count: Int!
 }
 
@@ -519,6 +531,10 @@ type Company {
   paidinCapital: String
   businessScope: String
   holders(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Holder!]
+  mainMembers(where: MainMemberWhereInput, orderBy: MainMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MainMember!]
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties(where: RelatedPartyWhereInput, orderBy: RelatedPartyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RelatedParty!]
   accountingFirms(where: AccountingFirmWhereInput, orderBy: AccountingFirmOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [AccountingFirm!]
 }
 
@@ -541,6 +557,10 @@ input CompanyCreateInput {
   paidinCapital: String
   businessScope: String
   holders: HolderCreateManyWithoutCompanyInput
+  mainMembers: MainMemberCreateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyCreateManyWithoutCompanyInput
   accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
 
@@ -559,6 +579,16 @@ input CompanyCreateOneWithoutHoldersInput {
   connect: CompanyWhereUniqueInput
 }
 
+input CompanyCreateOneWithoutMainMembersInput {
+  create: CompanyCreateWithoutMainMembersInput
+  connect: CompanyWhereUniqueInput
+}
+
+input CompanyCreateOneWithoutRelatedPartiesInput {
+  create: CompanyCreateWithoutRelatedPartiesInput
+  connect: CompanyWhereUniqueInput
+}
+
 input CompanyCreateWithoutAccountingFirmsInput {
   id: ID
   type: CompanyType!
@@ -572,6 +602,10 @@ input CompanyCreateWithoutAccountingFirmsInput {
   paidinCapital: String
   businessScope: String
   holders: HolderCreateManyWithoutCompanyInput
+  mainMembers: MainMemberCreateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyCreateManyWithoutCompanyInput
 }
 
 input CompanyCreateWithoutHoldersInput {
@@ -586,6 +620,48 @@ input CompanyCreateWithoutHoldersInput {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+  mainMembers: MainMemberCreateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyCreateManyWithoutCompanyInput
+  accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
+}
+
+input CompanyCreateWithoutMainMembersInput {
+  id: ID
+  type: CompanyType!
+  nature: CompanyNature!
+  name: String!
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderCreateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyCreateManyWithoutCompanyInput
+  accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
+}
+
+input CompanyCreateWithoutRelatedPartiesInput {
+  id: ID
+  type: CompanyType!
+  nature: CompanyNature!
+  name: String!
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderCreateManyWithoutCompanyInput
+  mainMembers: MainMemberCreateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
   accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
 
@@ -624,6 +700,10 @@ enum CompanyOrderByInput {
   paidinCapital_DESC
   businessScope_ASC
   businessScope_DESC
+  lastControllCompany_ASC
+  lastControllCompany_DESC
+  lastControllPerson_ASC
+  lastControllPerson_DESC
 }
 
 type CompanyPreviousValues {
@@ -638,6 +718,8 @@ type CompanyPreviousValues {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+  lastControllCompany: String
+  lastControllPerson: String
 }
 
 input CompanyScalarWhereInput {
@@ -769,6 +851,34 @@ input CompanyScalarWhereInput {
   businessScope_not_starts_with: String
   businessScope_ends_with: String
   businessScope_not_ends_with: String
+  lastControllCompany: String
+  lastControllCompany_not: String
+  lastControllCompany_in: [String!]
+  lastControllCompany_not_in: [String!]
+  lastControllCompany_lt: String
+  lastControllCompany_lte: String
+  lastControllCompany_gt: String
+  lastControllCompany_gte: String
+  lastControllCompany_contains: String
+  lastControllCompany_not_contains: String
+  lastControllCompany_starts_with: String
+  lastControllCompany_not_starts_with: String
+  lastControllCompany_ends_with: String
+  lastControllCompany_not_ends_with: String
+  lastControllPerson: String
+  lastControllPerson_not: String
+  lastControllPerson_in: [String!]
+  lastControllPerson_not_in: [String!]
+  lastControllPerson_lt: String
+  lastControllPerson_lte: String
+  lastControllPerson_gt: String
+  lastControllPerson_gte: String
+  lastControllPerson_contains: String
+  lastControllPerson_not_contains: String
+  lastControllPerson_starts_with: String
+  lastControllPerson_not_starts_with: String
+  lastControllPerson_ends_with: String
+  lastControllPerson_not_ends_with: String
   AND: [CompanyScalarWhereInput!]
   OR: [CompanyScalarWhereInput!]
   NOT: [CompanyScalarWhereInput!]
@@ -809,6 +919,10 @@ input CompanyUpdateDataInput {
   paidinCapital: String
   businessScope: String
   holders: HolderUpdateManyWithoutCompanyInput
+  mainMembers: MainMemberUpdateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
 
@@ -824,6 +938,10 @@ input CompanyUpdateInput {
   paidinCapital: String
   businessScope: String
   holders: HolderUpdateManyWithoutCompanyInput
+  mainMembers: MainMemberUpdateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
 
@@ -838,6 +956,8 @@ input CompanyUpdateManyDataInput {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+  lastControllCompany: String
+  lastControllPerson: String
 }
 
 input CompanyUpdateManyMutationInput {
@@ -851,6 +971,8 @@ input CompanyUpdateManyMutationInput {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+  lastControllCompany: String
+  lastControllPerson: String
 }
 
 input CompanyUpdateManyWithoutAccountingFirmsInput {
@@ -884,6 +1006,20 @@ input CompanyUpdateOneRequiredWithoutHoldersInput {
   connect: CompanyWhereUniqueInput
 }
 
+input CompanyUpdateOneRequiredWithoutMainMembersInput {
+  create: CompanyCreateWithoutMainMembersInput
+  update: CompanyUpdateWithoutMainMembersDataInput
+  upsert: CompanyUpsertWithoutMainMembersInput
+  connect: CompanyWhereUniqueInput
+}
+
+input CompanyUpdateOneRequiredWithoutRelatedPartiesInput {
+  create: CompanyCreateWithoutRelatedPartiesInput
+  update: CompanyUpdateWithoutRelatedPartiesDataInput
+  upsert: CompanyUpsertWithoutRelatedPartiesInput
+  connect: CompanyWhereUniqueInput
+}
+
 input CompanyUpdateWithoutAccountingFirmsDataInput {
   type: CompanyType
   nature: CompanyNature
@@ -896,6 +1032,10 @@ input CompanyUpdateWithoutAccountingFirmsDataInput {
   paidinCapital: String
   businessScope: String
   holders: HolderUpdateManyWithoutCompanyInput
+  mainMembers: MainMemberUpdateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
 }
 
 input CompanyUpdateWithoutHoldersDataInput {
@@ -909,6 +1049,46 @@ input CompanyUpdateWithoutHoldersDataInput {
   registeredCapital: String
   paidinCapital: String
   businessScope: String
+  mainMembers: MainMemberUpdateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
+  accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
+}
+
+input CompanyUpdateWithoutMainMembersDataInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderUpdateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
+  relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
+  accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
+}
+
+input CompanyUpdateWithoutRelatedPartiesDataInput {
+  type: CompanyType
+  nature: CompanyNature
+  name: String
+  code: String
+  address: String
+  legalRepresentative: String
+  establishDate: DateTime
+  registeredCapital: String
+  paidinCapital: String
+  businessScope: String
+  holders: HolderUpdateManyWithoutCompanyInput
+  mainMembers: MainMemberUpdateManyWithoutCompanyInput
+  lastControllCompany: String
+  lastControllPerson: String
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
 
@@ -925,6 +1105,16 @@ input CompanyUpsertNestedInput {
 input CompanyUpsertWithoutHoldersInput {
   update: CompanyUpdateWithoutHoldersDataInput!
   create: CompanyCreateWithoutHoldersInput!
+}
+
+input CompanyUpsertWithoutMainMembersInput {
+  update: CompanyUpdateWithoutMainMembersDataInput!
+  create: CompanyCreateWithoutMainMembersInput!
+}
+
+input CompanyUpsertWithoutRelatedPartiesInput {
+  update: CompanyUpdateWithoutRelatedPartiesDataInput!
+  create: CompanyCreateWithoutRelatedPartiesInput!
 }
 
 input CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput {
@@ -1065,6 +1255,40 @@ input CompanyWhereInput {
   holders_every: HolderWhereInput
   holders_some: HolderWhereInput
   holders_none: HolderWhereInput
+  mainMembers_every: MainMemberWhereInput
+  mainMembers_some: MainMemberWhereInput
+  mainMembers_none: MainMemberWhereInput
+  lastControllCompany: String
+  lastControllCompany_not: String
+  lastControllCompany_in: [String!]
+  lastControllCompany_not_in: [String!]
+  lastControllCompany_lt: String
+  lastControllCompany_lte: String
+  lastControllCompany_gt: String
+  lastControllCompany_gte: String
+  lastControllCompany_contains: String
+  lastControllCompany_not_contains: String
+  lastControllCompany_starts_with: String
+  lastControllCompany_not_starts_with: String
+  lastControllCompany_ends_with: String
+  lastControllCompany_not_ends_with: String
+  lastControllPerson: String
+  lastControllPerson_not: String
+  lastControllPerson_in: [String!]
+  lastControllPerson_not_in: [String!]
+  lastControllPerson_lt: String
+  lastControllPerson_lte: String
+  lastControllPerson_gt: String
+  lastControllPerson_gte: String
+  lastControllPerson_contains: String
+  lastControllPerson_not_contains: String
+  lastControllPerson_starts_with: String
+  lastControllPerson_not_starts_with: String
+  lastControllPerson_ends_with: String
+  lastControllPerson_not_ends_with: String
+  relatedParties_every: RelatedPartyWhereInput
+  relatedParties_some: RelatedPartyWhereInput
+  relatedParties_none: RelatedPartyWhereInput
   accountingFirms_every: AccountingFirmWhereInput
   accountingFirms_some: AccountingFirmWhereInput
   accountingFirms_none: AccountingFirmWhereInput
@@ -1955,6 +2179,225 @@ input HolderWhereUniqueInput {
 
 scalar Long
 
+type MainMember {
+  id: ID!
+  name: String!
+  post: String!
+  company: Company!
+}
+
+type MainMemberConnection {
+  pageInfo: PageInfo!
+  edges: [MainMemberEdge]!
+  aggregate: AggregateMainMember!
+}
+
+input MainMemberCreateInput {
+  id: ID
+  name: String!
+  post: String!
+  company: CompanyCreateOneWithoutMainMembersInput!
+}
+
+input MainMemberCreateManyWithoutCompanyInput {
+  create: [MainMemberCreateWithoutCompanyInput!]
+  connect: [MainMemberWhereUniqueInput!]
+}
+
+input MainMemberCreateWithoutCompanyInput {
+  id: ID
+  name: String!
+  post: String!
+}
+
+type MainMemberEdge {
+  node: MainMember!
+  cursor: String!
+}
+
+enum MainMemberOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  post_ASC
+  post_DESC
+}
+
+type MainMemberPreviousValues {
+  id: ID!
+  name: String!
+  post: String!
+}
+
+input MainMemberScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  post: String
+  post_not: String
+  post_in: [String!]
+  post_not_in: [String!]
+  post_lt: String
+  post_lte: String
+  post_gt: String
+  post_gte: String
+  post_contains: String
+  post_not_contains: String
+  post_starts_with: String
+  post_not_starts_with: String
+  post_ends_with: String
+  post_not_ends_with: String
+  AND: [MainMemberScalarWhereInput!]
+  OR: [MainMemberScalarWhereInput!]
+  NOT: [MainMemberScalarWhereInput!]
+}
+
+type MainMemberSubscriptionPayload {
+  mutation: MutationType!
+  node: MainMember
+  updatedFields: [String!]
+  previousValues: MainMemberPreviousValues
+}
+
+input MainMemberSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: MainMemberWhereInput
+  AND: [MainMemberSubscriptionWhereInput!]
+  OR: [MainMemberSubscriptionWhereInput!]
+  NOT: [MainMemberSubscriptionWhereInput!]
+}
+
+input MainMemberUpdateInput {
+  name: String
+  post: String
+  company: CompanyUpdateOneRequiredWithoutMainMembersInput
+}
+
+input MainMemberUpdateManyDataInput {
+  name: String
+  post: String
+}
+
+input MainMemberUpdateManyMutationInput {
+  name: String
+  post: String
+}
+
+input MainMemberUpdateManyWithoutCompanyInput {
+  create: [MainMemberCreateWithoutCompanyInput!]
+  delete: [MainMemberWhereUniqueInput!]
+  connect: [MainMemberWhereUniqueInput!]
+  set: [MainMemberWhereUniqueInput!]
+  disconnect: [MainMemberWhereUniqueInput!]
+  update: [MainMemberUpdateWithWhereUniqueWithoutCompanyInput!]
+  upsert: [MainMemberUpsertWithWhereUniqueWithoutCompanyInput!]
+  deleteMany: [MainMemberScalarWhereInput!]
+  updateMany: [MainMemberUpdateManyWithWhereNestedInput!]
+}
+
+input MainMemberUpdateManyWithWhereNestedInput {
+  where: MainMemberScalarWhereInput!
+  data: MainMemberUpdateManyDataInput!
+}
+
+input MainMemberUpdateWithoutCompanyDataInput {
+  name: String
+  post: String
+}
+
+input MainMemberUpdateWithWhereUniqueWithoutCompanyInput {
+  where: MainMemberWhereUniqueInput!
+  data: MainMemberUpdateWithoutCompanyDataInput!
+}
+
+input MainMemberUpsertWithWhereUniqueWithoutCompanyInput {
+  where: MainMemberWhereUniqueInput!
+  update: MainMemberUpdateWithoutCompanyDataInput!
+  create: MainMemberCreateWithoutCompanyInput!
+}
+
+input MainMemberWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  post: String
+  post_not: String
+  post_in: [String!]
+  post_not_in: [String!]
+  post_lt: String
+  post_lte: String
+  post_gt: String
+  post_gte: String
+  post_contains: String
+  post_not_contains: String
+  post_starts_with: String
+  post_not_starts_with: String
+  post_ends_with: String
+  post_not_ends_with: String
+  company: CompanyWhereInput
+  AND: [MainMemberWhereInput!]
+  OR: [MainMemberWhereInput!]
+  NOT: [MainMemberWhereInput!]
+}
+
+input MainMemberWhereUniqueInput {
+  id: ID
+}
+
 type Member {
   id: ID!
   project: Project!
@@ -2159,18 +2602,36 @@ type Mutation {
   upsertHolder(where: HolderWhereUniqueInput!, create: HolderCreateInput!, update: HolderUpdateInput!): Holder!
   deleteHolder(where: HolderWhereUniqueInput!): Holder
   deleteManyHolders(where: HolderWhereInput): BatchPayload!
+  createMainMember(data: MainMemberCreateInput!): MainMember!
+  updateMainMember(data: MainMemberUpdateInput!, where: MainMemberWhereUniqueInput!): MainMember
+  updateManyMainMembers(data: MainMemberUpdateManyMutationInput!, where: MainMemberWhereInput): BatchPayload!
+  upsertMainMember(where: MainMemberWhereUniqueInput!, create: MainMemberCreateInput!, update: MainMemberUpdateInput!): MainMember!
+  deleteMainMember(where: MainMemberWhereUniqueInput!): MainMember
+  deleteManyMainMembers(where: MainMemberWhereInput): BatchPayload!
   createMember(data: MemberCreateInput!): Member!
   updateMember(data: MemberUpdateInput!, where: MemberWhereUniqueInput!): Member
   updateManyMembers(data: MemberUpdateManyMutationInput!, where: MemberWhereInput): BatchPayload!
   upsertMember(where: MemberWhereUniqueInput!, create: MemberCreateInput!, update: MemberUpdateInput!): Member!
   deleteMember(where: MemberWhereUniqueInput!): Member
   deleteManyMembers(where: MemberWhereInput): BatchPayload!
+  createNoneCompany(data: NoneCompanyCreateInput!): NoneCompany!
+  updateNoneCompany(data: NoneCompanyUpdateInput!, where: NoneCompanyWhereUniqueInput!): NoneCompany
+  updateManyNoneCompanies(data: NoneCompanyUpdateManyMutationInput!, where: NoneCompanyWhereInput): BatchPayload!
+  upsertNoneCompany(where: NoneCompanyWhereUniqueInput!, create: NoneCompanyCreateInput!, update: NoneCompanyUpdateInput!): NoneCompany!
+  deleteNoneCompany(where: NoneCompanyWhereUniqueInput!): NoneCompany
+  deleteManyNoneCompanies(where: NoneCompanyWhereInput): BatchPayload!
   createProject(data: ProjectCreateInput!): Project!
   updateProject(data: ProjectUpdateInput!, where: ProjectWhereUniqueInput!): Project
   updateManyProjects(data: ProjectUpdateManyMutationInput!, where: ProjectWhereInput): BatchPayload!
   upsertProject(where: ProjectWhereUniqueInput!, create: ProjectCreateInput!, update: ProjectUpdateInput!): Project!
   deleteProject(where: ProjectWhereUniqueInput!): Project
   deleteManyProjects(where: ProjectWhereInput): BatchPayload!
+  createRelatedParty(data: RelatedPartyCreateInput!): RelatedParty!
+  updateRelatedParty(data: RelatedPartyUpdateInput!, where: RelatedPartyWhereUniqueInput!): RelatedParty
+  updateManyRelatedParties(data: RelatedPartyUpdateManyMutationInput!, where: RelatedPartyWhereInput): BatchPayload!
+  upsertRelatedParty(where: RelatedPartyWhereUniqueInput!, create: RelatedPartyCreateInput!, update: RelatedPartyUpdateInput!): RelatedParty!
+  deleteRelatedParty(where: RelatedPartyWhereUniqueInput!): RelatedParty
+  deleteManyRelatedParties(where: RelatedPartyWhereInput): BatchPayload!
   createStdSubject(data: StdSubjectCreateInput!): StdSubject!
   updateStdSubject(data: StdSubjectUpdateInput!, where: StdSubjectWhereUniqueInput!): StdSubject
   updateManyStdSubjects(data: StdSubjectUpdateManyMutationInput!, where: StdSubjectWhereInput): BatchPayload!
@@ -2205,6 +2666,104 @@ enum MutationType {
 
 interface Node {
   id: ID!
+}
+
+type NoneCompany {
+  id: ID!
+  name: String!
+}
+
+type NoneCompanyConnection {
+  pageInfo: PageInfo!
+  edges: [NoneCompanyEdge]!
+  aggregate: AggregateNoneCompany!
+}
+
+input NoneCompanyCreateInput {
+  id: ID
+  name: String!
+}
+
+type NoneCompanyEdge {
+  node: NoneCompany!
+  cursor: String!
+}
+
+enum NoneCompanyOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type NoneCompanyPreviousValues {
+  id: ID!
+  name: String!
+}
+
+type NoneCompanySubscriptionPayload {
+  mutation: MutationType!
+  node: NoneCompany
+  updatedFields: [String!]
+  previousValues: NoneCompanyPreviousValues
+}
+
+input NoneCompanySubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: NoneCompanyWhereInput
+  AND: [NoneCompanySubscriptionWhereInput!]
+  OR: [NoneCompanySubscriptionWhereInput!]
+  NOT: [NoneCompanySubscriptionWhereInput!]
+}
+
+input NoneCompanyUpdateInput {
+  name: String
+}
+
+input NoneCompanyUpdateManyMutationInput {
+  name: String
+}
+
+input NoneCompanyWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [NoneCompanyWhereInput!]
+  OR: [NoneCompanyWhereInput!]
+  NOT: [NoneCompanyWhereInput!]
+}
+
+input NoneCompanyWhereUniqueInput {
+  id: ID
+  name: String
 }
 
 type PageInfo {
@@ -2477,12 +3036,21 @@ type Query {
   holder(where: HolderWhereUniqueInput!): Holder
   holders(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Holder]!
   holdersConnection(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HolderConnection!
+  mainMember(where: MainMemberWhereUniqueInput!): MainMember
+  mainMembers(where: MainMemberWhereInput, orderBy: MainMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MainMember]!
+  mainMembersConnection(where: MainMemberWhereInput, orderBy: MainMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MainMemberConnection!
   member(where: MemberWhereUniqueInput!): Member
   members(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Member]!
   membersConnection(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MemberConnection!
+  noneCompany(where: NoneCompanyWhereUniqueInput!): NoneCompany
+  noneCompanies(where: NoneCompanyWhereInput, orderBy: NoneCompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [NoneCompany]!
+  noneCompaniesConnection(where: NoneCompanyWhereInput, orderBy: NoneCompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): NoneCompanyConnection!
   project(where: ProjectWhereUniqueInput!): Project
   projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Project]!
   projectsConnection(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ProjectConnection!
+  relatedParty(where: RelatedPartyWhereUniqueInput!): RelatedParty
+  relatedParties(where: RelatedPartyWhereInput, orderBy: RelatedPartyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RelatedParty]!
+  relatedPartiesConnection(where: RelatedPartyWhereInput, orderBy: RelatedPartyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RelatedPartyConnection!
   stdSubject(where: StdSubjectWhereUniqueInput!): StdSubject
   stdSubjects(where: StdSubjectWhereInput, orderBy: StdSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [StdSubject]!
   stdSubjectsConnection(where: StdSubjectWhereInput, orderBy: StdSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): StdSubjectConnection!
@@ -2496,6 +3064,289 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   node(id: ID!): Node
+}
+
+type RelatedParty {
+  id: ID!
+  grade: Int!
+  relationship: String!
+  type: String!
+  name: String!
+  company: Company!
+}
+
+type RelatedPartyConnection {
+  pageInfo: PageInfo!
+  edges: [RelatedPartyEdge]!
+  aggregate: AggregateRelatedParty!
+}
+
+input RelatedPartyCreateInput {
+  id: ID
+  grade: Int!
+  relationship: String!
+  type: String!
+  name: String!
+  company: CompanyCreateOneWithoutRelatedPartiesInput!
+}
+
+input RelatedPartyCreateManyWithoutCompanyInput {
+  create: [RelatedPartyCreateWithoutCompanyInput!]
+  connect: [RelatedPartyWhereUniqueInput!]
+}
+
+input RelatedPartyCreateWithoutCompanyInput {
+  id: ID
+  grade: Int!
+  relationship: String!
+  type: String!
+  name: String!
+}
+
+type RelatedPartyEdge {
+  node: RelatedParty!
+  cursor: String!
+}
+
+enum RelatedPartyOrderByInput {
+  id_ASC
+  id_DESC
+  grade_ASC
+  grade_DESC
+  relationship_ASC
+  relationship_DESC
+  type_ASC
+  type_DESC
+  name_ASC
+  name_DESC
+}
+
+type RelatedPartyPreviousValues {
+  id: ID!
+  grade: Int!
+  relationship: String!
+  type: String!
+  name: String!
+}
+
+input RelatedPartyScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  grade: Int
+  grade_not: Int
+  grade_in: [Int!]
+  grade_not_in: [Int!]
+  grade_lt: Int
+  grade_lte: Int
+  grade_gt: Int
+  grade_gte: Int
+  relationship: String
+  relationship_not: String
+  relationship_in: [String!]
+  relationship_not_in: [String!]
+  relationship_lt: String
+  relationship_lte: String
+  relationship_gt: String
+  relationship_gte: String
+  relationship_contains: String
+  relationship_not_contains: String
+  relationship_starts_with: String
+  relationship_not_starts_with: String
+  relationship_ends_with: String
+  relationship_not_ends_with: String
+  type: String
+  type_not: String
+  type_in: [String!]
+  type_not_in: [String!]
+  type_lt: String
+  type_lte: String
+  type_gt: String
+  type_gte: String
+  type_contains: String
+  type_not_contains: String
+  type_starts_with: String
+  type_not_starts_with: String
+  type_ends_with: String
+  type_not_ends_with: String
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [RelatedPartyScalarWhereInput!]
+  OR: [RelatedPartyScalarWhereInput!]
+  NOT: [RelatedPartyScalarWhereInput!]
+}
+
+type RelatedPartySubscriptionPayload {
+  mutation: MutationType!
+  node: RelatedParty
+  updatedFields: [String!]
+  previousValues: RelatedPartyPreviousValues
+}
+
+input RelatedPartySubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: RelatedPartyWhereInput
+  AND: [RelatedPartySubscriptionWhereInput!]
+  OR: [RelatedPartySubscriptionWhereInput!]
+  NOT: [RelatedPartySubscriptionWhereInput!]
+}
+
+input RelatedPartyUpdateInput {
+  grade: Int
+  relationship: String
+  type: String
+  name: String
+  company: CompanyUpdateOneRequiredWithoutRelatedPartiesInput
+}
+
+input RelatedPartyUpdateManyDataInput {
+  grade: Int
+  relationship: String
+  type: String
+  name: String
+}
+
+input RelatedPartyUpdateManyMutationInput {
+  grade: Int
+  relationship: String
+  type: String
+  name: String
+}
+
+input RelatedPartyUpdateManyWithoutCompanyInput {
+  create: [RelatedPartyCreateWithoutCompanyInput!]
+  delete: [RelatedPartyWhereUniqueInput!]
+  connect: [RelatedPartyWhereUniqueInput!]
+  set: [RelatedPartyWhereUniqueInput!]
+  disconnect: [RelatedPartyWhereUniqueInput!]
+  update: [RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput!]
+  upsert: [RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput!]
+  deleteMany: [RelatedPartyScalarWhereInput!]
+  updateMany: [RelatedPartyUpdateManyWithWhereNestedInput!]
+}
+
+input RelatedPartyUpdateManyWithWhereNestedInput {
+  where: RelatedPartyScalarWhereInput!
+  data: RelatedPartyUpdateManyDataInput!
+}
+
+input RelatedPartyUpdateWithoutCompanyDataInput {
+  grade: Int
+  relationship: String
+  type: String
+  name: String
+}
+
+input RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput {
+  where: RelatedPartyWhereUniqueInput!
+  data: RelatedPartyUpdateWithoutCompanyDataInput!
+}
+
+input RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput {
+  where: RelatedPartyWhereUniqueInput!
+  update: RelatedPartyUpdateWithoutCompanyDataInput!
+  create: RelatedPartyCreateWithoutCompanyInput!
+}
+
+input RelatedPartyWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  grade: Int
+  grade_not: Int
+  grade_in: [Int!]
+  grade_not_in: [Int!]
+  grade_lt: Int
+  grade_lte: Int
+  grade_gt: Int
+  grade_gte: Int
+  relationship: String
+  relationship_not: String
+  relationship_in: [String!]
+  relationship_not_in: [String!]
+  relationship_lt: String
+  relationship_lte: String
+  relationship_gt: String
+  relationship_gte: String
+  relationship_contains: String
+  relationship_not_contains: String
+  relationship_starts_with: String
+  relationship_not_starts_with: String
+  relationship_ends_with: String
+  relationship_not_ends_with: String
+  type: String
+  type_not: String
+  type_in: [String!]
+  type_not_in: [String!]
+  type_lt: String
+  type_lte: String
+  type_gt: String
+  type_gte: String
+  type_contains: String
+  type_not_contains: String
+  type_starts_with: String
+  type_not_starts_with: String
+  type_ends_with: String
+  type_not_ends_with: String
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  company: CompanyWhereInput
+  AND: [RelatedPartyWhereInput!]
+  OR: [RelatedPartyWhereInput!]
+  NOT: [RelatedPartyWhereInput!]
+}
+
+input RelatedPartyWhereUniqueInput {
+  id: ID
 }
 
 enum Role {
@@ -2848,8 +3699,11 @@ type Subscription {
   fSSubject(where: FSSubjectSubscriptionWhereInput): FSSubjectSubscriptionPayload
   file(where: FileSubscriptionWhereInput): FileSubscriptionPayload
   holder(where: HolderSubscriptionWhereInput): HolderSubscriptionPayload
+  mainMember(where: MainMemberSubscriptionWhereInput): MainMemberSubscriptionPayload
   member(where: MemberSubscriptionWhereInput): MemberSubscriptionPayload
+  noneCompany(where: NoneCompanySubscriptionWhereInput): NoneCompanySubscriptionPayload
   project(where: ProjectSubscriptionWhereInput): ProjectSubscriptionPayload
+  relatedParty(where: RelatedPartySubscriptionWhereInput): RelatedPartySubscriptionPayload
   stdSubject(where: StdSubjectSubscriptionWhereInput): StdSubjectSubscriptionPayload
   subjectContrast(where: SubjectContrastSubscriptionWhereInput): SubjectContrastSubscriptionPayload
   tbSubject(where: TbSubjectSubscriptionWhereInput): TbSubjectSubscriptionPayload

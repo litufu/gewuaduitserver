@@ -28,6 +28,7 @@ const typeDefs = gql`
     getCustomerAnalysis(projectId:String!):String!
     getAgeSetting(projectId:String!):String!
     getAccountAge(projectId:String!):String!
+    getFirstNCustomersOrSuppliers(projectId:String!,num:Int!,type:String!):String!
   }
 
   type Mutation {
@@ -53,6 +54,8 @@ const typeDefs = gql`
     ageSetting(projectId:String!,years:Int!,months:Int!,oneYear:Boolean!):Boolean!
     currentAccountHedging(projectId:String!):Boolean!
     computeAccountAge(projectId:String!):Boolean!
+    downloadSupplierAndCustomerInfo(projectId:String!):Boolean!
+    getRelatedPaties(companyName:String!):Boolean!
 
     
   }

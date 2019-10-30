@@ -44,6 +44,11 @@ enum CompanyNature{
   OTHER
 }
 
+type NoneCompany{
+  id: ID! @id
+  name:String!  @unique
+}
+
 
 type Company{
   id: ID! @id
@@ -58,13 +63,33 @@ type Company{
   paidinCapital:String
   businessScope:String
   holders:[Holder!]!
+  mainMembers:[MainMember!]!
+  lastControllCompany:String
+  lastControllPerson:String
+  relatedParties:[RelatedParty!]!
   accountingFirms:[AccountingFirm!]! @relation(link: TABLE)
+}
+
+type MainMember{
+  id: ID! @id
+  name:String!
+  post:String!
+  company:Company!
 }
 
 type Holder{
   id: ID! @id
   name:String!
   ratio:Float!
+  company:Company!
+}
+
+type RelatedParty{
+  id: ID! @id
+  grade:Int!
+  relationship:String!
+  type:String!
+  name:String!
   company:Company!
 }
 

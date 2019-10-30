@@ -43,7 +43,10 @@ def str_to_float(str1):
         print(" int")
         return float(str1)
 
-
+def replace_brace(obj):
+    p = re.compile('[\(（\)）]')
+    res = re.sub(p,"",obj)
+    return res
 
 def check_start_end_date(start_time, end_time):
     '''
@@ -298,5 +301,6 @@ class DateEncoder(json.JSONEncoder):
 if __name__ == '__main__':
     # str_to_float(np.nan)
 
-    str = "【供应商:惠州乐庭电子线缆有限公司 借 9699.00】"
-    parse_auxiliary(str)
+    # str = "【供应商:惠州乐庭电子线缆有限公司 借 9699.00】"
+    # parse_auxiliary(str)
+    print(replace_brace("康普通讯科技(上海)有限公司"))

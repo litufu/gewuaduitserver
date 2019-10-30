@@ -244,6 +244,13 @@ const Query = {
     const res = getAccountAgeProcess.stdout.toString() 
     return res
   },
+  getFirstNCustomersOrSuppliers:async(parent,{projectId,num,type},ctx)=>{
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const getFirstNCustomersOrSuppliersPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_first_n_customer_or_supplier.py') 
+    const getFirstNCustomersOrSuppliersProcess = spawnSync('python',[getFirstNCustomersOrSuppliersPath, dbPath,startTimeStr,endTimeStr,num,type]);
+    const res = getFirstNCustomersOrSuppliersProcess.stdout.toString() 
+    return res
+  },
 }
 
 module.exports = {

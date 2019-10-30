@@ -6,7 +6,9 @@ const mkdirp = require('mkdirp')
 const path = require('path')
 const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
-const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,companyNature,getProjectDBPathStartTimeEndtime } = require('../utils')
+const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,
+  companyNature,getProjectDBPathStartTimeEndtime,saveHoldersToRelatedParty ,companyType,
+  saveMainMembersToRelatedParty,addCompanyInfo,saveCompanyToRelatedParty} = require('../utils')
 const emailGenerator = require('../emailGenerator');
 
 mkdirp.sync(UPLOAD_DIR)
@@ -276,31 +278,43 @@ const Mutation = {
     const filepath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
     const pythonProcess = spawn('python',[filepath, name]);
     pythonProcess.stdout.on('data', async (data) => {
-        res = JSON.parse(data)
-        if(Array.isArray(res)){
-          for (let i=0;i<res.length;i++) {
-            const ratio = parseFloat(res[i].ratio.replace('%'))
-            const holderName = res[i].holder_name
-            await ctx.prisma.createHolder({
-              name:holderName,
-              ratio,
-              company:{connect:{name}}
-            })
-          }
-        }else{
-          await ctx.prisma.updateCompany({
-            where: { name },
-            data: {
-              code:res.code,
-              address:res.address,
-              legalRepresentative:res.legalRepresentative,
-              establishDate:res.establishDate,
-              registeredCapital:res.registeredCapital,
-              paidinCapital:res.paidinCapital,
-              businessScope:res.businessScope
-            }
+        let res = JSON.parse(data)
+        let companyInfo = res.companyInfo
+        let holders = res.holders
+        let members = res.members
+        // 增加股东信息
+        for (let i=0;i<holders.length;i++) {
+          const ratio = parseFloat(holders[i].ratio.replace('%',""))
+          const holderName = holders[i].holder_name
+          await ctx.prisma.createHolder({
+            name:holderName,
+            ratio,
+            company:{connect:{name}}
           })
         }
+        // 增加主要成员信息
+        for (let i=0;i<members.length;i++) {
+          const post = members[i].post
+          const Membername = members[i].name
+          await ctx.prisma.createMainMember({
+            name:Membername,
+            post,
+            company:{connect:{name}}
+          })
+        }
+        // 修改公司信息
+        await ctx.prisma.updateCompany({
+          where: { name },
+          data: {
+            code:companyInfo.code,
+            address:companyInfo.address,
+            legalRepresentative:companyInfo.legalRepresentative,
+            establishDate:companyInfo.establishDate,
+            registeredCapital:companyInfo.registeredCapital,
+            paidinCapital:companyInfo.paidinCapital,
+            businessScope:companyInfo.businessScope
+          }
+        })
     });
     
     pythonProcess.stderr.on('data', (data) => {
@@ -606,6 +620,138 @@ const Mutation = {
     }else{
       return false
     }
+  },
+  downloadSupplierAndCustomerInfo:async(parent,{projectId,num},ctx)=>{
+
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const getCustomerAndSupplierNamesPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_customer_and_supplier_names.py') 
+    const getCustomerAndSupplierNamesProcess = spawnSync('python',[getCustomerAndSupplierNamesPath, dbPath,startTimeStr,endTimeStr,num]);
+    const res = getCustomerAndSupplierNamesProcess.stdout.toString() 
+    const companies = JSON.parse(res)
+    const newCompanies = []
+    for(let i=0;i<companies.length;i++){
+      const company = await ctx.prisma.company({name:companies[i]})
+      const noneCompany = await ctx.prisma.noneCompany({name:companies[i]})
+      if(!company && !noneCompany){
+        newCompanies.push(companies[i])
+      }
+    }
+    const newCompaniesStr = JSON.stringify(newCompanies)
+    const downloadCompaniesInfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companies_info.py')
+    const downloadCompaniesInfoProcess = spawn('python',[downloadCompaniesInfoPath, newCompaniesStr]);
+
+    downloadCompaniesInfoProcess.stdout.on('data', async (data) => {
+         let res = JSON.parse(data)
+         if(res.hasOwnProperty('name')){
+           await ctx.prisma.createNoneCompany({name:res.name})
+         }else{
+           await addCompanyInfo(res,"DOMESTIC","OTHER")
+         }
+     });
+     
+     downloadCompaniesInfoProcess.stderr.on('data', (data) => {
+        throw new Error(`客户信息下载失败，请确认客户名称是否正确${data}`)
+     });
+ 
+     downloadCompaniesInfoProcess.on('exit', (code) => {
+       if(code!==0){
+         throw new Error(`客户信息下载失败，请确认客户名称是否正确`)
+       }
+     });
+  },
+  getRelatedPaties:async(parent,{companyName},ctx)=>{
+    const company = await ctx.prisma.company({name:companyName})
+    if(company){
+      // 第一步将公司高管和股东添加到关联方
+      // 第二部：检查控股股东是否为公司
+      // 第三部：是公司爬取控股股东的高管和股东，并将其添加到公司的关联方中
+      // 第四步：控股股东不是公司了，停止爬取
+      // 第一步：将公司高管和股东添加到关联方
+      // 将公司自身加入关联方列表
+      await saveCompanyToRelatedParty(ctx,company)
+      // 添加关联方和高管到关联方列表
+      const holders = await ctx.prisma.company({name:companyName}).holders()
+      const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
+      const contolHolder = sortedHolders[0]
+      const otherHolders = sortedHolders.slice(1,)
+      await saveHoldersToRelatedParty(ctx,company,contolHolder,otherHolders,1)
+      const members = await ctx.prisma.company({name:companyName}).mainMembers()
+      await saveMainMembersToRelatedParty(ctx,company,members,1)
+      // 第二步判断股东是否为公司，是公司据需爬取，不是公司则停止
+      let controlHolderName = contolHolder.name
+      let grade = 2
+      while(companyType(controlHolderName)==="公司"){
+        // 爬取控股股东工商信息并添加到数据库
+        const downloadCompanyinfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
+        const downloadCompanyinfoProcess = spawnSync('python',[downloadCompanyinfoPath, controlHolderName]);
+        const res = downloadCompanyinfoProcess.stdout.toString()
+        const companyInfo = JSON.parse(res)
+         // 如果未爬取到公司信息则返回
+         if(companyInfo.hasOwnProperty("name")){
+          return true
+        }
+        await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+        // 将控股股东和高管添加到关联方
+        const holders = await ctx.prisma.company({name:controlHolderName}).holders()
+        const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
+        const contolHolder = sortedHolders[0]
+        const otherHolders = sortedHolders.slice(1,)
+        await saveHoldersToRelatedParty(ctx,company,contolHolder,otherHolders,grade)
+        const members = await ctx.prisma.company({name:controlHolderName}).mainMembers()
+        await saveMainMembersToRelatedParty(ctx,company,members,grade)
+        controlHolderName = contolHolder.name
+        grade = grade + 1
+        
+      }
+    }else{
+      // 爬取控股股东工商信息并添加到数据库
+      const downloadCompanyinfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
+      const downloadCompanyinfoProcess = spawnSync('python',[downloadCompanyinfoPath, companyName]);
+      const res = downloadCompanyinfoProcess.stdout.toString() 
+      const companyInfo = JSON.parse(res)
+      // 如果未爬取到公司信息则返回
+      if(companyInfo.hasOwnProperty("name")){
+        return true
+      }
+      await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+      const newcompany = await ctx.prisma.company({name:companyName})
+      await saveCompanyToRelatedParty(ctx,newcompany)
+      // 将公司高管和股东添加到关联方
+      const holders = await ctx.prisma.company({name:companyName}).holders()
+      const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
+      const contolHolder = sortedHolders[0]
+      const otherHolders = sortedHolders.slice(1,)
+      await saveHoldersToRelatedParty(ctx,company,contolHolder,otherHolders,1)
+      const members = await ctx.prisma.company({name:companyName}).mainMembers()
+      await saveMainMembersToRelatedParty(ctx,company,members,1)
+      // 判断股东是否为公司，是公司据需爬取，不是公司则停止
+      let controlHolderName = contolHolder.name
+      console.log(controlHolderName)
+      let grade = 2
+      while(companyType(controlHolderName)==="公司"){
+        // 爬取控股股东工商信息并添加到数据库
+        const downloadCompanyinfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
+        const downloadCompanyinfoProcess = spawnSync('python',[downloadCompanyinfoPath, controlHolderName]);
+        const res = downloadCompanyinfoProcess.stdout.toString() 
+        const companyInfo = JSON.parse(res)
+        // 如果未爬取到公司信息则返回
+        if(companyInfo.hasOwnProperty("name")){
+          return true
+        }
+        await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+        // 将控股股东和高管添加到关联方
+        const holders = await ctx.prisma.company({name:controlHolderName}).holders()
+        const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
+        const contolHolder = sortedHolders[0]
+        const otherHolders = sortedHolders.slice(1,)
+        await saveHoldersToRelatedParty(ctx,company,contolHolder,otherHolders,grade)
+        const members = await ctx.prisma.company({name:controlHolderName}).mainMembers()
+        await saveMainMembersToRelatedParty(ctx,company,members,grade)
+        controlHolderName = contolHolder.name
+        grade = grade + 1
+      }
+    }
+    return true
   },
 }
 
