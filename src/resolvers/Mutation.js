@@ -621,7 +621,21 @@ const Mutation = {
       return false
     }
   },
-  downloadSupplierAndCustomerInfo:async(parent,{projectId,num},ctx)=>{
+  downloadCompanyInfo:async(parent,{companyName},ctx)=>{
+    const downloadCompanyinfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
+    const downloadCompanyinfoProcess = spawnSync('python',[downloadCompanyinfoPath, companyName]);
+    const res = downloadCompanyinfoProcess.stdout.toString()
+    const companyInfo = JSON.parse(res)
+      // 如果未爬取到公司信息则返回
+      if(companyInfo.hasOwnProperty("name")){
+      throw Error("下载公司工商信息失败，请检查公司名称是否正确")
+    }
+    await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+    const company = await ctx.prisma.company({name:companyName})
+    return company
+  },
+
+  downloadCustomerAndSupplierInfo:async(parent,{projectId,num},ctx)=>{
 
     const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getCustomerAndSupplierNamesPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_customer_and_supplier_names.py') 
@@ -645,7 +659,7 @@ const Mutation = {
          if(res.hasOwnProperty('name')){
            await ctx.prisma.createNoneCompany({name:res.name})
          }else{
-           await addCompanyInfo(res,"DOMESTIC","OTHER")
+           await addCompanyInfo(ctx,res,"DOMESTIC","OTHER")
          }
      });
      
@@ -658,16 +672,22 @@ const Mutation = {
          throw new Error(`客户信息下载失败，请确认客户名称是否正确`)
        }
      });
+     return true
   },
-  getRelatedPaties:async(parent,{companyName},ctx)=>{
+  getRelatedPaties:async(parent,{companyName,speed},ctx)=>{
     const company = await ctx.prisma.company({name:companyName})
     if(company){
+      const companyRelatedParties = await ctx.prisma.company({name:companyName}).relatedParties()
+      if(companyRelatedParties.length>0 && speed==="yes"){
+        return companyRelatedParties
+      }
       // 第一步将公司高管和股东添加到关联方
       // 第二部：检查控股股东是否为公司
       // 第三部：是公司爬取控股股东的高管和股东，并将其添加到公司的关联方中
       // 第四步：控股股东不是公司了，停止爬取
       // 第一步：将公司高管和股东添加到关联方
       // 将公司自身加入关联方列表
+              
       await saveCompanyToRelatedParty(ctx,company)
       // 添加关联方和高管到关联方列表
       const holders = await ctx.prisma.company({name:companyName}).holders()
@@ -701,7 +721,6 @@ const Mutation = {
         await saveMainMembersToRelatedParty(ctx,company,members,grade)
         controlHolderName = contolHolder.name
         grade = grade + 1
-        
       }
     }else{
       // 爬取控股股东工商信息并添加到数据库
@@ -726,7 +745,6 @@ const Mutation = {
       await saveMainMembersToRelatedParty(ctx,company,members,1)
       // 判断股东是否为公司，是公司据需爬取，不是公司则停止
       let controlHolderName = contolHolder.name
-      console.log(controlHolderName)
       let grade = 2
       while(companyType(controlHolderName)==="公司"){
         // 爬取控股股东工商信息并添加到数据库
@@ -751,8 +769,46 @@ const Mutation = {
         grade = grade + 1
       }
     }
-    return true
+    return ctx.prisma.company({name:companyName}).relatedParties()
   },
+  addStdCompanyName:async(parent,{originName,stdName,projectId},ctx)=>{
+    const {dbPath} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const companyStdNames = await ctx.prisma.companyStdNames({
+      where:{AND:[
+        {dbName:dbPath},
+        {originName},
+        {stdName}
+      ]}
+    })
+    if(companyStdNames.length===0){
+      const companyStdName = await ctx.prisma.createCompanyStdName({
+        dbName:dbPath,
+        originName,
+        stdName
+      })
+      return companyStdName
+    }else{
+      return companyStdNames[0]
+    }
+   },
+   setStandardizedAccountName:async(parent,{projectId},ctx)=>{
+    const {dbPath} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const companyStdNames = await ctx.prisma.companyStdNames({
+      where:{dbName:dbPath},
+    })
+    const newCompanyStdNames = companyStdNames.map(std=>({stdName:std.stdName,originName:std.originName}))
+    const companyStdNamesJson = JSON.stringify(newCompanyStdNames)
+    console.log(companyStdNamesJson)
+    const setStandardizedAccountNamePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/set_standardized_account_name.py')
+    const setStandardizedAccountNameProcess = spawnSync('python',[setStandardizedAccountNamePath, dbPath,companyStdNamesJson]);
+    const res = setStandardizedAccountNameProcess.stdout.toString()
+    console.log(res) 
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+   },
 }
 
 module.exports = {

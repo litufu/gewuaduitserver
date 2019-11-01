@@ -33,6 +33,10 @@ var models = [
     embedded: false
   },
   {
+    name: "CompanyStdName",
+    embedded: false
+  },
+  {
     name: "MainMember",
     embedded: false
   },

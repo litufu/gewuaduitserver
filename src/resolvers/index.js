@@ -6,6 +6,7 @@ const { Holder } = require('./Holder')
 const { DataRecord } = require('./DataRecord')
 const { Project } = require('./Project')
 const { Member } = require('./Member')
+const {RelatedParty} = require('./RelatedParty')
 // const {GraphQLUpload} = require("apollo-server-express")
 
 const resolvers = {
@@ -17,6 +18,7 @@ const resolvers = {
   DataRecord,
   Project,
   Member,
+  RelatedParty,
 }
 
 module.exports = {

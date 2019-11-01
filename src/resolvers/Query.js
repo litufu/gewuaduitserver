@@ -251,6 +251,19 @@ const Query = {
     const res = getFirstNCustomersOrSuppliersProcess.stdout.toString() 
     return res
   },
+  getCompanies:async(parent,{companyNames},ctx)=>{
+    const companies = await ctx.prisma.companies({where:{
+      name_in:companyNames
+    }})
+    return companies
+  },
+  getStdCompanyNames:async (parent,{projectId},ctx)=>{
+    const {dbPath} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const companyStdNames = await ctx.prisma.companyStdNames({
+      where:{dbName:dbPath}
+    })
+    return companyStdNames
+  },
 }
 
 module.exports = {

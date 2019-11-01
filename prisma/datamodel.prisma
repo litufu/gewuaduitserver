@@ -70,6 +70,13 @@ type Company{
   accountingFirms:[AccountingFirm!]! @relation(link: TABLE)
 }
 
+type CompanyStdName{
+  id: ID! @id
+  dbName:String!
+  originName:String!
+  stdName:String!
+}
+
 type MainMember{
   id: ID! @id
   name:String!

@@ -462,6 +462,10 @@ type AggregateCompany {
   count: Int!
 }
 
+type AggregateCompanyStdName {
+  count: Int!
+}
+
 type AggregateDataRecord {
   count: Int!
 }
@@ -882,6 +886,145 @@ input CompanyScalarWhereInput {
   AND: [CompanyScalarWhereInput!]
   OR: [CompanyScalarWhereInput!]
   NOT: [CompanyScalarWhereInput!]
+}
+
+type CompanyStdName {
+  id: ID!
+  dbName: String!
+  originName: String!
+  stdName: String!
+}
+
+type CompanyStdNameConnection {
+  pageInfo: PageInfo!
+  edges: [CompanyStdNameEdge]!
+  aggregate: AggregateCompanyStdName!
+}
+
+input CompanyStdNameCreateInput {
+  id: ID
+  dbName: String!
+  originName: String!
+  stdName: String!
+}
+
+type CompanyStdNameEdge {
+  node: CompanyStdName!
+  cursor: String!
+}
+
+enum CompanyStdNameOrderByInput {
+  id_ASC
+  id_DESC
+  dbName_ASC
+  dbName_DESC
+  originName_ASC
+  originName_DESC
+  stdName_ASC
+  stdName_DESC
+}
+
+type CompanyStdNamePreviousValues {
+  id: ID!
+  dbName: String!
+  originName: String!
+  stdName: String!
+}
+
+type CompanyStdNameSubscriptionPayload {
+  mutation: MutationType!
+  node: CompanyStdName
+  updatedFields: [String!]
+  previousValues: CompanyStdNamePreviousValues
+}
+
+input CompanyStdNameSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: CompanyStdNameWhereInput
+  AND: [CompanyStdNameSubscriptionWhereInput!]
+  OR: [CompanyStdNameSubscriptionWhereInput!]
+  NOT: [CompanyStdNameSubscriptionWhereInput!]
+}
+
+input CompanyStdNameUpdateInput {
+  dbName: String
+  originName: String
+  stdName: String
+}
+
+input CompanyStdNameUpdateManyMutationInput {
+  dbName: String
+  originName: String
+  stdName: String
+}
+
+input CompanyStdNameWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  dbName: String
+  dbName_not: String
+  dbName_in: [String!]
+  dbName_not_in: [String!]
+  dbName_lt: String
+  dbName_lte: String
+  dbName_gt: String
+  dbName_gte: String
+  dbName_contains: String
+  dbName_not_contains: String
+  dbName_starts_with: String
+  dbName_not_starts_with: String
+  dbName_ends_with: String
+  dbName_not_ends_with: String
+  originName: String
+  originName_not: String
+  originName_in: [String!]
+  originName_not_in: [String!]
+  originName_lt: String
+  originName_lte: String
+  originName_gt: String
+  originName_gte: String
+  originName_contains: String
+  originName_not_contains: String
+  originName_starts_with: String
+  originName_not_starts_with: String
+  originName_ends_with: String
+  originName_not_ends_with: String
+  stdName: String
+  stdName_not: String
+  stdName_in: [String!]
+  stdName_not_in: [String!]
+  stdName_lt: String
+  stdName_lte: String
+  stdName_gt: String
+  stdName_gte: String
+  stdName_contains: String
+  stdName_not_contains: String
+  stdName_starts_with: String
+  stdName_not_starts_with: String
+  stdName_ends_with: String
+  stdName_not_ends_with: String
+  AND: [CompanyStdNameWhereInput!]
+  OR: [CompanyStdNameWhereInput!]
+  NOT: [CompanyStdNameWhereInput!]
+}
+
+input CompanyStdNameWhereUniqueInput {
+  id: ID
 }
 
 type CompanySubscriptionPayload {
@@ -2578,6 +2721,12 @@ type Mutation {
   upsertCompany(where: CompanyWhereUniqueInput!, create: CompanyCreateInput!, update: CompanyUpdateInput!): Company!
   deleteCompany(where: CompanyWhereUniqueInput!): Company
   deleteManyCompanies(where: CompanyWhereInput): BatchPayload!
+  createCompanyStdName(data: CompanyStdNameCreateInput!): CompanyStdName!
+  updateCompanyStdName(data: CompanyStdNameUpdateInput!, where: CompanyStdNameWhereUniqueInput!): CompanyStdName
+  updateManyCompanyStdNames(data: CompanyStdNameUpdateManyMutationInput!, where: CompanyStdNameWhereInput): BatchPayload!
+  upsertCompanyStdName(where: CompanyStdNameWhereUniqueInput!, create: CompanyStdNameCreateInput!, update: CompanyStdNameUpdateInput!): CompanyStdName!
+  deleteCompanyStdName(where: CompanyStdNameWhereUniqueInput!): CompanyStdName
+  deleteManyCompanyStdNames(where: CompanyStdNameWhereInput): BatchPayload!
   createDataRecord(data: DataRecordCreateInput!): DataRecord!
   updateDataRecord(data: DataRecordUpdateInput!, where: DataRecordWhereUniqueInput!): DataRecord
   updateManyDataRecords(data: DataRecordUpdateManyMutationInput!, where: DataRecordWhereInput): BatchPayload!
@@ -3024,6 +3173,9 @@ type Query {
   company(where: CompanyWhereUniqueInput!): Company
   companies(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Company]!
   companiesConnection(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CompanyConnection!
+  companyStdName(where: CompanyStdNameWhereUniqueInput!): CompanyStdName
+  companyStdNames(where: CompanyStdNameWhereInput, orderBy: CompanyStdNameOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [CompanyStdName]!
+  companyStdNamesConnection(where: CompanyStdNameWhereInput, orderBy: CompanyStdNameOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CompanyStdNameConnection!
   dataRecord(where: DataRecordWhereUniqueInput!): DataRecord
   dataRecords(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [DataRecord]!
   dataRecordsConnection(where: DataRecordWhereInput, orderBy: DataRecordOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): DataRecordConnection!
@@ -3695,6 +3847,7 @@ input SubjectContrastWhereUniqueInput {
 type Subscription {
   accountingFirm(where: AccountingFirmSubscriptionWhereInput): AccountingFirmSubscriptionPayload
   company(where: CompanySubscriptionWhereInput): CompanySubscriptionPayload
+  companyStdName(where: CompanyStdNameSubscriptionWhereInput): CompanyStdNameSubscriptionPayload
   dataRecord(where: DataRecordSubscriptionWhereInput): DataRecordSubscriptionPayload
   fSSubject(where: FSSubjectSubscriptionWhereInput): FSSubjectSubscriptionPayload
   file(where: FileSubscriptionWhereInput): FileSubscriptionPayload

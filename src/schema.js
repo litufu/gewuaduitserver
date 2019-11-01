@@ -29,6 +29,8 @@ const typeDefs = gql`
     getAgeSetting(projectId:String!):String!
     getAccountAge(projectId:String!):String!
     getFirstNCustomersOrSuppliers(projectId:String!,num:Int!,type:String!):String!
+    getCompanies(companyNames:[String]!):[Company]
+    getStdCompanyNames(projectId:String!):[CompanyStdName]
   }
 
   type Mutation {
@@ -54,10 +56,13 @@ const typeDefs = gql`
     ageSetting(projectId:String!,years:Int!,months:Int!,oneYear:Boolean!):Boolean!
     currentAccountHedging(projectId:String!):Boolean!
     computeAccountAge(projectId:String!):Boolean!
-    downloadSupplierAndCustomerInfo(projectId:String!):Boolean!
-    getRelatedPaties(companyName:String!):Boolean!
+    downloadCompanyInfo(companyName:String!):Company
+    downloadCustomerAndSupplierInfo(projectId:String!,num:Int!):Boolean!
+    getRelatedPaties(companyName:String!,speed:String!):[RelatedParty]
+    addStdCompanyName(originName:String!,stdName:String!,projectId:String!):CompanyStdName
+    setStandardizedAccountName(projectId:String!):Boolean!
 
-    
+
   }
 
   input UploadTypeInput{
@@ -143,6 +148,7 @@ const typeDefs = gql`
     paidinCapital:String
     businessScope:String
     holders:[Holder]
+    relatedParties:[RelatedParty]
   }
 
   type Holder{
@@ -152,10 +158,27 @@ const typeDefs = gql`
     company:Company!
   }
 
+  type RelatedParty{
+    id: ID!
+    grade:Int!
+    relationship:String!
+    type:String!
+    name:String!
+    company:Company!
+  }
+
   input MemberInput{
     email:String!
     role:String!
   }
+
+  type CompanyStdName{
+    id: ID!
+    dbName:String!
+    originName:String!
+    stdName:String!
+  }
+
 
 
   type Project{
