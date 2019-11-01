@@ -177,6 +177,83 @@ const saveCompanyToRelatedParty= async (ctx,company)=>{
   })
 }
 
+const updateCompanyInfo=async (ctx,res,type,nature)=>{
+  let companyInfo = res.companyInfo
+  let holders = res.holders
+  let members = res.members
+  // 增加公司信息
+  const company = await ctx.prisma.updateCompany({
+    where:{name:companyInfo.name},
+    data:{
+      type:type,
+      nature:nature,
+      code:companyInfo.code,
+      address:companyInfo.address,
+      legalRepresentative:companyInfo.legalRepresentative,
+      establishDate:companyInfo.establishDate,
+      registeredCapital:companyInfo.registeredCapital,
+      paidinCapital:companyInfo.paidinCapital,
+      businessScope:companyInfo.businessScope
+    }
+})
+// 增加股东信息
+for (let i=0;i<holders.length;i++) {
+  const ratio = parseFloat(holders[i].ratio.replace('%',""))
+  const holderName = holders[i].holder_name
+  const newholders = await ctx.prisma.holders({
+    where:{
+      AND:[
+        {name:holderName},
+        {company:{id:company.id}}
+      ]
+    }
+  })
+  if(newholders.length===0){
+    await ctx.prisma.createHolder({
+      name:holderName,
+      ratio,
+      company:{connect:{id:company.id}}
+    })
+  }else{
+    await ctx.prisma.updateHolder({
+      where:{id:newholders[0].id},
+      data:{
+        ratio
+      }
+    })
+  }
+  
+}
+// 增加主要成员信息
+for (let i=0;i<members.length;i++) {
+  const post = members[i].post
+  const Membername = members[i].name
+  const newmembers = await ctx.prisma.mainMembers({
+    where:{
+      AND:[
+        {name:Membername},
+        {company:{id:company.id}}
+      ]
+    }
+  })
+  if(newmembers.length===0){
+    await ctx.prisma.createMainMember({
+      name:Membername,
+      post,
+      company:{connect:{id:company.id}}
+    })
+  }else{
+    await ctx.prisma.updateHolder({
+      where:{id:newmembers[0].id},
+      data:{
+        post
+      }
+    })
+  }
+  
+}
+}
+
 const addCompanyInfo=async (ctx,res,type,nature)=>{
     let companyInfo = res.companyInfo
     let holders = res.holders
@@ -234,5 +311,6 @@ module.exports = {
   saveMainMembersToRelatedParty,
   saveHoldersToRelatedParty,
   saveCompanyToRelatedParty,
-  addCompanyInfo
+  addCompanyInfo,
+  updateCompanyInfo
 }

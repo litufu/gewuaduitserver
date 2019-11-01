@@ -8,7 +8,7 @@ const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
 const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,
   companyNature,getProjectDBPathStartTimeEndtime,saveHoldersToRelatedParty ,companyType,
-  saveMainMembersToRelatedParty,addCompanyInfo,saveCompanyToRelatedParty} = require('../utils')
+  saveMainMembersToRelatedParty,addCompanyInfo,saveCompanyToRelatedParty,updateCompanyInfo} = require('../utils')
 const emailGenerator = require('../emailGenerator');
 
 mkdirp.sync(UPLOAD_DIR)
@@ -674,7 +674,7 @@ const Mutation = {
      });
      return true
   },
-  getRelatedPaties:async(parent,{companyName,speed},ctx)=>{
+  downloadRelatedPaties:async(parent,{companyName,speed},ctx)=>{
     const company = await ctx.prisma.company({name:companyName})
     if(company){
       const companyRelatedParties = await ctx.prisma.company({name:companyName}).relatedParties()
@@ -690,7 +690,24 @@ const Mutation = {
               
       await saveCompanyToRelatedParty(ctx,company)
       // 添加关联方和高管到关联方列表
-      const holders = await ctx.prisma.company({name:companyName}).holders()
+      let holders = await ctx.prisma.company({name:companyName}).holders()
+      if(holders.length===0){
+        const downloadCompanyinfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
+        const downloadCompanyinfoProcess = spawnSync('python',[downloadCompanyinfoPath, companyName]);
+        const res = downloadCompanyinfoProcess.stdout.toString()
+        const companyInfo = JSON.parse(res)
+         // 如果未爬取到公司信息则返回
+         if(companyInfo.hasOwnProperty("name")){
+          return true
+        }
+        await updateCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+        holders = await ctx.prisma.company({name:companyName}).holders()
+      }
+
+      if(holders.length===0){
+        return []
+      }
+
       const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
       const contolHolder = sortedHolders[0]
       const otherHolders = sortedHolders.slice(1,)
@@ -772,6 +789,7 @@ const Mutation = {
     return ctx.prisma.company({name:companyName}).relatedParties()
   },
   addStdCompanyName:async(parent,{originName,stdName,projectId},ctx)=>{
+    // 标准化名称对照表
     const {dbPath} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const companyStdNames = await ctx.prisma.companyStdNames({
       where:{AND:[
@@ -792,17 +810,16 @@ const Mutation = {
     }
    },
    setStandardizedAccountName:async(parent,{projectId},ctx)=>{
+    //  用标准化名称修改公司账套
     const {dbPath} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const companyStdNames = await ctx.prisma.companyStdNames({
       where:{dbName:dbPath},
     })
     const newCompanyStdNames = companyStdNames.map(std=>({stdName:std.stdName,originName:std.originName}))
     const companyStdNamesJson = JSON.stringify(newCompanyStdNames)
-    console.log(companyStdNamesJson)
     const setStandardizedAccountNamePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/set_standardized_account_name.py')
     const setStandardizedAccountNameProcess = spawnSync('python',[setStandardizedAccountNamePath, dbPath,companyStdNamesJson]);
     const res = setStandardizedAccountNameProcess.stdout.toString()
-    console.log(res) 
     if(res==="success"){
       return true
     }else{

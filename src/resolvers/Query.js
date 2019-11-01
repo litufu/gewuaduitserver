@@ -69,6 +69,10 @@ const Query = {
     })
    return firms
   },
+  company:async (parent, {projectId}, ctx) => {
+    const company = await ctx.prisma.project({id:projectId}).company()
+    return company
+  },
   companies:async (parent, {inputvalue}, ctx) => {
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })

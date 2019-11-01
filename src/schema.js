@@ -10,6 +10,7 @@ const typeDefs = gql`
     emailHasTaken(email:String!):Boolean!
     accountingFirms(inputvalue:String!):[AccountingFirm]
     companies(inputvalue:String!):[Company]
+    company(projectId:String!):Company
     projects:[Project]
     checkImportData(projectId:String):Boolean!
     getSubjectBalance(projectId:String):String!
@@ -58,7 +59,7 @@ const typeDefs = gql`
     computeAccountAge(projectId:String!):Boolean!
     downloadCompanyInfo(companyName:String!):Company
     downloadCustomerAndSupplierInfo(projectId:String!,num:Int!):Boolean!
-    getRelatedPaties(companyName:String!,speed:String!):[RelatedParty]
+    downloadRelatedPaties(companyName:String!,speed:String!):[RelatedParty]
     addStdCompanyName(originName:String!,stdName:String!,projectId:String!):CompanyStdName
     setStandardizedAccountName(projectId:String!):Boolean!
 
