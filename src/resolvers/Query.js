@@ -89,6 +89,9 @@ const Query = {
       first: 10
     })
   },
+  project:async (parent, {projectId}, ctx) => {
+    return ctx.prisma.project({id:projectId})
+  },
   projects:async (parent, args, ctx) => {
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })

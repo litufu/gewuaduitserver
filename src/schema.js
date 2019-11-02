@@ -11,6 +11,7 @@ const typeDefs = gql`
     accountingFirms(inputvalue:String!):[AccountingFirm]
     companies(inputvalue:String!):[Company]
     company(projectId:String!):Company
+    project(projectId:String!):Project
     projects:[Project]
     checkImportData(projectId:String):Boolean!
     getSubjectBalance(projectId:String):String!
