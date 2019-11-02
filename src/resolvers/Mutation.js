@@ -8,7 +8,7 @@ const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
 const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,
   companyNature,getProjectDBPathStartTimeEndtime,saveHoldersToRelatedParty ,companyType,
-  saveMainMembersToRelatedParty,addCompanyInfo,saveCompanyToRelatedParty,updateCompanyInfo} = require('../utils')
+  saveMainMembersToRelatedParty,saveCompanyToRelatedParty,addOrupdateCompanyInfo} = require('../utils')
 const emailGenerator = require('../emailGenerator');
 
 mkdirp.sync(UPLOAD_DIR)
@@ -630,7 +630,7 @@ const Mutation = {
       if(companyInfo.hasOwnProperty("name")){
       throw Error("下载公司工商信息失败，请检查公司名称是否正确")
     }
-    await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+    await addOrupdateCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
     const company = await ctx.prisma.company({name:companyName})
     return company
   },
@@ -659,7 +659,7 @@ const Mutation = {
          if(res.hasOwnProperty('name')){
            await ctx.prisma.createNoneCompany({name:res.name})
          }else{
-           await addCompanyInfo(ctx,res,"DOMESTIC","OTHER")
+           await addOrupdateCompanyInfo(ctx,res,"DOMESTIC","OTHER")
          }
      });
      
@@ -674,7 +674,7 @@ const Mutation = {
      });
      return true
   },
-  downloadRelatedPaties:async(parent,{companyName,speed},ctx)=>{
+  downloadRelatedPatiesCompany:async(parent,{companyName,speed},ctx)=>{
     const company = await ctx.prisma.company({name:companyName})
     if(company){
       const companyRelatedParties = await ctx.prisma.company({name:companyName}).relatedParties()
@@ -698,14 +698,14 @@ const Mutation = {
         const companyInfo = JSON.parse(res)
          // 如果未爬取到公司信息则返回
          if(companyInfo.hasOwnProperty("name")){
-          return true
+          return company
         }
-        await updateCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+        await addOrupdateCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
         holders = await ctx.prisma.company({name:companyName}).holders()
       }
 
       if(holders.length===0){
-        return []
+        return company
       }
 
       const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
@@ -725,9 +725,9 @@ const Mutation = {
         const companyInfo = JSON.parse(res)
          // 如果未爬取到公司信息则返回
          if(companyInfo.hasOwnProperty("name")){
-          return true
+          return company
         }
-        await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+        await addOrupdateCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
         // 将控股股东和高管添加到关联方
         const holders = await ctx.prisma.company({name:controlHolderName}).holders()
         const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
@@ -747,9 +747,9 @@ const Mutation = {
       const companyInfo = JSON.parse(res)
       // 如果未爬取到公司信息则返回
       if(companyInfo.hasOwnProperty("name")){
-        return true
+        throw Error("未找到公司")
       }
-      await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+      await addOrupdateCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
       const newcompany = await ctx.prisma.company({name:companyName})
       await saveCompanyToRelatedParty(ctx,newcompany)
       // 将公司高管和股东添加到关联方
@@ -757,9 +757,9 @@ const Mutation = {
       const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
       const contolHolder = sortedHolders[0]
       const otherHolders = sortedHolders.slice(1,)
-      await saveHoldersToRelatedParty(ctx,company,contolHolder,otherHolders,1)
+      await saveHoldersToRelatedParty(ctx,newcompany,contolHolder,otherHolders,1)
       const members = await ctx.prisma.company({name:companyName}).mainMembers()
-      await saveMainMembersToRelatedParty(ctx,company,members,1)
+      await saveMainMembersToRelatedParty(ctx,newcompany,members,1)
       // 判断股东是否为公司，是公司据需爬取，不是公司则停止
       let controlHolderName = contolHolder.name
       let grade = 2
@@ -771,22 +771,23 @@ const Mutation = {
         const companyInfo = JSON.parse(res)
         // 如果未爬取到公司信息则返回
         if(companyInfo.hasOwnProperty("name")){
-          return true
+          return newcompany
         }
-        await addCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
+        await addOrupdateCompanyInfo(ctx,companyInfo,"DOMESTIC","OTHER")
         // 将控股股东和高管添加到关联方
         const holders = await ctx.prisma.company({name:controlHolderName}).holders()
         const sortedHolders = _.orderBy(holders, ['ratio'], ['desc']);
         const contolHolder = sortedHolders[0]
         const otherHolders = sortedHolders.slice(1,)
-        await saveHoldersToRelatedParty(ctx,company,contolHolder,otherHolders,grade)
+        await saveHoldersToRelatedParty(ctx,newcompany,contolHolder,otherHolders,grade)
         const members = await ctx.prisma.company({name:controlHolderName}).mainMembers()
-        await saveMainMembersToRelatedParty(ctx,company,members,grade)
+        await saveMainMembersToRelatedParty(ctx,newcompany,members,grade)
         controlHolderName = contolHolder.name
         grade = grade + 1
       }
     }
-    return ctx.prisma.company({name:companyName}).relatedParties()
+    const resCompany = await ctx.prisma.company({name:companyName})
+    return resCompany
   },
   addStdCompanyName:async(parent,{originName,stdName,projectId},ctx)=>{
     // 标准化名称对照表

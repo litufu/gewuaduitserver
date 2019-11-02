@@ -177,25 +177,42 @@ const saveCompanyToRelatedParty= async (ctx,company)=>{
   })
 }
 
-const updateCompanyInfo=async (ctx,res,type,nature)=>{
+const addOrupdateCompanyInfo=async (ctx,res,type,nature)=>{
   let companyInfo = res.companyInfo
   let holders = res.holders
   let members = res.members
   // 增加公司信息
-  const company = await ctx.prisma.updateCompany({
-    where:{name:companyInfo.name},
-    data:{
-      type:type,
-      nature:nature,
-      code:companyInfo.code,
-      address:companyInfo.address,
-      legalRepresentative:companyInfo.legalRepresentative,
-      establishDate:companyInfo.establishDate,
-      registeredCapital:companyInfo.registeredCapital,
-      paidinCapital:companyInfo.paidinCapital,
-      businessScope:companyInfo.businessScope
-    }
-})
+  let company = await ctx.prisma.company({name:companyInfo.name})
+  if(company){
+    company = await ctx.prisma.updateCompany({
+        where:{name:companyInfo.name},
+        data:{
+          type:type,
+          nature:nature,
+          code:companyInfo.code,
+          address:companyInfo.address,
+          legalRepresentative:companyInfo.legalRepresentative,
+          establishDate:companyInfo.establishDate,
+          registeredCapital:companyInfo.registeredCapital,
+          paidinCapital:companyInfo.paidinCapital,
+          businessScope:companyInfo.businessScope
+        }
+    })
+  }else{
+    company = await ctx.prisma.createCompany({
+        name:companyInfo.name,
+        type:type,
+        nature:nature,
+        code:companyInfo.code,
+        address:companyInfo.address,
+        legalRepresentative:companyInfo.legalRepresentative,
+        establishDate:companyInfo.establishDate,
+        registeredCapital:companyInfo.registeredCapital,
+        paidinCapital:companyInfo.paidinCapital,
+        businessScope:companyInfo.businessScope
+    })
+  }
+  
 // 增加股东信息
 for (let i=0;i<holders.length;i++) {
   const ratio = parseFloat(holders[i].ratio.replace('%',""))
@@ -218,7 +235,7 @@ for (let i=0;i<holders.length;i++) {
     await ctx.prisma.updateHolder({
       where:{id:newholders[0].id},
       data:{
-        ratio
+        ratio,
       }
     })
   }
@@ -243,14 +260,13 @@ for (let i=0;i<members.length;i++) {
       company:{connect:{id:company.id}}
     })
   }else{
-    await ctx.prisma.updateHolder({
+    await ctx.prisma.updateMainMember({
       where:{id:newmembers[0].id},
       data:{
-        post
+        post,
       }
     })
   }
-  
 }
 }
 
@@ -311,6 +327,5 @@ module.exports = {
   saveMainMembersToRelatedParty,
   saveHoldersToRelatedParty,
   saveCompanyToRelatedParty,
-  addCompanyInfo,
-  updateCompanyInfo
+  addOrupdateCompanyInfo,
 }

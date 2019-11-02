@@ -268,6 +268,27 @@ const Query = {
     })
     return companyStdNames
   },
+  getCompanyDeal:async (parent,{projectId,num,type},ctx)=>{
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const getFirstNCustomersOrSuppliersPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_first_n_customer_or_supplier.py') 
+    const getFirstNCustomersOrSuppliersProcess = spawnSync('python',[getFirstNCustomersOrSuppliersPath, dbPath,startTimeStr,endTimeStr,num,type]);
+    const res = getFirstNCustomersOrSuppliersProcess.stdout.toString() 
+    const companyDealAmounts = JSON.parse(res)
+    let result = []
+    for(let i=0;i<companyDealAmounts.length;i++){
+      const amount = type==="customer" ? companyDealAmounts[i].sale_amount :companyDealAmounts[i].purchase_amount
+      const name = companyDealAmounts[i].name
+      const company = await ctx.prisma.company({name})
+      result.push({amount,company,name})
+    }
+    return result
+  },
+  getRate:async (parent,{currencyType,date},ctx)=>{
+    const getRatePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_rate.py') 
+    const getRateProcess = spawnSync('python',[getRatePath,currencyType,date ]);
+    const res = getRateProcess.stdout.toString() 
+    return res
+  },
 }
 
 module.exports = {

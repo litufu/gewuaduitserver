@@ -32,6 +32,8 @@ const typeDefs = gql`
     getFirstNCustomersOrSuppliers(projectId:String!,num:Int!,type:String!):String!
     getCompanies(companyNames:[String]!):[Company]
     getStdCompanyNames(projectId:String!):[CompanyStdName]
+    getCompanyDeal(projectId:String!,type:String!,num:Int!):[CompanyDeal]
+    getRate(currencyType:String!,date:String!):String!
   }
 
   type Mutation {
@@ -59,12 +61,12 @@ const typeDefs = gql`
     computeAccountAge(projectId:String!):Boolean!
     downloadCompanyInfo(companyName:String!):Company
     downloadCustomerAndSupplierInfo(projectId:String!,num:Int!):Boolean!
-    downloadRelatedPaties(companyName:String!,speed:String!):[RelatedParty]
+    downloadRelatedPatiesCompany(companyName:String!,speed:String!):Company!
     addStdCompanyName(originName:String!,stdName:String!,projectId:String!):CompanyStdName
     setStandardizedAccountName(projectId:String!):Boolean!
-
-
   }
+
+
 
   input UploadTypeInput{
     file:Upload!
@@ -134,6 +136,13 @@ const typeDefs = gql`
     PLANNEDLISTED
     OTHER
   }
+
+  type CompanyDeal{
+    company:Company
+    amount:Float!
+    name:String!
+  }
+
 
 
   type Company{
