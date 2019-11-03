@@ -212,6 +212,20 @@ class EntryClassify(Base):
     records = Column(String)
 
 
+# 函证抽查设置
+class LetterOfProofSetting(Base):
+    __tablename__ = 'letterofproofsetting'
+    id = Column(Integer, primary_key=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    customer_amount = Column(Float)
+    customer_balance = Column(Float)
+    supplier_amount = Column(Float)
+    supplier_balance = Column(Float)
+    other_balance = Column(Float)
+
+
+
 # 凭证交易或事项描述
 class TransactionEvent(Base):
     __tablename__ = 'transactionevent'
@@ -327,7 +341,7 @@ class AgeSetting(Base):
       
 if __name__ == "__main__":
     db_path = sys.argv[1]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # db_path = "D:\gewuaduit\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     Base.metadata.create_all(engine)
     print("success")

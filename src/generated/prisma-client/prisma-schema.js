@@ -482,6 +482,10 @@ type AggregateHolder {
   count: Int!
 }
 
+type AggregateLetterOfProof {
+  count: Int!
+}
+
 type AggregateMainMember {
   count: Int!
 }
@@ -2320,6 +2324,491 @@ input HolderWhereUniqueInput {
   id: ID
 }
 
+type LetterOfProof {
+  id: ID!
+  subjectName: String!
+  name: String!
+  adrress: String
+  contact: String
+  telephone: String
+  zipCode: String
+  sampleReason: String
+  currencyType: String
+  sendDate: String
+  sendNo: String
+  receiveDate: String
+  receiveNo: String
+  balance: Float
+  amount: Float
+  sendBalance: Float
+  sendAmount: Float
+  receiveBalance: Float
+  receiveAmount: Float
+  sendPhoto: String
+  receivePhoto: String
+  proofPhoto: String
+  project: Project!
+}
+
+type LetterOfProofConnection {
+  pageInfo: PageInfo!
+  edges: [LetterOfProofEdge]!
+  aggregate: AggregateLetterOfProof!
+}
+
+input LetterOfProofCreateInput {
+  id: ID
+  subjectName: String!
+  name: String!
+  adrress: String
+  contact: String
+  telephone: String
+  zipCode: String
+  sampleReason: String
+  currencyType: String
+  sendDate: String
+  sendNo: String
+  receiveDate: String
+  receiveNo: String
+  balance: Float
+  amount: Float
+  sendBalance: Float
+  sendAmount: Float
+  receiveBalance: Float
+  receiveAmount: Float
+  sendPhoto: String
+  receivePhoto: String
+  proofPhoto: String
+  project: ProjectCreateOneInput!
+}
+
+type LetterOfProofEdge {
+  node: LetterOfProof!
+  cursor: String!
+}
+
+enum LetterOfProofOrderByInput {
+  id_ASC
+  id_DESC
+  subjectName_ASC
+  subjectName_DESC
+  name_ASC
+  name_DESC
+  adrress_ASC
+  adrress_DESC
+  contact_ASC
+  contact_DESC
+  telephone_ASC
+  telephone_DESC
+  zipCode_ASC
+  zipCode_DESC
+  sampleReason_ASC
+  sampleReason_DESC
+  currencyType_ASC
+  currencyType_DESC
+  sendDate_ASC
+  sendDate_DESC
+  sendNo_ASC
+  sendNo_DESC
+  receiveDate_ASC
+  receiveDate_DESC
+  receiveNo_ASC
+  receiveNo_DESC
+  balance_ASC
+  balance_DESC
+  amount_ASC
+  amount_DESC
+  sendBalance_ASC
+  sendBalance_DESC
+  sendAmount_ASC
+  sendAmount_DESC
+  receiveBalance_ASC
+  receiveBalance_DESC
+  receiveAmount_ASC
+  receiveAmount_DESC
+  sendPhoto_ASC
+  sendPhoto_DESC
+  receivePhoto_ASC
+  receivePhoto_DESC
+  proofPhoto_ASC
+  proofPhoto_DESC
+}
+
+type LetterOfProofPreviousValues {
+  id: ID!
+  subjectName: String!
+  name: String!
+  adrress: String
+  contact: String
+  telephone: String
+  zipCode: String
+  sampleReason: String
+  currencyType: String
+  sendDate: String
+  sendNo: String
+  receiveDate: String
+  receiveNo: String
+  balance: Float
+  amount: Float
+  sendBalance: Float
+  sendAmount: Float
+  receiveBalance: Float
+  receiveAmount: Float
+  sendPhoto: String
+  receivePhoto: String
+  proofPhoto: String
+}
+
+type LetterOfProofSubscriptionPayload {
+  mutation: MutationType!
+  node: LetterOfProof
+  updatedFields: [String!]
+  previousValues: LetterOfProofPreviousValues
+}
+
+input LetterOfProofSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: LetterOfProofWhereInput
+  AND: [LetterOfProofSubscriptionWhereInput!]
+  OR: [LetterOfProofSubscriptionWhereInput!]
+  NOT: [LetterOfProofSubscriptionWhereInput!]
+}
+
+input LetterOfProofUpdateInput {
+  subjectName: String
+  name: String
+  adrress: String
+  contact: String
+  telephone: String
+  zipCode: String
+  sampleReason: String
+  currencyType: String
+  sendDate: String
+  sendNo: String
+  receiveDate: String
+  receiveNo: String
+  balance: Float
+  amount: Float
+  sendBalance: Float
+  sendAmount: Float
+  receiveBalance: Float
+  receiveAmount: Float
+  sendPhoto: String
+  receivePhoto: String
+  proofPhoto: String
+  project: ProjectUpdateOneRequiredInput
+}
+
+input LetterOfProofUpdateManyMutationInput {
+  subjectName: String
+  name: String
+  adrress: String
+  contact: String
+  telephone: String
+  zipCode: String
+  sampleReason: String
+  currencyType: String
+  sendDate: String
+  sendNo: String
+  receiveDate: String
+  receiveNo: String
+  balance: Float
+  amount: Float
+  sendBalance: Float
+  sendAmount: Float
+  receiveBalance: Float
+  receiveAmount: Float
+  sendPhoto: String
+  receivePhoto: String
+  proofPhoto: String
+}
+
+input LetterOfProofWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  subjectName: String
+  subjectName_not: String
+  subjectName_in: [String!]
+  subjectName_not_in: [String!]
+  subjectName_lt: String
+  subjectName_lte: String
+  subjectName_gt: String
+  subjectName_gte: String
+  subjectName_contains: String
+  subjectName_not_contains: String
+  subjectName_starts_with: String
+  subjectName_not_starts_with: String
+  subjectName_ends_with: String
+  subjectName_not_ends_with: String
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  adrress: String
+  adrress_not: String
+  adrress_in: [String!]
+  adrress_not_in: [String!]
+  adrress_lt: String
+  adrress_lte: String
+  adrress_gt: String
+  adrress_gte: String
+  adrress_contains: String
+  adrress_not_contains: String
+  adrress_starts_with: String
+  adrress_not_starts_with: String
+  adrress_ends_with: String
+  adrress_not_ends_with: String
+  contact: String
+  contact_not: String
+  contact_in: [String!]
+  contact_not_in: [String!]
+  contact_lt: String
+  contact_lte: String
+  contact_gt: String
+  contact_gte: String
+  contact_contains: String
+  contact_not_contains: String
+  contact_starts_with: String
+  contact_not_starts_with: String
+  contact_ends_with: String
+  contact_not_ends_with: String
+  telephone: String
+  telephone_not: String
+  telephone_in: [String!]
+  telephone_not_in: [String!]
+  telephone_lt: String
+  telephone_lte: String
+  telephone_gt: String
+  telephone_gte: String
+  telephone_contains: String
+  telephone_not_contains: String
+  telephone_starts_with: String
+  telephone_not_starts_with: String
+  telephone_ends_with: String
+  telephone_not_ends_with: String
+  zipCode: String
+  zipCode_not: String
+  zipCode_in: [String!]
+  zipCode_not_in: [String!]
+  zipCode_lt: String
+  zipCode_lte: String
+  zipCode_gt: String
+  zipCode_gte: String
+  zipCode_contains: String
+  zipCode_not_contains: String
+  zipCode_starts_with: String
+  zipCode_not_starts_with: String
+  zipCode_ends_with: String
+  zipCode_not_ends_with: String
+  sampleReason: String
+  sampleReason_not: String
+  sampleReason_in: [String!]
+  sampleReason_not_in: [String!]
+  sampleReason_lt: String
+  sampleReason_lte: String
+  sampleReason_gt: String
+  sampleReason_gte: String
+  sampleReason_contains: String
+  sampleReason_not_contains: String
+  sampleReason_starts_with: String
+  sampleReason_not_starts_with: String
+  sampleReason_ends_with: String
+  sampleReason_not_ends_with: String
+  currencyType: String
+  currencyType_not: String
+  currencyType_in: [String!]
+  currencyType_not_in: [String!]
+  currencyType_lt: String
+  currencyType_lte: String
+  currencyType_gt: String
+  currencyType_gte: String
+  currencyType_contains: String
+  currencyType_not_contains: String
+  currencyType_starts_with: String
+  currencyType_not_starts_with: String
+  currencyType_ends_with: String
+  currencyType_not_ends_with: String
+  sendDate: String
+  sendDate_not: String
+  sendDate_in: [String!]
+  sendDate_not_in: [String!]
+  sendDate_lt: String
+  sendDate_lte: String
+  sendDate_gt: String
+  sendDate_gte: String
+  sendDate_contains: String
+  sendDate_not_contains: String
+  sendDate_starts_with: String
+  sendDate_not_starts_with: String
+  sendDate_ends_with: String
+  sendDate_not_ends_with: String
+  sendNo: String
+  sendNo_not: String
+  sendNo_in: [String!]
+  sendNo_not_in: [String!]
+  sendNo_lt: String
+  sendNo_lte: String
+  sendNo_gt: String
+  sendNo_gte: String
+  sendNo_contains: String
+  sendNo_not_contains: String
+  sendNo_starts_with: String
+  sendNo_not_starts_with: String
+  sendNo_ends_with: String
+  sendNo_not_ends_with: String
+  receiveDate: String
+  receiveDate_not: String
+  receiveDate_in: [String!]
+  receiveDate_not_in: [String!]
+  receiveDate_lt: String
+  receiveDate_lte: String
+  receiveDate_gt: String
+  receiveDate_gte: String
+  receiveDate_contains: String
+  receiveDate_not_contains: String
+  receiveDate_starts_with: String
+  receiveDate_not_starts_with: String
+  receiveDate_ends_with: String
+  receiveDate_not_ends_with: String
+  receiveNo: String
+  receiveNo_not: String
+  receiveNo_in: [String!]
+  receiveNo_not_in: [String!]
+  receiveNo_lt: String
+  receiveNo_lte: String
+  receiveNo_gt: String
+  receiveNo_gte: String
+  receiveNo_contains: String
+  receiveNo_not_contains: String
+  receiveNo_starts_with: String
+  receiveNo_not_starts_with: String
+  receiveNo_ends_with: String
+  receiveNo_not_ends_with: String
+  balance: Float
+  balance_not: Float
+  balance_in: [Float!]
+  balance_not_in: [Float!]
+  balance_lt: Float
+  balance_lte: Float
+  balance_gt: Float
+  balance_gte: Float
+  amount: Float
+  amount_not: Float
+  amount_in: [Float!]
+  amount_not_in: [Float!]
+  amount_lt: Float
+  amount_lte: Float
+  amount_gt: Float
+  amount_gte: Float
+  sendBalance: Float
+  sendBalance_not: Float
+  sendBalance_in: [Float!]
+  sendBalance_not_in: [Float!]
+  sendBalance_lt: Float
+  sendBalance_lte: Float
+  sendBalance_gt: Float
+  sendBalance_gte: Float
+  sendAmount: Float
+  sendAmount_not: Float
+  sendAmount_in: [Float!]
+  sendAmount_not_in: [Float!]
+  sendAmount_lt: Float
+  sendAmount_lte: Float
+  sendAmount_gt: Float
+  sendAmount_gte: Float
+  receiveBalance: Float
+  receiveBalance_not: Float
+  receiveBalance_in: [Float!]
+  receiveBalance_not_in: [Float!]
+  receiveBalance_lt: Float
+  receiveBalance_lte: Float
+  receiveBalance_gt: Float
+  receiveBalance_gte: Float
+  receiveAmount: Float
+  receiveAmount_not: Float
+  receiveAmount_in: [Float!]
+  receiveAmount_not_in: [Float!]
+  receiveAmount_lt: Float
+  receiveAmount_lte: Float
+  receiveAmount_gt: Float
+  receiveAmount_gte: Float
+  sendPhoto: String
+  sendPhoto_not: String
+  sendPhoto_in: [String!]
+  sendPhoto_not_in: [String!]
+  sendPhoto_lt: String
+  sendPhoto_lte: String
+  sendPhoto_gt: String
+  sendPhoto_gte: String
+  sendPhoto_contains: String
+  sendPhoto_not_contains: String
+  sendPhoto_starts_with: String
+  sendPhoto_not_starts_with: String
+  sendPhoto_ends_with: String
+  sendPhoto_not_ends_with: String
+  receivePhoto: String
+  receivePhoto_not: String
+  receivePhoto_in: [String!]
+  receivePhoto_not_in: [String!]
+  receivePhoto_lt: String
+  receivePhoto_lte: String
+  receivePhoto_gt: String
+  receivePhoto_gte: String
+  receivePhoto_contains: String
+  receivePhoto_not_contains: String
+  receivePhoto_starts_with: String
+  receivePhoto_not_starts_with: String
+  receivePhoto_ends_with: String
+  receivePhoto_not_ends_with: String
+  proofPhoto: String
+  proofPhoto_not: String
+  proofPhoto_in: [String!]
+  proofPhoto_not_in: [String!]
+  proofPhoto_lt: String
+  proofPhoto_lte: String
+  proofPhoto_gt: String
+  proofPhoto_gte: String
+  proofPhoto_contains: String
+  proofPhoto_not_contains: String
+  proofPhoto_starts_with: String
+  proofPhoto_not_starts_with: String
+  proofPhoto_ends_with: String
+  proofPhoto_not_ends_with: String
+  project: ProjectWhereInput
+  AND: [LetterOfProofWhereInput!]
+  OR: [LetterOfProofWhereInput!]
+  NOT: [LetterOfProofWhereInput!]
+}
+
+input LetterOfProofWhereUniqueInput {
+  id: ID
+}
+
 scalar Long
 
 type MainMember {
@@ -2751,6 +3240,12 @@ type Mutation {
   upsertHolder(where: HolderWhereUniqueInput!, create: HolderCreateInput!, update: HolderUpdateInput!): Holder!
   deleteHolder(where: HolderWhereUniqueInput!): Holder
   deleteManyHolders(where: HolderWhereInput): BatchPayload!
+  createLetterOfProof(data: LetterOfProofCreateInput!): LetterOfProof!
+  updateLetterOfProof(data: LetterOfProofUpdateInput!, where: LetterOfProofWhereUniqueInput!): LetterOfProof
+  updateManyLetterOfProofs(data: LetterOfProofUpdateManyMutationInput!, where: LetterOfProofWhereInput): BatchPayload!
+  upsertLetterOfProof(where: LetterOfProofWhereUniqueInput!, create: LetterOfProofCreateInput!, update: LetterOfProofUpdateInput!): LetterOfProof!
+  deleteLetterOfProof(where: LetterOfProofWhereUniqueInput!): LetterOfProof
+  deleteManyLetterOfProofs(where: LetterOfProofWhereInput): BatchPayload!
   createMainMember(data: MainMemberCreateInput!): MainMember!
   updateMainMember(data: MainMemberUpdateInput!, where: MainMemberWhereUniqueInput!): MainMember
   updateManyMainMembers(data: MainMemberUpdateManyMutationInput!, where: MainMemberWhereInput): BatchPayload!
@@ -2951,6 +3446,11 @@ input ProjectCreateManyInput {
   connect: [ProjectWhereUniqueInput!]
 }
 
+input ProjectCreateOneInput {
+  create: ProjectCreateInput
+  connect: ProjectWhereUniqueInput
+}
+
 input ProjectCreateOneWithoutMembersInput {
   create: ProjectCreateWithoutMembersInput
   connect: ProjectWhereUniqueInput
@@ -3091,6 +3591,13 @@ input ProjectUpdateManyWithWhereNestedInput {
   data: ProjectUpdateManyDataInput!
 }
 
+input ProjectUpdateOneRequiredInput {
+  create: ProjectCreateInput
+  update: ProjectUpdateDataInput
+  upsert: ProjectUpsertNestedInput
+  connect: ProjectWhereUniqueInput
+}
+
 input ProjectUpdateOneRequiredWithoutMembersInput {
   create: ProjectCreateWithoutMembersInput
   update: ProjectUpdateWithoutMembersDataInput
@@ -3108,6 +3615,11 @@ input ProjectUpdateWithoutMembersDataInput {
 input ProjectUpdateWithWhereUniqueNestedInput {
   where: ProjectWhereUniqueInput!
   data: ProjectUpdateDataInput!
+}
+
+input ProjectUpsertNestedInput {
+  update: ProjectUpdateDataInput!
+  create: ProjectCreateInput!
 }
 
 input ProjectUpsertWithoutMembersInput {
@@ -3188,6 +3700,9 @@ type Query {
   holder(where: HolderWhereUniqueInput!): Holder
   holders(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Holder]!
   holdersConnection(where: HolderWhereInput, orderBy: HolderOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HolderConnection!
+  letterOfProof(where: LetterOfProofWhereUniqueInput!): LetterOfProof
+  letterOfProofs(where: LetterOfProofWhereInput, orderBy: LetterOfProofOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [LetterOfProof]!
+  letterOfProofsConnection(where: LetterOfProofWhereInput, orderBy: LetterOfProofOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): LetterOfProofConnection!
   mainMember(where: MainMemberWhereUniqueInput!): MainMember
   mainMembers(where: MainMemberWhereInput, orderBy: MainMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MainMember]!
   mainMembersConnection(where: MainMemberWhereInput, orderBy: MainMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MainMemberConnection!
@@ -3852,6 +4367,7 @@ type Subscription {
   fSSubject(where: FSSubjectSubscriptionWhereInput): FSSubjectSubscriptionPayload
   file(where: FileSubscriptionWhereInput): FileSubscriptionPayload
   holder(where: HolderSubscriptionWhereInput): HolderSubscriptionPayload
+  letterOfProof(where: LetterOfProofSubscriptionWhereInput): LetterOfProofSubscriptionPayload
   mainMember(where: MainMemberSubscriptionWhereInput): MainMemberSubscriptionPayload
   member(where: MemberSubscriptionWhereInput): MemberSubscriptionPayload
   noneCompany(where: NoneCompanySubscriptionWhereInput): NoneCompanySubscriptionPayload

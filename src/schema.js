@@ -65,6 +65,9 @@ const typeDefs = gql`
     downloadRelatedPatiesCompany(companyName:String!,speed:String!):Company!
     addStdCompanyName(originName:String!,stdName:String!,projectId:String!):CompanyStdName
     setStandardizedAccountName(projectId:String!):Boolean!
+    addOrUpdateLetterOfProofSetting(projectId:String,customerAmount:String!,customeBalance:String!,supplierAmount:String!,supplierBalance:String!,otherBalance:String!):Boolean!
+    
+    
   }
 
 
@@ -190,7 +193,31 @@ const typeDefs = gql`
     stdName:String!
   }
 
-
+  type LetterOfProof{
+    id: ID!
+    subjectName:String!
+    name:String!
+    adrress:String
+    contact:String
+    telephone:String
+    zipCode:String
+    sampleReason:String
+    currencyType:String
+    sendDate:String
+    sendNo:String
+    receiveDate:String
+    receiveNo:String
+    balance:Float
+    amount:Float
+    sendBalance:Float
+    sendAmount:Float
+    receiveBalance:Float
+    receiveAmount:Float
+    sendPhoto:String
+    receivePhoto:String
+    proofPhoto:String
+    project:Project!
+}
 
   type Project{
     id: ID!

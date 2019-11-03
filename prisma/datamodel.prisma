@@ -100,6 +100,32 @@ type RelatedParty{
   company:Company!
 }
 
+type LetterOfProof{
+  id: ID! @id
+  subjectName:String!
+  name:String!
+  adrress:String
+  contact:String
+  telephone:String
+  zipCode:String
+  sampleReason:String
+  currencyType:String
+  sendDate:String
+  sendNo:String
+  receiveDate:String
+  receiveNo:String
+  balance:Float
+  amount:Float
+  sendBalance:Float
+  sendAmount:Float
+  receiveBalance:Float
+  receiveAmount:Float
+  sendPhoto:String
+  receivePhoto:String
+  proofPhoto:String
+  project:Project!
+}
+
 type Project{
   id: ID! @id
   accountingFirm:AccountingFirm!

@@ -23,6 +23,7 @@ export interface Exists {
   fSSubject: (where?: FSSubjectWhereInput) => Promise<boolean>;
   file: (where?: FileWhereInput) => Promise<boolean>;
   holder: (where?: HolderWhereInput) => Promise<boolean>;
+  letterOfProof: (where?: LetterOfProofWhereInput) => Promise<boolean>;
   mainMember: (where?: MainMemberWhereInput) => Promise<boolean>;
   member: (where?: MemberWhereInput) => Promise<boolean>;
   noneCompany: (where?: NoneCompanyWhereInput) => Promise<boolean>;
@@ -190,6 +191,27 @@ export interface Prisma {
     first?: Int;
     last?: Int;
   }) => HolderConnectionPromise;
+  letterOfProof: (
+    where: LetterOfProofWhereUniqueInput
+  ) => LetterOfProofNullablePromise;
+  letterOfProofs: (args?: {
+    where?: LetterOfProofWhereInput;
+    orderBy?: LetterOfProofOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => FragmentableArray<LetterOfProof>;
+  letterOfProofsConnection: (args?: {
+    where?: LetterOfProofWhereInput;
+    orderBy?: LetterOfProofOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => LetterOfProofConnectionPromise;
   mainMember: (where: MainMemberWhereUniqueInput) => MainMemberNullablePromise;
   mainMembers: (args?: {
     where?: MainMemberWhereInput;
@@ -497,6 +519,26 @@ export interface Prisma {
   }) => HolderPromise;
   deleteHolder: (where: HolderWhereUniqueInput) => HolderPromise;
   deleteManyHolders: (where?: HolderWhereInput) => BatchPayloadPromise;
+  createLetterOfProof: (data: LetterOfProofCreateInput) => LetterOfProofPromise;
+  updateLetterOfProof: (args: {
+    data: LetterOfProofUpdateInput;
+    where: LetterOfProofWhereUniqueInput;
+  }) => LetterOfProofPromise;
+  updateManyLetterOfProofs: (args: {
+    data: LetterOfProofUpdateManyMutationInput;
+    where?: LetterOfProofWhereInput;
+  }) => BatchPayloadPromise;
+  upsertLetterOfProof: (args: {
+    where: LetterOfProofWhereUniqueInput;
+    create: LetterOfProofCreateInput;
+    update: LetterOfProofUpdateInput;
+  }) => LetterOfProofPromise;
+  deleteLetterOfProof: (
+    where: LetterOfProofWhereUniqueInput
+  ) => LetterOfProofPromise;
+  deleteManyLetterOfProofs: (
+    where?: LetterOfProofWhereInput
+  ) => BatchPayloadPromise;
   createMainMember: (data: MainMemberCreateInput) => MainMemberPromise;
   updateMainMember: (args: {
     data: MainMemberUpdateInput;
@@ -683,6 +725,9 @@ export interface Subscription {
   holder: (
     where?: HolderSubscriptionWhereInput
   ) => HolderSubscriptionPayloadSubscription;
+  letterOfProof: (
+    where?: LetterOfProofSubscriptionWhereInput
+  ) => LetterOfProofSubscriptionPayloadSubscription;
   mainMember: (
     where?: MainMemberSubscriptionWhereInput
   ) => MainMemberSubscriptionPayloadSubscription;
@@ -720,31 +765,41 @@ export interface ClientConstructor<T> {
  * Types
  */
 
-export type CompanyNature = "STATEOWNED" | "LISTED" | "PLANNEDLISTED" | "OTHER";
-
-export type UserOrderByInput =
+export type CompanyOrderByInput =
   | "id_ASC"
   | "id_DESC"
-  | "email_ASC"
-  | "email_DESC"
-  | "emailvalidated_ASC"
-  | "emailvalidated_DESC"
-  | "validateEmailToken_ASC"
-  | "validateEmailToken_DESC"
-  | "createdAt_ASC"
-  | "createdAt_DESC"
-  | "updatedAt_ASC"
-  | "updatedAt_DESC"
-  | "password_ASC"
-  | "password_DESC"
-  | "resetPasswordToken_ASC"
-  | "resetPasswordToken_DESC"
-  | "resetPasswordExpires_ASC"
-  | "resetPasswordExpires_DESC"
+  | "type_ASC"
+  | "type_DESC"
+  | "nature_ASC"
+  | "nature_DESC"
   | "name_ASC"
   | "name_DESC"
-  | "role_ASC"
-  | "role_DESC";
+  | "code_ASC"
+  | "code_DESC"
+  | "address_ASC"
+  | "address_DESC"
+  | "legalRepresentative_ASC"
+  | "legalRepresentative_DESC"
+  | "establishDate_ASC"
+  | "establishDate_DESC"
+  | "registeredCapital_ASC"
+  | "registeredCapital_DESC"
+  | "paidinCapital_ASC"
+  | "paidinCapital_DESC"
+  | "businessScope_ASC"
+  | "businessScope_DESC"
+  | "lastControllCompany_ASC"
+  | "lastControllCompany_DESC"
+  | "lastControllPerson_ASC"
+  | "lastControllPerson_DESC";
+
+export type ProjectOrderByInput =
+  | "id_ASC"
+  | "id_DESC"
+  | "startTime_ASC"
+  | "startTime_DESC"
+  | "endTime_ASC"
+  | "endTime_DESC";
 
 export type FileOrderByInput =
   | "id_ASC"
@@ -794,17 +849,51 @@ export type MemberOrderByInput =
   | "role_ASC"
   | "role_DESC";
 
-export type FSSubjectOrderByInput =
+export type LetterOfProofOrderByInput =
   | "id_ASC"
   | "id_DESC"
+  | "subjectName_ASC"
+  | "subjectName_DESC"
   | "name_ASC"
   | "name_DESC"
-  | "show_ASC"
-  | "show_DESC"
-  | "subject_ASC"
-  | "subject_DESC"
-  | "direction_ASC"
-  | "direction_DESC";
+  | "adrress_ASC"
+  | "adrress_DESC"
+  | "contact_ASC"
+  | "contact_DESC"
+  | "telephone_ASC"
+  | "telephone_DESC"
+  | "zipCode_ASC"
+  | "zipCode_DESC"
+  | "sampleReason_ASC"
+  | "sampleReason_DESC"
+  | "currencyType_ASC"
+  | "currencyType_DESC"
+  | "sendDate_ASC"
+  | "sendDate_DESC"
+  | "sendNo_ASC"
+  | "sendNo_DESC"
+  | "receiveDate_ASC"
+  | "receiveDate_DESC"
+  | "receiveNo_ASC"
+  | "receiveNo_DESC"
+  | "balance_ASC"
+  | "balance_DESC"
+  | "amount_ASC"
+  | "amount_DESC"
+  | "sendBalance_ASC"
+  | "sendBalance_DESC"
+  | "sendAmount_ASC"
+  | "sendAmount_DESC"
+  | "receiveBalance_ASC"
+  | "receiveBalance_DESC"
+  | "receiveAmount_ASC"
+  | "receiveAmount_DESC"
+  | "sendPhoto_ASC"
+  | "sendPhoto_DESC"
+  | "receivePhoto_ASC"
+  | "receivePhoto_DESC"
+  | "proofPhoto_ASC"
+  | "proofPhoto_DESC";
 
 export type AccountingFirmOrderByInput =
   | "id_ASC"
@@ -822,15 +911,17 @@ export type AccountingFirmOrderByInput =
   | "contact_ASC"
   | "contact_DESC";
 
-export type CompanyStdNameOrderByInput =
+export type FSSubjectOrderByInput =
   | "id_ASC"
   | "id_DESC"
-  | "dbName_ASC"
-  | "dbName_DESC"
-  | "originName_ASC"
-  | "originName_DESC"
-  | "stdName_ASC"
-  | "stdName_DESC";
+  | "name_ASC"
+  | "name_DESC"
+  | "show_ASC"
+  | "show_DESC"
+  | "subject_ASC"
+  | "subject_DESC"
+  | "direction_ASC"
+  | "direction_DESC";
 
 export type RelatedPartyOrderByInput =
   | "id_ASC"
@@ -845,6 +936,54 @@ export type RelatedPartyOrderByInput =
   | "name_DESC";
 
 export type CompanyType = "DOMESTIC" | "OUTLANDS";
+
+export type ProjectRole =
+  | "MANAGER"
+  | "PARTNER"
+  | "ASSISTANT"
+  | "QC"
+  | "REVIEWPARTNER"
+  | "JUDGE"
+  | "CPA";
+
+export type MutationType = "CREATED" | "UPDATED" | "DELETED";
+
+export type UserOrderByInput =
+  | "id_ASC"
+  | "id_DESC"
+  | "email_ASC"
+  | "email_DESC"
+  | "emailvalidated_ASC"
+  | "emailvalidated_DESC"
+  | "validateEmailToken_ASC"
+  | "validateEmailToken_DESC"
+  | "createdAt_ASC"
+  | "createdAt_DESC"
+  | "updatedAt_ASC"
+  | "updatedAt_DESC"
+  | "password_ASC"
+  | "password_DESC"
+  | "resetPasswordToken_ASC"
+  | "resetPasswordToken_DESC"
+  | "resetPasswordExpires_ASC"
+  | "resetPasswordExpires_DESC"
+  | "name_ASC"
+  | "name_DESC"
+  | "role_ASC"
+  | "role_DESC";
+
+export type FileType =
+  | "SUBJECTBALANCE"
+  | "CHRONOLOGICALACCOUNT"
+  | "AUXILIARYACCOUNTING";
+
+export type HolderOrderByInput =
+  | "id_ASC"
+  | "id_DESC"
+  | "name_ASC"
+  | "name_DESC"
+  | "ratio_ASC"
+  | "ratio_DESC";
 
 export type MainMemberOrderByInput =
   | "id_ASC"
@@ -872,35 +1011,19 @@ export type SubjectContrastOrderByInput =
   | "secondClass_ASC"
   | "secondClass_DESC";
 
-export type FileType =
-  | "SUBJECTBALANCE"
-  | "CHRONOLOGICALACCOUNT"
-  | "AUXILIARYACCOUNTING";
+export type CompanyNature = "STATEOWNED" | "LISTED" | "PLANNEDLISTED" | "OTHER";
 
-export type ProjectOrderByInput =
+export type CompanyStdNameOrderByInput =
   | "id_ASC"
   | "id_DESC"
-  | "startTime_ASC"
-  | "startTime_DESC"
-  | "endTime_ASC"
-  | "endTime_DESC";
+  | "dbName_ASC"
+  | "dbName_DESC"
+  | "originName_ASC"
+  | "originName_DESC"
+  | "stdName_ASC"
+  | "stdName_DESC";
 
-export type HolderOrderByInput =
-  | "id_ASC"
-  | "id_DESC"
-  | "name_ASC"
-  | "name_DESC"
-  | "ratio_ASC"
-  | "ratio_DESC";
-
-export type ProjectRole =
-  | "MANAGER"
-  | "PARTNER"
-  | "ASSISTANT"
-  | "QC"
-  | "REVIEWPARTNER"
-  | "JUDGE"
-  | "CPA";
+export type Role = "ADMIN" | "CUSTOMER";
 
 export type NoneCompanyOrderByInput =
   | "id_ASC"
@@ -908,41 +1031,9 @@ export type NoneCompanyOrderByInput =
   | "name_ASC"
   | "name_DESC";
 
-export type MutationType = "CREATED" | "UPDATED" | "DELETED";
-
-export type CompanyOrderByInput =
-  | "id_ASC"
-  | "id_DESC"
-  | "type_ASC"
-  | "type_DESC"
-  | "nature_ASC"
-  | "nature_DESC"
-  | "name_ASC"
-  | "name_DESC"
-  | "code_ASC"
-  | "code_DESC"
-  | "address_ASC"
-  | "address_DESC"
-  | "legalRepresentative_ASC"
-  | "legalRepresentative_DESC"
-  | "establishDate_ASC"
-  | "establishDate_DESC"
-  | "registeredCapital_ASC"
-  | "registeredCapital_DESC"
-  | "paidinCapital_ASC"
-  | "paidinCapital_DESC"
-  | "businessScope_ASC"
-  | "businessScope_DESC"
-  | "lastControllCompany_ASC"
-  | "lastControllCompany_DESC"
-  | "lastControllPerson_ASC"
-  | "lastControllPerson_DESC";
-
-export type Role = "ADMIN" | "CUSTOMER";
-
-export interface MainMemberUpdateManyWithWhereNestedInput {
-  where: MainMemberScalarWhereInput;
-  data: MainMemberUpdateManyDataInput;
+export interface MainMemberUpdateManyDataInput {
+  name?: Maybe<String>;
+  post?: Maybe<String>;
 }
 
 export type AccountingFirmWhereUniqueInput = AtLeastOne<{
@@ -950,6 +1041,37 @@ export type AccountingFirmWhereUniqueInput = AtLeastOne<{
   name?: Maybe<String>;
   code?: Maybe<String>;
 }>;
+
+export interface MainMemberCreateWithoutCompanyInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  post: String;
+}
+
+export interface FSSubjectCreateInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  show: String;
+  subject: String;
+  direction: String;
+}
+
+export interface RelatedPartyCreateManyWithoutCompanyInput {
+  create?: Maybe<
+    | RelatedPartyCreateWithoutCompanyInput[]
+    | RelatedPartyCreateWithoutCompanyInput
+  >;
+  connect?: Maybe<
+    RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput
+  >;
+}
+
+export interface CompanyUpdateOneRequiredInput {
+  create?: Maybe<CompanyCreateInput>;
+  update?: Maybe<CompanyUpdateDataInput>;
+  upsert?: Maybe<CompanyUpsertNestedInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
+}
 
 export interface RelatedPartyCreateWithoutCompanyInput {
   id?: Maybe<ID_Input>;
@@ -959,17 +1081,70 @@ export interface RelatedPartyCreateWithoutCompanyInput {
   name: String;
 }
 
-export interface UserUpdateWithoutDataRecordsDataInput {
-  email?: Maybe<String>;
-  emailvalidated?: Maybe<Boolean>;
-  validateEmailToken?: Maybe<String>;
-  password?: Maybe<String>;
-  resetPasswordToken?: Maybe<String>;
-  resetPasswordExpires?: Maybe<Float>;
-  name?: Maybe<String>;
-  role?: Maybe<Role>;
-  accountingFirm?: Maybe<AccountingFirmUpdateOneWithoutEmployeesInput>;
-  projects?: Maybe<ProjectUpdateManyInput>;
+export interface FileWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  path?: Maybe<String>;
+  path_not?: Maybe<String>;
+  path_in?: Maybe<String[] | String>;
+  path_not_in?: Maybe<String[] | String>;
+  path_lt?: Maybe<String>;
+  path_lte?: Maybe<String>;
+  path_gt?: Maybe<String>;
+  path_gte?: Maybe<String>;
+  path_contains?: Maybe<String>;
+  path_not_contains?: Maybe<String>;
+  path_starts_with?: Maybe<String>;
+  path_not_starts_with?: Maybe<String>;
+  path_ends_with?: Maybe<String>;
+  path_not_ends_with?: Maybe<String>;
+  filename?: Maybe<String>;
+  filename_not?: Maybe<String>;
+  filename_in?: Maybe<String[] | String>;
+  filename_not_in?: Maybe<String[] | String>;
+  filename_lt?: Maybe<String>;
+  filename_lte?: Maybe<String>;
+  filename_gt?: Maybe<String>;
+  filename_gte?: Maybe<String>;
+  filename_contains?: Maybe<String>;
+  filename_not_contains?: Maybe<String>;
+  filename_starts_with?: Maybe<String>;
+  filename_not_starts_with?: Maybe<String>;
+  filename_ends_with?: Maybe<String>;
+  filename_not_ends_with?: Maybe<String>;
+  mimetype?: Maybe<String>;
+  mimetype_not?: Maybe<String>;
+  mimetype_in?: Maybe<String[] | String>;
+  mimetype_not_in?: Maybe<String[] | String>;
+  mimetype_lt?: Maybe<String>;
+  mimetype_lte?: Maybe<String>;
+  mimetype_gt?: Maybe<String>;
+  mimetype_gte?: Maybe<String>;
+  mimetype_contains?: Maybe<String>;
+  mimetype_not_contains?: Maybe<String>;
+  mimetype_starts_with?: Maybe<String>;
+  mimetype_not_starts_with?: Maybe<String>;
+  mimetype_ends_with?: Maybe<String>;
+  mimetype_not_ends_with?: Maybe<String>;
+  type?: Maybe<FileType>;
+  type_not?: Maybe<FileType>;
+  type_in?: Maybe<FileType[] | FileType>;
+  type_not_in?: Maybe<FileType[] | FileType>;
+  AND?: Maybe<FileWhereInput[] | FileWhereInput>;
+  OR?: Maybe<FileWhereInput[] | FileWhereInput>;
+  NOT?: Maybe<FileWhereInput[] | FileWhereInput>;
 }
 
 export interface AccountingFirmCreateManyWithoutCustomersInput {
@@ -980,6 +1155,1932 @@ export interface AccountingFirmCreateManyWithoutCustomersInput {
   connect?: Maybe<
     AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
   >;
+}
+
+export interface DataRecordWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  accountingFirm?: Maybe<AccountingFirmWhereInput>;
+  company?: Maybe<CompanyWhereInput>;
+  startTime?: Maybe<DateTimeInput>;
+  startTime_not?: Maybe<DateTimeInput>;
+  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_lt?: Maybe<DateTimeInput>;
+  startTime_lte?: Maybe<DateTimeInput>;
+  startTime_gt?: Maybe<DateTimeInput>;
+  startTime_gte?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  endTime_not?: Maybe<DateTimeInput>;
+  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_lt?: Maybe<DateTimeInput>;
+  endTime_lte?: Maybe<DateTimeInput>;
+  endTime_gt?: Maybe<DateTimeInput>;
+  endTime_gte?: Maybe<DateTimeInput>;
+  uploadTime?: Maybe<DateTimeInput>;
+  uploadTime_not?: Maybe<DateTimeInput>;
+  uploadTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  uploadTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  uploadTime_lt?: Maybe<DateTimeInput>;
+  uploadTime_lte?: Maybe<DateTimeInput>;
+  uploadTime_gt?: Maybe<DateTimeInput>;
+  uploadTime_gte?: Maybe<DateTimeInput>;
+  files_every?: Maybe<FileWhereInput>;
+  files_some?: Maybe<FileWhereInput>;
+  files_none?: Maybe<FileWhereInput>;
+  users_every?: Maybe<UserWhereInput>;
+  users_some?: Maybe<UserWhereInput>;
+  users_none?: Maybe<UserWhereInput>;
+  AND?: Maybe<DataRecordWhereInput[] | DataRecordWhereInput>;
+  OR?: Maybe<DataRecordWhereInput[] | DataRecordWhereInput>;
+  NOT?: Maybe<DataRecordWhereInput[] | DataRecordWhereInput>;
+}
+
+export interface AccountingFirmCreateWithoutCustomersInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  code: String;
+  address: String;
+  phone: String;
+  email: String;
+  contact: String;
+  employees?: Maybe<UserCreateManyWithoutAccountingFirmInput>;
+}
+
+export interface MemberWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  project?: Maybe<ProjectWhereInput>;
+  user?: Maybe<UserWhereInput>;
+  role?: Maybe<ProjectRole>;
+  role_not?: Maybe<ProjectRole>;
+  role_in?: Maybe<ProjectRole[] | ProjectRole>;
+  role_not_in?: Maybe<ProjectRole[] | ProjectRole>;
+  AND?: Maybe<MemberWhereInput[] | MemberWhereInput>;
+  OR?: Maybe<MemberWhereInput[] | MemberWhereInput>;
+  NOT?: Maybe<MemberWhereInput[] | MemberWhereInput>;
+}
+
+export interface MemberCreateManyWithoutProjectInput {
+  create?: Maybe<
+    MemberCreateWithoutProjectInput[] | MemberCreateWithoutProjectInput
+  >;
+  connect?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
+}
+
+export interface ProjectWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  accountingFirm?: Maybe<AccountingFirmWhereInput>;
+  company?: Maybe<CompanyWhereInput>;
+  startTime?: Maybe<DateTimeInput>;
+  startTime_not?: Maybe<DateTimeInput>;
+  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_lt?: Maybe<DateTimeInput>;
+  startTime_lte?: Maybe<DateTimeInput>;
+  startTime_gt?: Maybe<DateTimeInput>;
+  startTime_gte?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  endTime_not?: Maybe<DateTimeInput>;
+  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_lt?: Maybe<DateTimeInput>;
+  endTime_lte?: Maybe<DateTimeInput>;
+  endTime_gt?: Maybe<DateTimeInput>;
+  endTime_gte?: Maybe<DateTimeInput>;
+  members_every?: Maybe<MemberWhereInput>;
+  members_some?: Maybe<MemberWhereInput>;
+  members_none?: Maybe<MemberWhereInput>;
+  AND?: Maybe<ProjectWhereInput[] | ProjectWhereInput>;
+  OR?: Maybe<ProjectWhereInput[] | ProjectWhereInput>;
+  NOT?: Maybe<ProjectWhereInput[] | ProjectWhereInput>;
+}
+
+export interface MemberCreateWithoutProjectInput {
+  id?: Maybe<ID_Input>;
+  user: UserCreateOneInput;
+  role: ProjectRole;
+}
+
+export interface ProjectSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<ProjectWhereInput>;
+  AND?: Maybe<ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput>;
+  OR?: Maybe<ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput>;
+  NOT?: Maybe<ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput>;
+}
+
+export interface UserCreateOneInput {
+  create?: Maybe<UserCreateInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface NoneCompanySubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<NoneCompanyWhereInput>;
+  AND?: Maybe<
+    NoneCompanySubscriptionWhereInput[] | NoneCompanySubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    NoneCompanySubscriptionWhereInput[] | NoneCompanySubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    NoneCompanySubscriptionWhereInput[] | NoneCompanySubscriptionWhereInput
+  >;
+}
+
+export interface UserCreateInput {
+  id?: Maybe<ID_Input>;
+  email: String;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken: String;
+  password: String;
+  resetPasswordToken: String;
+  resetPasswordExpires?: Maybe<Float>;
+  name: String;
+  role?: Maybe<Role>;
+  accountingFirm?: Maybe<AccountingFirmCreateOneWithoutEmployeesInput>;
+  projects?: Maybe<ProjectCreateManyInput>;
+  dataRecords?: Maybe<DataRecordCreateManyWithoutUsersInput>;
+}
+
+export interface MemberSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<MemberWhereInput>;
+  AND?: Maybe<MemberSubscriptionWhereInput[] | MemberSubscriptionWhereInput>;
+  OR?: Maybe<MemberSubscriptionWhereInput[] | MemberSubscriptionWhereInput>;
+  NOT?: Maybe<MemberSubscriptionWhereInput[] | MemberSubscriptionWhereInput>;
+}
+
+export interface AccountingFirmCreateOneWithoutEmployeesInput {
+  create?: Maybe<AccountingFirmCreateWithoutEmployeesInput>;
+  connect?: Maybe<AccountingFirmWhereUniqueInput>;
+}
+
+export interface MainMemberSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<MainMemberWhereInput>;
+  AND?: Maybe<
+    MainMemberSubscriptionWhereInput[] | MainMemberSubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    MainMemberSubscriptionWhereInput[] | MainMemberSubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    MainMemberSubscriptionWhereInput[] | MainMemberSubscriptionWhereInput
+  >;
+}
+
+export interface AccountingFirmCreateWithoutEmployeesInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  code: String;
+  address: String;
+  phone: String;
+  email: String;
+  contact: String;
+  customers?: Maybe<CompanyCreateManyWithoutAccountingFirmsInput>;
+}
+
+export interface HolderSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<HolderWhereInput>;
+  AND?: Maybe<HolderSubscriptionWhereInput[] | HolderSubscriptionWhereInput>;
+  OR?: Maybe<HolderSubscriptionWhereInput[] | HolderSubscriptionWhereInput>;
+  NOT?: Maybe<HolderSubscriptionWhereInput[] | HolderSubscriptionWhereInput>;
+}
+
+export interface CompanyCreateManyWithoutAccountingFirmsInput {
+  create?: Maybe<
+    | CompanyCreateWithoutAccountingFirmsInput[]
+    | CompanyCreateWithoutAccountingFirmsInput
+  >;
+  connect?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
+}
+
+export type CompanyWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+  name?: Maybe<String>;
+}>;
+
+export interface CompanyCreateWithoutAccountingFirmsInput {
+  id?: Maybe<ID_Input>;
+  type: CompanyType;
+  nature: CompanyNature;
+  name: String;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  holders?: Maybe<HolderCreateManyWithoutCompanyInput>;
+  mainMembers?: Maybe<MainMemberCreateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
+}
+
+export interface DataRecordSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<DataRecordWhereInput>;
+  AND?: Maybe<
+    DataRecordSubscriptionWhereInput[] | DataRecordSubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    DataRecordSubscriptionWhereInput[] | DataRecordSubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    DataRecordSubscriptionWhereInput[] | DataRecordSubscriptionWhereInput
+  >;
+}
+
+export interface DataRecordCreateManyWithoutUsersInput {
+  create?: Maybe<
+    DataRecordCreateWithoutUsersInput[] | DataRecordCreateWithoutUsersInput
+  >;
+  connect?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
+}
+
+export type CompanyStdNameWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface DataRecordCreateWithoutUsersInput {
+  id?: Maybe<ID_Input>;
+  accountingFirm: AccountingFirmCreateOneInput;
+  company: CompanyCreateOneInput;
+  startTime: DateTimeInput;
+  endTime: DateTimeInput;
+  files?: Maybe<FileCreateManyInput>;
+}
+
+export interface CompanyStdNameWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  dbName?: Maybe<String>;
+  dbName_not?: Maybe<String>;
+  dbName_in?: Maybe<String[] | String>;
+  dbName_not_in?: Maybe<String[] | String>;
+  dbName_lt?: Maybe<String>;
+  dbName_lte?: Maybe<String>;
+  dbName_gt?: Maybe<String>;
+  dbName_gte?: Maybe<String>;
+  dbName_contains?: Maybe<String>;
+  dbName_not_contains?: Maybe<String>;
+  dbName_starts_with?: Maybe<String>;
+  dbName_not_starts_with?: Maybe<String>;
+  dbName_ends_with?: Maybe<String>;
+  dbName_not_ends_with?: Maybe<String>;
+  originName?: Maybe<String>;
+  originName_not?: Maybe<String>;
+  originName_in?: Maybe<String[] | String>;
+  originName_not_in?: Maybe<String[] | String>;
+  originName_lt?: Maybe<String>;
+  originName_lte?: Maybe<String>;
+  originName_gt?: Maybe<String>;
+  originName_gte?: Maybe<String>;
+  originName_contains?: Maybe<String>;
+  originName_not_contains?: Maybe<String>;
+  originName_starts_with?: Maybe<String>;
+  originName_not_starts_with?: Maybe<String>;
+  originName_ends_with?: Maybe<String>;
+  originName_not_ends_with?: Maybe<String>;
+  stdName?: Maybe<String>;
+  stdName_not?: Maybe<String>;
+  stdName_in?: Maybe<String[] | String>;
+  stdName_not_in?: Maybe<String[] | String>;
+  stdName_lt?: Maybe<String>;
+  stdName_lte?: Maybe<String>;
+  stdName_gt?: Maybe<String>;
+  stdName_gte?: Maybe<String>;
+  stdName_contains?: Maybe<String>;
+  stdName_not_contains?: Maybe<String>;
+  stdName_starts_with?: Maybe<String>;
+  stdName_not_starts_with?: Maybe<String>;
+  stdName_ends_with?: Maybe<String>;
+  stdName_not_ends_with?: Maybe<String>;
+  AND?: Maybe<CompanyStdNameWhereInput[] | CompanyStdNameWhereInput>;
+  OR?: Maybe<CompanyStdNameWhereInput[] | CompanyStdNameWhereInput>;
+  NOT?: Maybe<CompanyStdNameWhereInput[] | CompanyStdNameWhereInput>;
+}
+
+export interface FileCreateManyInput {
+  create?: Maybe<FileCreateInput[] | FileCreateInput>;
+  connect?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
+}
+
+export interface AccountingFirmSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<AccountingFirmWhereInput>;
+  AND?: Maybe<
+    | AccountingFirmSubscriptionWhereInput[]
+    | AccountingFirmSubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    | AccountingFirmSubscriptionWhereInput[]
+    | AccountingFirmSubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    | AccountingFirmSubscriptionWhereInput[]
+    | AccountingFirmSubscriptionWhereInput
+  >;
+}
+
+export interface FileCreateInput {
+  id?: Maybe<ID_Input>;
+  path: String;
+  filename: String;
+  mimetype: String;
+  type: FileType;
+}
+
+export interface UserUpdateInput {
+  email?: Maybe<String>;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken?: Maybe<String>;
+  password?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+  resetPasswordExpires?: Maybe<Float>;
+  name?: Maybe<String>;
+  role?: Maybe<Role>;
+  accountingFirm?: Maybe<AccountingFirmUpdateOneWithoutEmployeesInput>;
+  projects?: Maybe<ProjectUpdateManyInput>;
+  dataRecords?: Maybe<DataRecordUpdateManyWithoutUsersInput>;
+}
+
+export interface AccountingFirmUpdateInput {
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  phone?: Maybe<String>;
+  email?: Maybe<String>;
+  contact?: Maybe<String>;
+  employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
+  customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
+}
+
+export interface TbSubjectUpdateManyMutationInput {
+  show?: Maybe<String>;
+  subject?: Maybe<String>;
+  direction?: Maybe<String>;
+  order?: Maybe<Int>;
+}
+
+export interface UserUpdateManyWithoutAccountingFirmInput {
+  create?: Maybe<
+    | UserCreateWithoutAccountingFirmInput[]
+    | UserCreateWithoutAccountingFirmInput
+  >;
+  delete?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
+  connect?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
+  set?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
+  disconnect?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
+  update?: Maybe<
+    | UserUpdateWithWhereUniqueWithoutAccountingFirmInput[]
+    | UserUpdateWithWhereUniqueWithoutAccountingFirmInput
+  >;
+  upsert?: Maybe<
+    | UserUpsertWithWhereUniqueWithoutAccountingFirmInput[]
+    | UserUpsertWithWhereUniqueWithoutAccountingFirmInput
+  >;
+  deleteMany?: Maybe<UserScalarWhereInput[] | UserScalarWhereInput>;
+  updateMany?: Maybe<
+    UserUpdateManyWithWhereNestedInput[] | UserUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface TbSubjectCreateInput {
+  id?: Maybe<ID_Input>;
+  show: String;
+  subject: String;
+  direction: String;
+  order: Int;
+}
+
+export interface UserUpdateWithWhereUniqueWithoutAccountingFirmInput {
+  where: UserWhereUniqueInput;
+  data: UserUpdateWithoutAccountingFirmDataInput;
+}
+
+export interface SubjectContrastUpdateManyMutationInput {
+  origin?: Maybe<String>;
+  tb?: Maybe<String>;
+  fs?: Maybe<String>;
+  coefficient?: Maybe<Int>;
+  direction?: Maybe<String>;
+  firstClass?: Maybe<String>;
+  secondClass?: Maybe<String>;
+}
+
+export interface UserUpdateWithoutAccountingFirmDataInput {
+  email?: Maybe<String>;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken?: Maybe<String>;
+  password?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+  resetPasswordExpires?: Maybe<Float>;
+  name?: Maybe<String>;
+  role?: Maybe<Role>;
+  projects?: Maybe<ProjectUpdateManyInput>;
+  dataRecords?: Maybe<DataRecordUpdateManyWithoutUsersInput>;
+}
+
+export interface AccountingFirmWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  code?: Maybe<String>;
+  code_not?: Maybe<String>;
+  code_in?: Maybe<String[] | String>;
+  code_not_in?: Maybe<String[] | String>;
+  code_lt?: Maybe<String>;
+  code_lte?: Maybe<String>;
+  code_gt?: Maybe<String>;
+  code_gte?: Maybe<String>;
+  code_contains?: Maybe<String>;
+  code_not_contains?: Maybe<String>;
+  code_starts_with?: Maybe<String>;
+  code_not_starts_with?: Maybe<String>;
+  code_ends_with?: Maybe<String>;
+  code_not_ends_with?: Maybe<String>;
+  address?: Maybe<String>;
+  address_not?: Maybe<String>;
+  address_in?: Maybe<String[] | String>;
+  address_not_in?: Maybe<String[] | String>;
+  address_lt?: Maybe<String>;
+  address_lte?: Maybe<String>;
+  address_gt?: Maybe<String>;
+  address_gte?: Maybe<String>;
+  address_contains?: Maybe<String>;
+  address_not_contains?: Maybe<String>;
+  address_starts_with?: Maybe<String>;
+  address_not_starts_with?: Maybe<String>;
+  address_ends_with?: Maybe<String>;
+  address_not_ends_with?: Maybe<String>;
+  phone?: Maybe<String>;
+  phone_not?: Maybe<String>;
+  phone_in?: Maybe<String[] | String>;
+  phone_not_in?: Maybe<String[] | String>;
+  phone_lt?: Maybe<String>;
+  phone_lte?: Maybe<String>;
+  phone_gt?: Maybe<String>;
+  phone_gte?: Maybe<String>;
+  phone_contains?: Maybe<String>;
+  phone_not_contains?: Maybe<String>;
+  phone_starts_with?: Maybe<String>;
+  phone_not_starts_with?: Maybe<String>;
+  phone_ends_with?: Maybe<String>;
+  phone_not_ends_with?: Maybe<String>;
+  email?: Maybe<String>;
+  email_not?: Maybe<String>;
+  email_in?: Maybe<String[] | String>;
+  email_not_in?: Maybe<String[] | String>;
+  email_lt?: Maybe<String>;
+  email_lte?: Maybe<String>;
+  email_gt?: Maybe<String>;
+  email_gte?: Maybe<String>;
+  email_contains?: Maybe<String>;
+  email_not_contains?: Maybe<String>;
+  email_starts_with?: Maybe<String>;
+  email_not_starts_with?: Maybe<String>;
+  email_ends_with?: Maybe<String>;
+  email_not_ends_with?: Maybe<String>;
+  contact?: Maybe<String>;
+  contact_not?: Maybe<String>;
+  contact_in?: Maybe<String[] | String>;
+  contact_not_in?: Maybe<String[] | String>;
+  contact_lt?: Maybe<String>;
+  contact_lte?: Maybe<String>;
+  contact_gt?: Maybe<String>;
+  contact_gte?: Maybe<String>;
+  contact_contains?: Maybe<String>;
+  contact_not_contains?: Maybe<String>;
+  contact_starts_with?: Maybe<String>;
+  contact_not_starts_with?: Maybe<String>;
+  contact_ends_with?: Maybe<String>;
+  contact_not_ends_with?: Maybe<String>;
+  employees_every?: Maybe<UserWhereInput>;
+  employees_some?: Maybe<UserWhereInput>;
+  employees_none?: Maybe<UserWhereInput>;
+  customers_every?: Maybe<CompanyWhereInput>;
+  customers_some?: Maybe<CompanyWhereInput>;
+  customers_none?: Maybe<CompanyWhereInput>;
+  AND?: Maybe<AccountingFirmWhereInput[] | AccountingFirmWhereInput>;
+  OR?: Maybe<AccountingFirmWhereInput[] | AccountingFirmWhereInput>;
+  NOT?: Maybe<AccountingFirmWhereInput[] | AccountingFirmWhereInput>;
+}
+
+export interface ProjectUpdateManyInput {
+  create?: Maybe<ProjectCreateInput[] | ProjectCreateInput>;
+  update?: Maybe<
+    | ProjectUpdateWithWhereUniqueNestedInput[]
+    | ProjectUpdateWithWhereUniqueNestedInput
+  >;
+  upsert?: Maybe<
+    | ProjectUpsertWithWhereUniqueNestedInput[]
+    | ProjectUpsertWithWhereUniqueNestedInput
+  >;
+  delete?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
+  connect?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
+  set?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
+  disconnect?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
+  deleteMany?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
+  updateMany?: Maybe<
+    | ProjectUpdateManyWithWhereNestedInput[]
+    | ProjectUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface SubjectContrastCreateInput {
+  id?: Maybe<ID_Input>;
+  origin: String;
+  tb: String;
+  fs: String;
+  coefficient: Int;
+  direction: String;
+  firstClass: String;
+  secondClass: String;
+}
+
+export interface ProjectUpdateWithWhereUniqueNestedInput {
+  where: ProjectWhereUniqueInput;
+  data: ProjectUpdateDataInput;
+}
+
+export type FileWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface ProjectUpdateDataInput {
+  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
+  company?: Maybe<CompanyUpdateOneRequiredInput>;
+  startTime?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  members?: Maybe<MemberUpdateManyWithoutProjectInput>;
+}
+
+export interface StdSubjectCreateInput {
+  id?: Maybe<ID_Input>;
+  code: String;
+  name: String;
+}
+
+export interface AccountingFirmUpdateOneRequiredInput {
+  create?: Maybe<AccountingFirmCreateInput>;
+  update?: Maybe<AccountingFirmUpdateDataInput>;
+  upsert?: Maybe<AccountingFirmUpsertNestedInput>;
+  connect?: Maybe<AccountingFirmWhereUniqueInput>;
+}
+
+export type HolderWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface AccountingFirmUpdateDataInput {
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  phone?: Maybe<String>;
+  email?: Maybe<String>;
+  contact?: Maybe<String>;
+  employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
+  customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
+}
+
+export interface CompanyUpdateWithoutRelatedPartiesDataInput {
+  type?: Maybe<CompanyType>;
+  nature?: Maybe<CompanyNature>;
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
+  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
+}
+
+export interface CompanyUpdateManyWithoutAccountingFirmsInput {
+  create?: Maybe<
+    | CompanyCreateWithoutAccountingFirmsInput[]
+    | CompanyCreateWithoutAccountingFirmsInput
+  >;
+  delete?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
+  connect?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
+  set?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
+  disconnect?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
+  update?: Maybe<
+    | CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput[]
+    | CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput
+  >;
+  upsert?: Maybe<
+    | CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput[]
+    | CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput
+  >;
+  deleteMany?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
+  updateMany?: Maybe<
+    | CompanyUpdateManyWithWhereNestedInput[]
+    | CompanyUpdateManyWithWhereNestedInput
+  >;
+}
+
+export type LetterOfProofWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput {
+  where: CompanyWhereUniqueInput;
+  data: CompanyUpdateWithoutAccountingFirmsDataInput;
+}
+
+export interface LetterOfProofWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  subjectName?: Maybe<String>;
+  subjectName_not?: Maybe<String>;
+  subjectName_in?: Maybe<String[] | String>;
+  subjectName_not_in?: Maybe<String[] | String>;
+  subjectName_lt?: Maybe<String>;
+  subjectName_lte?: Maybe<String>;
+  subjectName_gt?: Maybe<String>;
+  subjectName_gte?: Maybe<String>;
+  subjectName_contains?: Maybe<String>;
+  subjectName_not_contains?: Maybe<String>;
+  subjectName_starts_with?: Maybe<String>;
+  subjectName_not_starts_with?: Maybe<String>;
+  subjectName_ends_with?: Maybe<String>;
+  subjectName_not_ends_with?: Maybe<String>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  adrress?: Maybe<String>;
+  adrress_not?: Maybe<String>;
+  adrress_in?: Maybe<String[] | String>;
+  adrress_not_in?: Maybe<String[] | String>;
+  adrress_lt?: Maybe<String>;
+  adrress_lte?: Maybe<String>;
+  adrress_gt?: Maybe<String>;
+  adrress_gte?: Maybe<String>;
+  adrress_contains?: Maybe<String>;
+  adrress_not_contains?: Maybe<String>;
+  adrress_starts_with?: Maybe<String>;
+  adrress_not_starts_with?: Maybe<String>;
+  adrress_ends_with?: Maybe<String>;
+  adrress_not_ends_with?: Maybe<String>;
+  contact?: Maybe<String>;
+  contact_not?: Maybe<String>;
+  contact_in?: Maybe<String[] | String>;
+  contact_not_in?: Maybe<String[] | String>;
+  contact_lt?: Maybe<String>;
+  contact_lte?: Maybe<String>;
+  contact_gt?: Maybe<String>;
+  contact_gte?: Maybe<String>;
+  contact_contains?: Maybe<String>;
+  contact_not_contains?: Maybe<String>;
+  contact_starts_with?: Maybe<String>;
+  contact_not_starts_with?: Maybe<String>;
+  contact_ends_with?: Maybe<String>;
+  contact_not_ends_with?: Maybe<String>;
+  telephone?: Maybe<String>;
+  telephone_not?: Maybe<String>;
+  telephone_in?: Maybe<String[] | String>;
+  telephone_not_in?: Maybe<String[] | String>;
+  telephone_lt?: Maybe<String>;
+  telephone_lte?: Maybe<String>;
+  telephone_gt?: Maybe<String>;
+  telephone_gte?: Maybe<String>;
+  telephone_contains?: Maybe<String>;
+  telephone_not_contains?: Maybe<String>;
+  telephone_starts_with?: Maybe<String>;
+  telephone_not_starts_with?: Maybe<String>;
+  telephone_ends_with?: Maybe<String>;
+  telephone_not_ends_with?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  zipCode_not?: Maybe<String>;
+  zipCode_in?: Maybe<String[] | String>;
+  zipCode_not_in?: Maybe<String[] | String>;
+  zipCode_lt?: Maybe<String>;
+  zipCode_lte?: Maybe<String>;
+  zipCode_gt?: Maybe<String>;
+  zipCode_gte?: Maybe<String>;
+  zipCode_contains?: Maybe<String>;
+  zipCode_not_contains?: Maybe<String>;
+  zipCode_starts_with?: Maybe<String>;
+  zipCode_not_starts_with?: Maybe<String>;
+  zipCode_ends_with?: Maybe<String>;
+  zipCode_not_ends_with?: Maybe<String>;
+  sampleReason?: Maybe<String>;
+  sampleReason_not?: Maybe<String>;
+  sampleReason_in?: Maybe<String[] | String>;
+  sampleReason_not_in?: Maybe<String[] | String>;
+  sampleReason_lt?: Maybe<String>;
+  sampleReason_lte?: Maybe<String>;
+  sampleReason_gt?: Maybe<String>;
+  sampleReason_gte?: Maybe<String>;
+  sampleReason_contains?: Maybe<String>;
+  sampleReason_not_contains?: Maybe<String>;
+  sampleReason_starts_with?: Maybe<String>;
+  sampleReason_not_starts_with?: Maybe<String>;
+  sampleReason_ends_with?: Maybe<String>;
+  sampleReason_not_ends_with?: Maybe<String>;
+  currencyType?: Maybe<String>;
+  currencyType_not?: Maybe<String>;
+  currencyType_in?: Maybe<String[] | String>;
+  currencyType_not_in?: Maybe<String[] | String>;
+  currencyType_lt?: Maybe<String>;
+  currencyType_lte?: Maybe<String>;
+  currencyType_gt?: Maybe<String>;
+  currencyType_gte?: Maybe<String>;
+  currencyType_contains?: Maybe<String>;
+  currencyType_not_contains?: Maybe<String>;
+  currencyType_starts_with?: Maybe<String>;
+  currencyType_not_starts_with?: Maybe<String>;
+  currencyType_ends_with?: Maybe<String>;
+  currencyType_not_ends_with?: Maybe<String>;
+  sendDate?: Maybe<String>;
+  sendDate_not?: Maybe<String>;
+  sendDate_in?: Maybe<String[] | String>;
+  sendDate_not_in?: Maybe<String[] | String>;
+  sendDate_lt?: Maybe<String>;
+  sendDate_lte?: Maybe<String>;
+  sendDate_gt?: Maybe<String>;
+  sendDate_gte?: Maybe<String>;
+  sendDate_contains?: Maybe<String>;
+  sendDate_not_contains?: Maybe<String>;
+  sendDate_starts_with?: Maybe<String>;
+  sendDate_not_starts_with?: Maybe<String>;
+  sendDate_ends_with?: Maybe<String>;
+  sendDate_not_ends_with?: Maybe<String>;
+  sendNo?: Maybe<String>;
+  sendNo_not?: Maybe<String>;
+  sendNo_in?: Maybe<String[] | String>;
+  sendNo_not_in?: Maybe<String[] | String>;
+  sendNo_lt?: Maybe<String>;
+  sendNo_lte?: Maybe<String>;
+  sendNo_gt?: Maybe<String>;
+  sendNo_gte?: Maybe<String>;
+  sendNo_contains?: Maybe<String>;
+  sendNo_not_contains?: Maybe<String>;
+  sendNo_starts_with?: Maybe<String>;
+  sendNo_not_starts_with?: Maybe<String>;
+  sendNo_ends_with?: Maybe<String>;
+  sendNo_not_ends_with?: Maybe<String>;
+  receiveDate?: Maybe<String>;
+  receiveDate_not?: Maybe<String>;
+  receiveDate_in?: Maybe<String[] | String>;
+  receiveDate_not_in?: Maybe<String[] | String>;
+  receiveDate_lt?: Maybe<String>;
+  receiveDate_lte?: Maybe<String>;
+  receiveDate_gt?: Maybe<String>;
+  receiveDate_gte?: Maybe<String>;
+  receiveDate_contains?: Maybe<String>;
+  receiveDate_not_contains?: Maybe<String>;
+  receiveDate_starts_with?: Maybe<String>;
+  receiveDate_not_starts_with?: Maybe<String>;
+  receiveDate_ends_with?: Maybe<String>;
+  receiveDate_not_ends_with?: Maybe<String>;
+  receiveNo?: Maybe<String>;
+  receiveNo_not?: Maybe<String>;
+  receiveNo_in?: Maybe<String[] | String>;
+  receiveNo_not_in?: Maybe<String[] | String>;
+  receiveNo_lt?: Maybe<String>;
+  receiveNo_lte?: Maybe<String>;
+  receiveNo_gt?: Maybe<String>;
+  receiveNo_gte?: Maybe<String>;
+  receiveNo_contains?: Maybe<String>;
+  receiveNo_not_contains?: Maybe<String>;
+  receiveNo_starts_with?: Maybe<String>;
+  receiveNo_not_starts_with?: Maybe<String>;
+  receiveNo_ends_with?: Maybe<String>;
+  receiveNo_not_ends_with?: Maybe<String>;
+  balance?: Maybe<Float>;
+  balance_not?: Maybe<Float>;
+  balance_in?: Maybe<Float[] | Float>;
+  balance_not_in?: Maybe<Float[] | Float>;
+  balance_lt?: Maybe<Float>;
+  balance_lte?: Maybe<Float>;
+  balance_gt?: Maybe<Float>;
+  balance_gte?: Maybe<Float>;
+  amount?: Maybe<Float>;
+  amount_not?: Maybe<Float>;
+  amount_in?: Maybe<Float[] | Float>;
+  amount_not_in?: Maybe<Float[] | Float>;
+  amount_lt?: Maybe<Float>;
+  amount_lte?: Maybe<Float>;
+  amount_gt?: Maybe<Float>;
+  amount_gte?: Maybe<Float>;
+  sendBalance?: Maybe<Float>;
+  sendBalance_not?: Maybe<Float>;
+  sendBalance_in?: Maybe<Float[] | Float>;
+  sendBalance_not_in?: Maybe<Float[] | Float>;
+  sendBalance_lt?: Maybe<Float>;
+  sendBalance_lte?: Maybe<Float>;
+  sendBalance_gt?: Maybe<Float>;
+  sendBalance_gte?: Maybe<Float>;
+  sendAmount?: Maybe<Float>;
+  sendAmount_not?: Maybe<Float>;
+  sendAmount_in?: Maybe<Float[] | Float>;
+  sendAmount_not_in?: Maybe<Float[] | Float>;
+  sendAmount_lt?: Maybe<Float>;
+  sendAmount_lte?: Maybe<Float>;
+  sendAmount_gt?: Maybe<Float>;
+  sendAmount_gte?: Maybe<Float>;
+  receiveBalance?: Maybe<Float>;
+  receiveBalance_not?: Maybe<Float>;
+  receiveBalance_in?: Maybe<Float[] | Float>;
+  receiveBalance_not_in?: Maybe<Float[] | Float>;
+  receiveBalance_lt?: Maybe<Float>;
+  receiveBalance_lte?: Maybe<Float>;
+  receiveBalance_gt?: Maybe<Float>;
+  receiveBalance_gte?: Maybe<Float>;
+  receiveAmount?: Maybe<Float>;
+  receiveAmount_not?: Maybe<Float>;
+  receiveAmount_in?: Maybe<Float[] | Float>;
+  receiveAmount_not_in?: Maybe<Float[] | Float>;
+  receiveAmount_lt?: Maybe<Float>;
+  receiveAmount_lte?: Maybe<Float>;
+  receiveAmount_gt?: Maybe<Float>;
+  receiveAmount_gte?: Maybe<Float>;
+  sendPhoto?: Maybe<String>;
+  sendPhoto_not?: Maybe<String>;
+  sendPhoto_in?: Maybe<String[] | String>;
+  sendPhoto_not_in?: Maybe<String[] | String>;
+  sendPhoto_lt?: Maybe<String>;
+  sendPhoto_lte?: Maybe<String>;
+  sendPhoto_gt?: Maybe<String>;
+  sendPhoto_gte?: Maybe<String>;
+  sendPhoto_contains?: Maybe<String>;
+  sendPhoto_not_contains?: Maybe<String>;
+  sendPhoto_starts_with?: Maybe<String>;
+  sendPhoto_not_starts_with?: Maybe<String>;
+  sendPhoto_ends_with?: Maybe<String>;
+  sendPhoto_not_ends_with?: Maybe<String>;
+  receivePhoto?: Maybe<String>;
+  receivePhoto_not?: Maybe<String>;
+  receivePhoto_in?: Maybe<String[] | String>;
+  receivePhoto_not_in?: Maybe<String[] | String>;
+  receivePhoto_lt?: Maybe<String>;
+  receivePhoto_lte?: Maybe<String>;
+  receivePhoto_gt?: Maybe<String>;
+  receivePhoto_gte?: Maybe<String>;
+  receivePhoto_contains?: Maybe<String>;
+  receivePhoto_not_contains?: Maybe<String>;
+  receivePhoto_starts_with?: Maybe<String>;
+  receivePhoto_not_starts_with?: Maybe<String>;
+  receivePhoto_ends_with?: Maybe<String>;
+  receivePhoto_not_ends_with?: Maybe<String>;
+  proofPhoto?: Maybe<String>;
+  proofPhoto_not?: Maybe<String>;
+  proofPhoto_in?: Maybe<String[] | String>;
+  proofPhoto_not_in?: Maybe<String[] | String>;
+  proofPhoto_lt?: Maybe<String>;
+  proofPhoto_lte?: Maybe<String>;
+  proofPhoto_gt?: Maybe<String>;
+  proofPhoto_gte?: Maybe<String>;
+  proofPhoto_contains?: Maybe<String>;
+  proofPhoto_not_contains?: Maybe<String>;
+  proofPhoto_starts_with?: Maybe<String>;
+  proofPhoto_not_starts_with?: Maybe<String>;
+  proofPhoto_ends_with?: Maybe<String>;
+  proofPhoto_not_ends_with?: Maybe<String>;
+  project?: Maybe<ProjectWhereInput>;
+  AND?: Maybe<LetterOfProofWhereInput[] | LetterOfProofWhereInput>;
+  OR?: Maybe<LetterOfProofWhereInput[] | LetterOfProofWhereInput>;
+  NOT?: Maybe<LetterOfProofWhereInput[] | LetterOfProofWhereInput>;
+}
+
+export interface CompanyUpdateWithoutAccountingFirmsDataInput {
+  type?: Maybe<CompanyType>;
+  nature?: Maybe<CompanyNature>;
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
+  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
+}
+
+export interface CompanyCreateOneWithoutRelatedPartiesInput {
+  create?: Maybe<CompanyCreateWithoutRelatedPartiesInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
+}
+
+export interface HolderUpdateManyWithoutCompanyInput {
+  create?: Maybe<
+    HolderCreateWithoutCompanyInput[] | HolderCreateWithoutCompanyInput
+  >;
+  delete?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
+  connect?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
+  set?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
+  disconnect?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
+  update?: Maybe<
+    | HolderUpdateWithWhereUniqueWithoutCompanyInput[]
+    | HolderUpdateWithWhereUniqueWithoutCompanyInput
+  >;
+  upsert?: Maybe<
+    | HolderUpsertWithWhereUniqueWithoutCompanyInput[]
+    | HolderUpsertWithWhereUniqueWithoutCompanyInput
+  >;
+  deleteMany?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
+  updateMany?: Maybe<
+    | HolderUpdateManyWithWhereNestedInput[]
+    | HolderUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface ProjectUpdateManyMutationInput {
+  startTime?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+}
+
+export interface HolderUpdateWithWhereUniqueWithoutCompanyInput {
+  where: HolderWhereUniqueInput;
+  data: HolderUpdateWithoutCompanyDataInput;
+}
+
+export interface ProjectUpdateInput {
+  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
+  company?: Maybe<CompanyUpdateOneRequiredInput>;
+  startTime?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  members?: Maybe<MemberUpdateManyWithoutProjectInput>;
+}
+
+export interface HolderUpdateWithoutCompanyDataInput {
+  name?: Maybe<String>;
+  ratio?: Maybe<Float>;
+}
+
+export interface NoneCompanyUpdateInput {
+  name?: Maybe<String>;
+}
+
+export interface HolderUpsertWithWhereUniqueWithoutCompanyInput {
+  where: HolderWhereUniqueInput;
+  update: HolderUpdateWithoutCompanyDataInput;
+  create: HolderCreateWithoutCompanyInput;
+}
+
+export interface NoneCompanyCreateInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+}
+
+export interface HolderScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  ratio?: Maybe<Float>;
+  ratio_not?: Maybe<Float>;
+  ratio_in?: Maybe<Float[] | Float>;
+  ratio_not_in?: Maybe<Float[] | Float>;
+  ratio_lt?: Maybe<Float>;
+  ratio_lte?: Maybe<Float>;
+  ratio_gt?: Maybe<Float>;
+  ratio_gte?: Maybe<Float>;
+  AND?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
+  OR?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
+  NOT?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
+}
+
+export interface ProjectUpsertWithoutMembersInput {
+  update: ProjectUpdateWithoutMembersDataInput;
+  create: ProjectCreateWithoutMembersInput;
+}
+
+export interface HolderUpdateManyWithWhereNestedInput {
+  where: HolderScalarWhereInput;
+  data: HolderUpdateManyDataInput;
+}
+
+export interface ProjectUpdateWithoutMembersDataInput {
+  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
+  company?: Maybe<CompanyUpdateOneRequiredInput>;
+  startTime?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+}
+
+export interface HolderUpdateManyDataInput {
+  name?: Maybe<String>;
+  ratio?: Maybe<Float>;
+}
+
+export interface ProjectUpdateOneRequiredWithoutMembersInput {
+  create?: Maybe<ProjectCreateWithoutMembersInput>;
+  update?: Maybe<ProjectUpdateWithoutMembersDataInput>;
+  upsert?: Maybe<ProjectUpsertWithoutMembersInput>;
+  connect?: Maybe<ProjectWhereUniqueInput>;
+}
+
+export interface MainMemberUpdateManyWithoutCompanyInput {
+  create?: Maybe<
+    MainMemberCreateWithoutCompanyInput[] | MainMemberCreateWithoutCompanyInput
+  >;
+  delete?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
+  connect?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
+  set?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
+  disconnect?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
+  update?: Maybe<
+    | MainMemberUpdateWithWhereUniqueWithoutCompanyInput[]
+    | MainMemberUpdateWithWhereUniqueWithoutCompanyInput
+  >;
+  upsert?: Maybe<
+    | MainMemberUpsertWithWhereUniqueWithoutCompanyInput[]
+    | MainMemberUpsertWithWhereUniqueWithoutCompanyInput
+  >;
+  deleteMany?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
+  updateMany?: Maybe<
+    | MainMemberUpdateManyWithWhereNestedInput[]
+    | MainMemberUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface ProjectCreateWithoutMembersInput {
+  id?: Maybe<ID_Input>;
+  accountingFirm: AccountingFirmCreateOneInput;
+  company: CompanyCreateOneInput;
+  startTime: DateTimeInput;
+  endTime: DateTimeInput;
+}
+
+export interface MainMemberUpdateWithWhereUniqueWithoutCompanyInput {
+  where: MainMemberWhereUniqueInput;
+  data: MainMemberUpdateWithoutCompanyDataInput;
+}
+
+export type ProjectWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface MainMemberUpdateWithoutCompanyDataInput {
+  name?: Maybe<String>;
+  post?: Maybe<String>;
+}
+
+export interface MainMemberUpdateManyMutationInput {
+  name?: Maybe<String>;
+  post?: Maybe<String>;
+}
+
+export interface MainMemberUpsertWithWhereUniqueWithoutCompanyInput {
+  where: MainMemberWhereUniqueInput;
+  update: MainMemberUpdateWithoutCompanyDataInput;
+  create: MainMemberCreateWithoutCompanyInput;
+}
+
+export type RelatedPartyWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface MainMemberScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  post?: Maybe<String>;
+  post_not?: Maybe<String>;
+  post_in?: Maybe<String[] | String>;
+  post_not_in?: Maybe<String[] | String>;
+  post_lt?: Maybe<String>;
+  post_lte?: Maybe<String>;
+  post_gt?: Maybe<String>;
+  post_gte?: Maybe<String>;
+  post_contains?: Maybe<String>;
+  post_not_contains?: Maybe<String>;
+  post_starts_with?: Maybe<String>;
+  post_not_starts_with?: Maybe<String>;
+  post_ends_with?: Maybe<String>;
+  post_not_ends_with?: Maybe<String>;
+  AND?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
+  OR?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
+  NOT?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
+}
+
+export interface CompanyUpdateOneRequiredWithoutMainMembersInput {
+  create?: Maybe<CompanyCreateWithoutMainMembersInput>;
+  update?: Maybe<CompanyUpdateWithoutMainMembersDataInput>;
+  upsert?: Maybe<CompanyUpsertWithoutMainMembersInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
+}
+
+export interface MainMemberUpdateManyWithWhereNestedInput {
+  where: MainMemberScalarWhereInput;
+  data: MainMemberUpdateManyDataInput;
+}
+
+export type StdSubjectWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+  code?: Maybe<String>;
+  name?: Maybe<String>;
+}>;
+
+export interface FileUpdateManyMutationInput {
+  path?: Maybe<String>;
+  filename?: Maybe<String>;
+  mimetype?: Maybe<String>;
+  type?: Maybe<FileType>;
+}
+
+export interface StdSubjectWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  code?: Maybe<String>;
+  code_not?: Maybe<String>;
+  code_in?: Maybe<String[] | String>;
+  code_not_in?: Maybe<String[] | String>;
+  code_lt?: Maybe<String>;
+  code_lte?: Maybe<String>;
+  code_gt?: Maybe<String>;
+  code_gte?: Maybe<String>;
+  code_contains?: Maybe<String>;
+  code_not_contains?: Maybe<String>;
+  code_starts_with?: Maybe<String>;
+  code_not_starts_with?: Maybe<String>;
+  code_ends_with?: Maybe<String>;
+  code_not_ends_with?: Maybe<String>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  AND?: Maybe<StdSubjectWhereInput[] | StdSubjectWhereInput>;
+  OR?: Maybe<StdSubjectWhereInput[] | StdSubjectWhereInput>;
+  NOT?: Maybe<StdSubjectWhereInput[] | StdSubjectWhereInput>;
+}
+
+export interface RelatedPartyUpdateManyWithoutCompanyInput {
+  create?: Maybe<
+    | RelatedPartyCreateWithoutCompanyInput[]
+    | RelatedPartyCreateWithoutCompanyInput
+  >;
+  delete?: Maybe<RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput>;
+  connect?: Maybe<
+    RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput
+  >;
+  set?: Maybe<RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput>;
+  disconnect?: Maybe<
+    RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput
+  >;
+  update?: Maybe<
+    | RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput[]
+    | RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput
+  >;
+  upsert?: Maybe<
+    | RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput[]
+    | RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput
+  >;
+  deleteMany?: Maybe<
+    RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput
+  >;
+  updateMany?: Maybe<
+    | RelatedPartyUpdateManyWithWhereNestedInput[]
+    | RelatedPartyUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface MainMemberCreateInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  post: String;
+  company: CompanyCreateOneWithoutMainMembersInput;
+}
+
+export interface RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput {
+  where: RelatedPartyWhereUniqueInput;
+  data: RelatedPartyUpdateWithoutCompanyDataInput;
+}
+
+export interface ProjectUpsertNestedInput {
+  update: ProjectUpdateDataInput;
+  create: ProjectCreateInput;
+}
+
+export interface RelatedPartyUpdateWithoutCompanyDataInput {
+  grade?: Maybe<Int>;
+  relationship?: Maybe<String>;
+  type?: Maybe<String>;
+  name?: Maybe<String>;
+}
+
+export interface ProjectUpdateOneRequiredInput {
+  create?: Maybe<ProjectCreateInput>;
+  update?: Maybe<ProjectUpdateDataInput>;
+  upsert?: Maybe<ProjectUpsertNestedInput>;
+  connect?: Maybe<ProjectWhereUniqueInput>;
+}
+
+export interface RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput {
+  where: RelatedPartyWhereUniqueInput;
+  update: RelatedPartyUpdateWithoutCompanyDataInput;
+  create: RelatedPartyCreateWithoutCompanyInput;
+}
+
+export interface UserWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  email?: Maybe<String>;
+  email_not?: Maybe<String>;
+  email_in?: Maybe<String[] | String>;
+  email_not_in?: Maybe<String[] | String>;
+  email_lt?: Maybe<String>;
+  email_lte?: Maybe<String>;
+  email_gt?: Maybe<String>;
+  email_gte?: Maybe<String>;
+  email_contains?: Maybe<String>;
+  email_not_contains?: Maybe<String>;
+  email_starts_with?: Maybe<String>;
+  email_not_starts_with?: Maybe<String>;
+  email_ends_with?: Maybe<String>;
+  email_not_ends_with?: Maybe<String>;
+  emailvalidated?: Maybe<Boolean>;
+  emailvalidated_not?: Maybe<Boolean>;
+  validateEmailToken?: Maybe<String>;
+  validateEmailToken_not?: Maybe<String>;
+  validateEmailToken_in?: Maybe<String[] | String>;
+  validateEmailToken_not_in?: Maybe<String[] | String>;
+  validateEmailToken_lt?: Maybe<String>;
+  validateEmailToken_lte?: Maybe<String>;
+  validateEmailToken_gt?: Maybe<String>;
+  validateEmailToken_gte?: Maybe<String>;
+  validateEmailToken_contains?: Maybe<String>;
+  validateEmailToken_not_contains?: Maybe<String>;
+  validateEmailToken_starts_with?: Maybe<String>;
+  validateEmailToken_not_starts_with?: Maybe<String>;
+  validateEmailToken_ends_with?: Maybe<String>;
+  validateEmailToken_not_ends_with?: Maybe<String>;
+  createdAt?: Maybe<DateTimeInput>;
+  createdAt_not?: Maybe<DateTimeInput>;
+  createdAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  createdAt_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  createdAt_lt?: Maybe<DateTimeInput>;
+  createdAt_lte?: Maybe<DateTimeInput>;
+  createdAt_gt?: Maybe<DateTimeInput>;
+  createdAt_gte?: Maybe<DateTimeInput>;
+  updatedAt?: Maybe<DateTimeInput>;
+  updatedAt_not?: Maybe<DateTimeInput>;
+  updatedAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  updatedAt_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  updatedAt_lt?: Maybe<DateTimeInput>;
+  updatedAt_lte?: Maybe<DateTimeInput>;
+  updatedAt_gt?: Maybe<DateTimeInput>;
+  updatedAt_gte?: Maybe<DateTimeInput>;
+  password?: Maybe<String>;
+  password_not?: Maybe<String>;
+  password_in?: Maybe<String[] | String>;
+  password_not_in?: Maybe<String[] | String>;
+  password_lt?: Maybe<String>;
+  password_lte?: Maybe<String>;
+  password_gt?: Maybe<String>;
+  password_gte?: Maybe<String>;
+  password_contains?: Maybe<String>;
+  password_not_contains?: Maybe<String>;
+  password_starts_with?: Maybe<String>;
+  password_not_starts_with?: Maybe<String>;
+  password_ends_with?: Maybe<String>;
+  password_not_ends_with?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+  resetPasswordToken_not?: Maybe<String>;
+  resetPasswordToken_in?: Maybe<String[] | String>;
+  resetPasswordToken_not_in?: Maybe<String[] | String>;
+  resetPasswordToken_lt?: Maybe<String>;
+  resetPasswordToken_lte?: Maybe<String>;
+  resetPasswordToken_gt?: Maybe<String>;
+  resetPasswordToken_gte?: Maybe<String>;
+  resetPasswordToken_contains?: Maybe<String>;
+  resetPasswordToken_not_contains?: Maybe<String>;
+  resetPasswordToken_starts_with?: Maybe<String>;
+  resetPasswordToken_not_starts_with?: Maybe<String>;
+  resetPasswordToken_ends_with?: Maybe<String>;
+  resetPasswordToken_not_ends_with?: Maybe<String>;
+  resetPasswordExpires?: Maybe<Float>;
+  resetPasswordExpires_not?: Maybe<Float>;
+  resetPasswordExpires_in?: Maybe<Float[] | Float>;
+  resetPasswordExpires_not_in?: Maybe<Float[] | Float>;
+  resetPasswordExpires_lt?: Maybe<Float>;
+  resetPasswordExpires_lte?: Maybe<Float>;
+  resetPasswordExpires_gt?: Maybe<Float>;
+  resetPasswordExpires_gte?: Maybe<Float>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  role?: Maybe<Role>;
+  role_not?: Maybe<Role>;
+  role_in?: Maybe<Role[] | Role>;
+  role_not_in?: Maybe<Role[] | Role>;
+  accountingFirm?: Maybe<AccountingFirmWhereInput>;
+  projects_every?: Maybe<ProjectWhereInput>;
+  projects_some?: Maybe<ProjectWhereInput>;
+  projects_none?: Maybe<ProjectWhereInput>;
+  dataRecords_every?: Maybe<DataRecordWhereInput>;
+  dataRecords_some?: Maybe<DataRecordWhereInput>;
+  dataRecords_none?: Maybe<DataRecordWhereInput>;
+  AND?: Maybe<UserWhereInput[] | UserWhereInput>;
+  OR?: Maybe<UserWhereInput[] | UserWhereInput>;
+  NOT?: Maybe<UserWhereInput[] | UserWhereInput>;
+}
+
+export interface RelatedPartyScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  grade?: Maybe<Int>;
+  grade_not?: Maybe<Int>;
+  grade_in?: Maybe<Int[] | Int>;
+  grade_not_in?: Maybe<Int[] | Int>;
+  grade_lt?: Maybe<Int>;
+  grade_lte?: Maybe<Int>;
+  grade_gt?: Maybe<Int>;
+  grade_gte?: Maybe<Int>;
+  relationship?: Maybe<String>;
+  relationship_not?: Maybe<String>;
+  relationship_in?: Maybe<String[] | String>;
+  relationship_not_in?: Maybe<String[] | String>;
+  relationship_lt?: Maybe<String>;
+  relationship_lte?: Maybe<String>;
+  relationship_gt?: Maybe<String>;
+  relationship_gte?: Maybe<String>;
+  relationship_contains?: Maybe<String>;
+  relationship_not_contains?: Maybe<String>;
+  relationship_starts_with?: Maybe<String>;
+  relationship_not_starts_with?: Maybe<String>;
+  relationship_ends_with?: Maybe<String>;
+  relationship_not_ends_with?: Maybe<String>;
+  type?: Maybe<String>;
+  type_not?: Maybe<String>;
+  type_in?: Maybe<String[] | String>;
+  type_not_in?: Maybe<String[] | String>;
+  type_lt?: Maybe<String>;
+  type_lte?: Maybe<String>;
+  type_gt?: Maybe<String>;
+  type_gte?: Maybe<String>;
+  type_contains?: Maybe<String>;
+  type_not_contains?: Maybe<String>;
+  type_starts_with?: Maybe<String>;
+  type_not_starts_with?: Maybe<String>;
+  type_ends_with?: Maybe<String>;
+  type_not_ends_with?: Maybe<String>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  AND?: Maybe<RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput>;
+  OR?: Maybe<RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput>;
+  NOT?: Maybe<RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput>;
+}
+
+export interface ProjectCreateOneInput {
+  create?: Maybe<ProjectCreateInput>;
+  connect?: Maybe<ProjectWhereUniqueInput>;
+}
+
+export interface RelatedPartyUpdateManyWithWhereNestedInput {
+  where: RelatedPartyScalarWhereInput;
+  data: RelatedPartyUpdateManyDataInput;
+}
+
+export type TbSubjectWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+  show?: Maybe<String>;
+}>;
+
+export interface RelatedPartyUpdateManyDataInput {
+  grade?: Maybe<Int>;
+  relationship?: Maybe<String>;
+  type?: Maybe<String>;
+  name?: Maybe<String>;
+}
+
+export interface TbSubjectWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  show?: Maybe<String>;
+  show_not?: Maybe<String>;
+  show_in?: Maybe<String[] | String>;
+  show_not_in?: Maybe<String[] | String>;
+  show_lt?: Maybe<String>;
+  show_lte?: Maybe<String>;
+  show_gt?: Maybe<String>;
+  show_gte?: Maybe<String>;
+  show_contains?: Maybe<String>;
+  show_not_contains?: Maybe<String>;
+  show_starts_with?: Maybe<String>;
+  show_not_starts_with?: Maybe<String>;
+  show_ends_with?: Maybe<String>;
+  show_not_ends_with?: Maybe<String>;
+  subject?: Maybe<String>;
+  subject_not?: Maybe<String>;
+  subject_in?: Maybe<String[] | String>;
+  subject_not_in?: Maybe<String[] | String>;
+  subject_lt?: Maybe<String>;
+  subject_lte?: Maybe<String>;
+  subject_gt?: Maybe<String>;
+  subject_gte?: Maybe<String>;
+  subject_contains?: Maybe<String>;
+  subject_not_contains?: Maybe<String>;
+  subject_starts_with?: Maybe<String>;
+  subject_not_starts_with?: Maybe<String>;
+  subject_ends_with?: Maybe<String>;
+  subject_not_ends_with?: Maybe<String>;
+  direction?: Maybe<String>;
+  direction_not?: Maybe<String>;
+  direction_in?: Maybe<String[] | String>;
+  direction_not_in?: Maybe<String[] | String>;
+  direction_lt?: Maybe<String>;
+  direction_lte?: Maybe<String>;
+  direction_gt?: Maybe<String>;
+  direction_gte?: Maybe<String>;
+  direction_contains?: Maybe<String>;
+  direction_not_contains?: Maybe<String>;
+  direction_starts_with?: Maybe<String>;
+  direction_not_starts_with?: Maybe<String>;
+  direction_ends_with?: Maybe<String>;
+  direction_not_ends_with?: Maybe<String>;
+  order?: Maybe<Int>;
+  order_not?: Maybe<Int>;
+  order_in?: Maybe<Int[] | Int>;
+  order_not_in?: Maybe<Int[] | Int>;
+  order_lt?: Maybe<Int>;
+  order_lte?: Maybe<Int>;
+  order_gt?: Maybe<Int>;
+  order_gte?: Maybe<Int>;
+  AND?: Maybe<TbSubjectWhereInput[] | TbSubjectWhereInput>;
+  OR?: Maybe<TbSubjectWhereInput[] | TbSubjectWhereInput>;
+  NOT?: Maybe<TbSubjectWhereInput[] | TbSubjectWhereInput>;
+}
+
+export interface CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput {
+  where: CompanyWhereUniqueInput;
+  update: CompanyUpdateWithoutAccountingFirmsDataInput;
+  create: CompanyCreateWithoutAccountingFirmsInput;
+}
+
+export interface CompanyUpdateWithoutHoldersDataInput {
+  type?: Maybe<CompanyType>;
+  nature?: Maybe<CompanyNature>;
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
+  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
+}
+
+export interface CompanyScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  type?: Maybe<CompanyType>;
+  type_not?: Maybe<CompanyType>;
+  type_in?: Maybe<CompanyType[] | CompanyType>;
+  type_not_in?: Maybe<CompanyType[] | CompanyType>;
+  nature?: Maybe<CompanyNature>;
+  nature_not?: Maybe<CompanyNature>;
+  nature_in?: Maybe<CompanyNature[] | CompanyNature>;
+  nature_not_in?: Maybe<CompanyNature[] | CompanyNature>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  code?: Maybe<String>;
+  code_not?: Maybe<String>;
+  code_in?: Maybe<String[] | String>;
+  code_not_in?: Maybe<String[] | String>;
+  code_lt?: Maybe<String>;
+  code_lte?: Maybe<String>;
+  code_gt?: Maybe<String>;
+  code_gte?: Maybe<String>;
+  code_contains?: Maybe<String>;
+  code_not_contains?: Maybe<String>;
+  code_starts_with?: Maybe<String>;
+  code_not_starts_with?: Maybe<String>;
+  code_ends_with?: Maybe<String>;
+  code_not_ends_with?: Maybe<String>;
+  address?: Maybe<String>;
+  address_not?: Maybe<String>;
+  address_in?: Maybe<String[] | String>;
+  address_not_in?: Maybe<String[] | String>;
+  address_lt?: Maybe<String>;
+  address_lte?: Maybe<String>;
+  address_gt?: Maybe<String>;
+  address_gte?: Maybe<String>;
+  address_contains?: Maybe<String>;
+  address_not_contains?: Maybe<String>;
+  address_starts_with?: Maybe<String>;
+  address_not_starts_with?: Maybe<String>;
+  address_ends_with?: Maybe<String>;
+  address_not_ends_with?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  legalRepresentative_not?: Maybe<String>;
+  legalRepresentative_in?: Maybe<String[] | String>;
+  legalRepresentative_not_in?: Maybe<String[] | String>;
+  legalRepresentative_lt?: Maybe<String>;
+  legalRepresentative_lte?: Maybe<String>;
+  legalRepresentative_gt?: Maybe<String>;
+  legalRepresentative_gte?: Maybe<String>;
+  legalRepresentative_contains?: Maybe<String>;
+  legalRepresentative_not_contains?: Maybe<String>;
+  legalRepresentative_starts_with?: Maybe<String>;
+  legalRepresentative_not_starts_with?: Maybe<String>;
+  legalRepresentative_ends_with?: Maybe<String>;
+  legalRepresentative_not_ends_with?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  establishDate_not?: Maybe<DateTimeInput>;
+  establishDate_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  establishDate_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  establishDate_lt?: Maybe<DateTimeInput>;
+  establishDate_lte?: Maybe<DateTimeInput>;
+  establishDate_gt?: Maybe<DateTimeInput>;
+  establishDate_gte?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  registeredCapital_not?: Maybe<String>;
+  registeredCapital_in?: Maybe<String[] | String>;
+  registeredCapital_not_in?: Maybe<String[] | String>;
+  registeredCapital_lt?: Maybe<String>;
+  registeredCapital_lte?: Maybe<String>;
+  registeredCapital_gt?: Maybe<String>;
+  registeredCapital_gte?: Maybe<String>;
+  registeredCapital_contains?: Maybe<String>;
+  registeredCapital_not_contains?: Maybe<String>;
+  registeredCapital_starts_with?: Maybe<String>;
+  registeredCapital_not_starts_with?: Maybe<String>;
+  registeredCapital_ends_with?: Maybe<String>;
+  registeredCapital_not_ends_with?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  paidinCapital_not?: Maybe<String>;
+  paidinCapital_in?: Maybe<String[] | String>;
+  paidinCapital_not_in?: Maybe<String[] | String>;
+  paidinCapital_lt?: Maybe<String>;
+  paidinCapital_lte?: Maybe<String>;
+  paidinCapital_gt?: Maybe<String>;
+  paidinCapital_gte?: Maybe<String>;
+  paidinCapital_contains?: Maybe<String>;
+  paidinCapital_not_contains?: Maybe<String>;
+  paidinCapital_starts_with?: Maybe<String>;
+  paidinCapital_not_starts_with?: Maybe<String>;
+  paidinCapital_ends_with?: Maybe<String>;
+  paidinCapital_not_ends_with?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  businessScope_not?: Maybe<String>;
+  businessScope_in?: Maybe<String[] | String>;
+  businessScope_not_in?: Maybe<String[] | String>;
+  businessScope_lt?: Maybe<String>;
+  businessScope_lte?: Maybe<String>;
+  businessScope_gt?: Maybe<String>;
+  businessScope_gte?: Maybe<String>;
+  businessScope_contains?: Maybe<String>;
+  businessScope_not_contains?: Maybe<String>;
+  businessScope_starts_with?: Maybe<String>;
+  businessScope_not_starts_with?: Maybe<String>;
+  businessScope_ends_with?: Maybe<String>;
+  businessScope_not_ends_with?: Maybe<String>;
+  lastControllCompany?: Maybe<String>;
+  lastControllCompany_not?: Maybe<String>;
+  lastControllCompany_in?: Maybe<String[] | String>;
+  lastControllCompany_not_in?: Maybe<String[] | String>;
+  lastControllCompany_lt?: Maybe<String>;
+  lastControllCompany_lte?: Maybe<String>;
+  lastControllCompany_gt?: Maybe<String>;
+  lastControllCompany_gte?: Maybe<String>;
+  lastControllCompany_contains?: Maybe<String>;
+  lastControllCompany_not_contains?: Maybe<String>;
+  lastControllCompany_starts_with?: Maybe<String>;
+  lastControllCompany_not_starts_with?: Maybe<String>;
+  lastControllCompany_ends_with?: Maybe<String>;
+  lastControllCompany_not_ends_with?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  lastControllPerson_not?: Maybe<String>;
+  lastControllPerson_in?: Maybe<String[] | String>;
+  lastControllPerson_not_in?: Maybe<String[] | String>;
+  lastControllPerson_lt?: Maybe<String>;
+  lastControllPerson_lte?: Maybe<String>;
+  lastControllPerson_gt?: Maybe<String>;
+  lastControllPerson_gte?: Maybe<String>;
+  lastControllPerson_contains?: Maybe<String>;
+  lastControllPerson_not_contains?: Maybe<String>;
+  lastControllPerson_starts_with?: Maybe<String>;
+  lastControllPerson_not_starts_with?: Maybe<String>;
+  lastControllPerson_ends_with?: Maybe<String>;
+  lastControllPerson_not_ends_with?: Maybe<String>;
+  AND?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
+  OR?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
+  NOT?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
+}
+
+export interface HolderUpdateInput {
+  name?: Maybe<String>;
+  ratio?: Maybe<Float>;
+  company?: Maybe<CompanyUpdateOneRequiredWithoutHoldersInput>;
+}
+
+export interface CompanyUpdateManyWithWhereNestedInput {
+  where: CompanyScalarWhereInput;
+  data: CompanyUpdateManyDataInput;
+}
+
+export interface CompanyCreateWithoutHoldersInput {
+  id?: Maybe<ID_Input>;
+  type: CompanyType;
+  nature: CompanyNature;
+  name: String;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  mainMembers?: Maybe<MainMemberCreateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
+  accountingFirms?: Maybe<AccountingFirmCreateManyWithoutCustomersInput>;
 }
 
 export interface CompanyUpdateManyDataInput {
@@ -997,7 +3098,19 @@ export interface CompanyUpdateManyDataInput {
   lastControllPerson?: Maybe<String>;
 }
 
-export interface AccountingFirmCreateWithoutCustomersInput {
+export interface HolderCreateInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  ratio: Float;
+  company: CompanyCreateOneWithoutHoldersInput;
+}
+
+export interface AccountingFirmUpsertNestedInput {
+  update: AccountingFirmUpdateDataInput;
+  create: AccountingFirmCreateInput;
+}
+
+export interface AccountingFirmCreateInput {
   id?: Maybe<ID_Input>;
   name: String;
   code: String;
@@ -1006,6 +3119,130 @@ export interface AccountingFirmCreateWithoutCustomersInput {
   email: String;
   contact: String;
   employees?: Maybe<UserCreateManyWithoutAccountingFirmInput>;
+  customers?: Maybe<CompanyCreateManyWithoutAccountingFirmsInput>;
+}
+
+export interface FileUpdateInput {
+  path?: Maybe<String>;
+  filename?: Maybe<String>;
+  mimetype?: Maybe<String>;
+  type?: Maybe<FileType>;
+}
+
+export interface UserCreateWithoutAccountingFirmInput {
+  id?: Maybe<ID_Input>;
+  email: String;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken: String;
+  password: String;
+  resetPasswordToken: String;
+  resetPasswordExpires?: Maybe<Float>;
+  name: String;
+  role?: Maybe<Role>;
+  projects?: Maybe<ProjectCreateManyInput>;
+  dataRecords?: Maybe<DataRecordCreateManyWithoutUsersInput>;
+}
+
+export interface CompanyUpdateDataInput {
+  type?: Maybe<CompanyType>;
+  nature?: Maybe<CompanyNature>;
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
+  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
+  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
+}
+
+export interface ProjectCreateInput {
+  id?: Maybe<ID_Input>;
+  accountingFirm: AccountingFirmCreateOneInput;
+  company: CompanyCreateOneInput;
+  startTime: DateTimeInput;
+  endTime: DateTimeInput;
+  members?: Maybe<MemberCreateManyWithoutProjectInput>;
+}
+
+export interface AccountingFirmUpdateManyWithoutCustomersInput {
+  create?: Maybe<
+    | AccountingFirmCreateWithoutCustomersInput[]
+    | AccountingFirmCreateWithoutCustomersInput
+  >;
+  delete?: Maybe<
+    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
+  >;
+  connect?: Maybe<
+    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
+  >;
+  set?: Maybe<
+    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
+  >;
+  disconnect?: Maybe<
+    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
+  >;
+  update?: Maybe<
+    | AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput[]
+    | AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput
+  >;
+  upsert?: Maybe<
+    | AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput[]
+    | AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput
+  >;
+  deleteMany?: Maybe<
+    AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput
+  >;
+  updateMany?: Maybe<
+    | AccountingFirmUpdateManyWithWhereNestedInput[]
+    | AccountingFirmUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface CompanyCreateOneInput {
+  create?: Maybe<CompanyCreateInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
+}
+
+export interface AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput {
+  where: AccountingFirmWhereUniqueInput;
+  data: AccountingFirmUpdateWithoutCustomersDataInput;
+}
+
+export interface HolderCreateManyWithoutCompanyInput {
+  create?: Maybe<
+    HolderCreateWithoutCompanyInput[] | HolderCreateWithoutCompanyInput
+  >;
+  connect?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
+}
+
+export interface AccountingFirmUpdateWithoutCustomersDataInput {
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  phone?: Maybe<String>;
+  email?: Maybe<String>;
+  contact?: Maybe<String>;
+  employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
+}
+
+export interface MainMemberCreateManyWithoutCompanyInput {
+  create?: Maybe<
+    MainMemberCreateWithoutCompanyInput[] | MainMemberCreateWithoutCompanyInput
+  >;
+  connect?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
+}
+
+export interface AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput {
+  where: AccountingFirmWhereUniqueInput;
+  update: AccountingFirmUpdateWithoutCustomersDataInput;
+  create: AccountingFirmCreateWithoutCustomersInput;
 }
 
 export interface TbSubjectSubscriptionWhereInput {
@@ -1025,37 +3262,112 @@ export interface TbSubjectSubscriptionWhereInput {
   >;
 }
 
-export interface MemberCreateManyWithoutProjectInput {
-  create?: Maybe<
-    MemberCreateWithoutProjectInput[] | MemberCreateWithoutProjectInput
-  >;
-  connect?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
-}
-
-export interface SubjectContrastSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<SubjectContrastWhereInput>;
-  AND?: Maybe<
-    | SubjectContrastSubscriptionWhereInput[]
-    | SubjectContrastSubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    | SubjectContrastSubscriptionWhereInput[]
-    | SubjectContrastSubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    | SubjectContrastSubscriptionWhereInput[]
-    | SubjectContrastSubscriptionWhereInput
-  >;
-}
-
-export interface MemberCreateWithoutProjectInput {
+export interface AccountingFirmScalarWhereInput {
   id?: Maybe<ID_Input>;
-  user: UserCreateOneInput;
-  role: ProjectRole;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  code?: Maybe<String>;
+  code_not?: Maybe<String>;
+  code_in?: Maybe<String[] | String>;
+  code_not_in?: Maybe<String[] | String>;
+  code_lt?: Maybe<String>;
+  code_lte?: Maybe<String>;
+  code_gt?: Maybe<String>;
+  code_gte?: Maybe<String>;
+  code_contains?: Maybe<String>;
+  code_not_contains?: Maybe<String>;
+  code_starts_with?: Maybe<String>;
+  code_not_starts_with?: Maybe<String>;
+  code_ends_with?: Maybe<String>;
+  code_not_ends_with?: Maybe<String>;
+  address?: Maybe<String>;
+  address_not?: Maybe<String>;
+  address_in?: Maybe<String[] | String>;
+  address_not_in?: Maybe<String[] | String>;
+  address_lt?: Maybe<String>;
+  address_lte?: Maybe<String>;
+  address_gt?: Maybe<String>;
+  address_gte?: Maybe<String>;
+  address_contains?: Maybe<String>;
+  address_not_contains?: Maybe<String>;
+  address_starts_with?: Maybe<String>;
+  address_not_starts_with?: Maybe<String>;
+  address_ends_with?: Maybe<String>;
+  address_not_ends_with?: Maybe<String>;
+  phone?: Maybe<String>;
+  phone_not?: Maybe<String>;
+  phone_in?: Maybe<String[] | String>;
+  phone_not_in?: Maybe<String[] | String>;
+  phone_lt?: Maybe<String>;
+  phone_lte?: Maybe<String>;
+  phone_gt?: Maybe<String>;
+  phone_gte?: Maybe<String>;
+  phone_contains?: Maybe<String>;
+  phone_not_contains?: Maybe<String>;
+  phone_starts_with?: Maybe<String>;
+  phone_not_starts_with?: Maybe<String>;
+  phone_ends_with?: Maybe<String>;
+  phone_not_ends_with?: Maybe<String>;
+  email?: Maybe<String>;
+  email_not?: Maybe<String>;
+  email_in?: Maybe<String[] | String>;
+  email_not_in?: Maybe<String[] | String>;
+  email_lt?: Maybe<String>;
+  email_lte?: Maybe<String>;
+  email_gt?: Maybe<String>;
+  email_gte?: Maybe<String>;
+  email_contains?: Maybe<String>;
+  email_not_contains?: Maybe<String>;
+  email_starts_with?: Maybe<String>;
+  email_not_starts_with?: Maybe<String>;
+  email_ends_with?: Maybe<String>;
+  email_not_ends_with?: Maybe<String>;
+  contact?: Maybe<String>;
+  contact_not?: Maybe<String>;
+  contact_in?: Maybe<String[] | String>;
+  contact_not_in?: Maybe<String[] | String>;
+  contact_lt?: Maybe<String>;
+  contact_lte?: Maybe<String>;
+  contact_gt?: Maybe<String>;
+  contact_gte?: Maybe<String>;
+  contact_contains?: Maybe<String>;
+  contact_not_contains?: Maybe<String>;
+  contact_starts_with?: Maybe<String>;
+  contact_not_starts_with?: Maybe<String>;
+  contact_ends_with?: Maybe<String>;
+  contact_not_ends_with?: Maybe<String>;
+  AND?: Maybe<
+    AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput
+  >;
+  OR?: Maybe<AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput>;
+  NOT?: Maybe<
+    AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput
+  >;
 }
 
 export interface StdSubjectSubscriptionWhereInput {
@@ -1075,41 +3387,9 @@ export interface StdSubjectSubscriptionWhereInput {
   >;
 }
 
-export interface UserCreateOneInput {
-  create?: Maybe<UserCreateInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface RelatedPartySubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<RelatedPartyWhereInput>;
-  AND?: Maybe<
-    RelatedPartySubscriptionWhereInput[] | RelatedPartySubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    RelatedPartySubscriptionWhereInput[] | RelatedPartySubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    RelatedPartySubscriptionWhereInput[] | RelatedPartySubscriptionWhereInput
-  >;
-}
-
-export interface UserCreateInput {
-  id?: Maybe<ID_Input>;
-  email: String;
-  emailvalidated?: Maybe<Boolean>;
-  validateEmailToken: String;
-  password: String;
-  resetPasswordToken: String;
-  resetPasswordExpires?: Maybe<Float>;
-  name: String;
-  role?: Maybe<Role>;
-  accountingFirm?: Maybe<AccountingFirmCreateOneWithoutEmployeesInput>;
-  projects?: Maybe<ProjectCreateManyInput>;
-  dataRecords?: Maybe<DataRecordCreateManyWithoutUsersInput>;
+export interface AccountingFirmUpdateManyWithWhereNestedInput {
+  where: AccountingFirmScalarWhereInput;
+  data: AccountingFirmUpdateManyDataInput;
 }
 
 export interface RelatedPartyWhereInput {
@@ -1183,69 +3463,13 @@ export interface RelatedPartyWhereInput {
   NOT?: Maybe<RelatedPartyWhereInput[] | RelatedPartyWhereInput>;
 }
 
-export interface AccountingFirmCreateOneWithoutEmployeesInput {
-  create?: Maybe<AccountingFirmCreateWithoutEmployeesInput>;
-  connect?: Maybe<AccountingFirmWhereUniqueInput>;
-}
-
-export interface MainMemberWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
+export interface AccountingFirmUpdateManyDataInput {
   name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  post?: Maybe<String>;
-  post_not?: Maybe<String>;
-  post_in?: Maybe<String[] | String>;
-  post_not_in?: Maybe<String[] | String>;
-  post_lt?: Maybe<String>;
-  post_lte?: Maybe<String>;
-  post_gt?: Maybe<String>;
-  post_gte?: Maybe<String>;
-  post_contains?: Maybe<String>;
-  post_not_contains?: Maybe<String>;
-  post_starts_with?: Maybe<String>;
-  post_not_starts_with?: Maybe<String>;
-  post_ends_with?: Maybe<String>;
-  post_not_ends_with?: Maybe<String>;
-  company?: Maybe<CompanyWhereInput>;
-  AND?: Maybe<MainMemberWhereInput[] | MainMemberWhereInput>;
-  OR?: Maybe<MainMemberWhereInput[] | MainMemberWhereInput>;
-  NOT?: Maybe<MainMemberWhereInput[] | MainMemberWhereInput>;
-}
-
-export interface AccountingFirmCreateWithoutEmployeesInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  code: String;
-  address: String;
-  phone: String;
-  email: String;
-  contact: String;
-  customers?: Maybe<CompanyCreateManyWithoutAccountingFirmsInput>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  phone?: Maybe<String>;
+  email?: Maybe<String>;
+  contact?: Maybe<String>;
 }
 
 export interface HolderWhereInput {
@@ -1291,12 +3515,68 @@ export interface HolderWhereInput {
   NOT?: Maybe<HolderWhereInput[] | HolderWhereInput>;
 }
 
-export interface CompanyCreateManyWithoutAccountingFirmsInput {
+export interface CompanyUpsertNestedInput {
+  update: CompanyUpdateDataInput;
+  create: CompanyCreateInput;
+}
+
+export interface FileSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<FileWhereInput>;
+  AND?: Maybe<FileSubscriptionWhereInput[] | FileSubscriptionWhereInput>;
+  OR?: Maybe<FileSubscriptionWhereInput[] | FileSubscriptionWhereInput>;
+  NOT?: Maybe<FileSubscriptionWhereInput[] | FileSubscriptionWhereInput>;
+}
+
+export interface MemberUpdateManyWithoutProjectInput {
   create?: Maybe<
-    | CompanyCreateWithoutAccountingFirmsInput[]
-    | CompanyCreateWithoutAccountingFirmsInput
+    MemberCreateWithoutProjectInput[] | MemberCreateWithoutProjectInput
   >;
-  connect?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
+  delete?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
+  connect?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
+  set?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
+  disconnect?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
+  update?: Maybe<
+    | MemberUpdateWithWhereUniqueWithoutProjectInput[]
+    | MemberUpdateWithWhereUniqueWithoutProjectInput
+  >;
+  upsert?: Maybe<
+    | MemberUpsertWithWhereUniqueWithoutProjectInput[]
+    | MemberUpsertWithWhereUniqueWithoutProjectInput
+  >;
+  deleteMany?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
+  updateMany?: Maybe<
+    | MemberUpdateManyWithWhereNestedInput[]
+    | MemberUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface CompanyStdNameSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<CompanyStdNameWhereInput>;
+  AND?: Maybe<
+    | CompanyStdNameSubscriptionWhereInput[]
+    | CompanyStdNameSubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    | CompanyStdNameSubscriptionWhereInput[]
+    | CompanyStdNameSubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    | CompanyStdNameSubscriptionWhereInput[]
+    | CompanyStdNameSubscriptionWhereInput
+  >;
+}
+
+export interface MemberUpdateWithWhereUniqueWithoutProjectInput {
+  where: MemberWhereUniqueInput;
+  data: MemberUpdateWithoutProjectDataInput;
 }
 
 export interface CompanyWhereInput {
@@ -1473,123 +3753,27 @@ export interface CompanyWhereInput {
   NOT?: Maybe<CompanyWhereInput[] | CompanyWhereInput>;
 }
 
-export interface CompanyCreateWithoutAccountingFirmsInput {
-  id?: Maybe<ID_Input>;
-  type: CompanyType;
-  nature: CompanyNature;
-  name: String;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  holders?: Maybe<HolderCreateManyWithoutCompanyInput>;
-  mainMembers?: Maybe<MainMemberCreateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
+export interface MemberUpdateWithoutProjectDataInput {
+  user?: Maybe<UserUpdateOneRequiredInput>;
+  role?: Maybe<ProjectRole>;
 }
 
-export interface FileSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<FileWhereInput>;
-  AND?: Maybe<FileSubscriptionWhereInput[] | FileSubscriptionWhereInput>;
-  OR?: Maybe<FileSubscriptionWhereInput[] | FileSubscriptionWhereInput>;
-  NOT?: Maybe<FileSubscriptionWhereInput[] | FileSubscriptionWhereInput>;
+export type DataRecordWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface UserUpdateOneRequiredInput {
+  create?: Maybe<UserCreateInput>;
+  update?: Maybe<UserUpdateDataInput>;
+  upsert?: Maybe<UserUpsertNestedInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
 }
 
-export interface DataRecordCreateManyWithoutUsersInput {
-  create?: Maybe<
-    DataRecordCreateWithoutUsersInput[] | DataRecordCreateWithoutUsersInput
-  >;
-  connect?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
-}
+export type FSSubjectWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
 
-export interface DataRecordSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<DataRecordWhereInput>;
-  AND?: Maybe<
-    DataRecordSubscriptionWhereInput[] | DataRecordSubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    DataRecordSubscriptionWhereInput[] | DataRecordSubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    DataRecordSubscriptionWhereInput[] | DataRecordSubscriptionWhereInput
-  >;
-}
-
-export interface DataRecordCreateWithoutUsersInput {
-  id?: Maybe<ID_Input>;
-  accountingFirm: AccountingFirmCreateOneInput;
-  company: CompanyCreateOneInput;
-  startTime: DateTimeInput;
-  endTime: DateTimeInput;
-  files?: Maybe<FileCreateManyInput>;
-}
-
-export interface CompanyStdNameSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<CompanyStdNameWhereInput>;
-  AND?: Maybe<
-    | CompanyStdNameSubscriptionWhereInput[]
-    | CompanyStdNameSubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    | CompanyStdNameSubscriptionWhereInput[]
-    | CompanyStdNameSubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    | CompanyStdNameSubscriptionWhereInput[]
-    | CompanyStdNameSubscriptionWhereInput
-  >;
-}
-
-export interface FileCreateManyInput {
-  create?: Maybe<FileCreateInput[] | FileCreateInput>;
-  connect?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
-}
-
-export interface AccountingFirmSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<AccountingFirmWhereInput>;
-  AND?: Maybe<
-    | AccountingFirmSubscriptionWhereInput[]
-    | AccountingFirmSubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    | AccountingFirmSubscriptionWhereInput[]
-    | AccountingFirmSubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    | AccountingFirmSubscriptionWhereInput[]
-    | AccountingFirmSubscriptionWhereInput
-  >;
-}
-
-export interface FileCreateInput {
-  id?: Maybe<ID_Input>;
-  path: String;
-  filename: String;
-  mimetype: String;
-  type: FileType;
-}
-
-export interface UserUpdateManyMutationInput {
+export interface UserUpdateDataInput {
   email?: Maybe<String>;
   emailvalidated?: Maybe<Boolean>;
   validateEmailToken?: Maybe<String>;
@@ -1598,20 +3782,137 @@ export interface UserUpdateManyMutationInput {
   resetPasswordExpires?: Maybe<Float>;
   name?: Maybe<String>;
   role?: Maybe<Role>;
+  accountingFirm?: Maybe<AccountingFirmUpdateOneWithoutEmployeesInput>;
+  projects?: Maybe<ProjectUpdateManyInput>;
+  dataRecords?: Maybe<DataRecordUpdateManyWithoutUsersInput>;
 }
 
-export interface AccountingFirmUpdateInput {
+export interface SubjectContrastUpdateInput {
+  origin?: Maybe<String>;
+  tb?: Maybe<String>;
+  fs?: Maybe<String>;
+  coefficient?: Maybe<Int>;
+  direction?: Maybe<String>;
+  firstClass?: Maybe<String>;
+  secondClass?: Maybe<String>;
+}
+
+export interface AccountingFirmUpdateOneWithoutEmployeesInput {
+  create?: Maybe<AccountingFirmCreateWithoutEmployeesInput>;
+  update?: Maybe<AccountingFirmUpdateWithoutEmployeesDataInput>;
+  upsert?: Maybe<AccountingFirmUpsertWithoutEmployeesInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<AccountingFirmWhereUniqueInput>;
+}
+
+export interface StdSubjectUpdateInput {
+  code?: Maybe<String>;
+  name?: Maybe<String>;
+}
+
+export interface AccountingFirmUpdateWithoutEmployeesDataInput {
   name?: Maybe<String>;
   code?: Maybe<String>;
   address?: Maybe<String>;
   phone?: Maybe<String>;
   email?: Maybe<String>;
   contact?: Maybe<String>;
-  employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
   customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
 }
 
-export interface AccountingFirmWhereInput {
+export interface CompanyUpsertWithoutRelatedPartiesInput {
+  update: CompanyUpdateWithoutRelatedPartiesDataInput;
+  create: CompanyCreateWithoutRelatedPartiesInput;
+}
+
+export interface AccountingFirmUpsertWithoutEmployeesInput {
+  update: AccountingFirmUpdateWithoutEmployeesDataInput;
+  create: AccountingFirmCreateWithoutEmployeesInput;
+}
+
+export interface RelatedPartyUpdateInput {
+  grade?: Maybe<Int>;
+  relationship?: Maybe<String>;
+  type?: Maybe<String>;
+  name?: Maybe<String>;
+  company?: Maybe<CompanyUpdateOneRequiredWithoutRelatedPartiesInput>;
+}
+
+export interface DataRecordUpdateManyWithoutUsersInput {
+  create?: Maybe<
+    DataRecordCreateWithoutUsersInput[] | DataRecordCreateWithoutUsersInput
+  >;
+  delete?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
+  connect?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
+  set?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
+  disconnect?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
+  update?: Maybe<
+    | DataRecordUpdateWithWhereUniqueWithoutUsersInput[]
+    | DataRecordUpdateWithWhereUniqueWithoutUsersInput
+  >;
+  upsert?: Maybe<
+    | DataRecordUpsertWithWhereUniqueWithoutUsersInput[]
+    | DataRecordUpsertWithWhereUniqueWithoutUsersInput
+  >;
+  deleteMany?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
+  updateMany?: Maybe<
+    | DataRecordUpdateManyWithWhereNestedInput[]
+    | DataRecordUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface RelatedPartyCreateInput {
+  id?: Maybe<ID_Input>;
+  grade: Int;
+  relationship: String;
+  type: String;
+  name: String;
+  company: CompanyCreateOneWithoutRelatedPartiesInput;
+}
+
+export interface DataRecordUpdateWithWhereUniqueWithoutUsersInput {
+  where: DataRecordWhereUniqueInput;
+  data: DataRecordUpdateWithoutUsersDataInput;
+}
+
+export interface NoneCompanyUpdateManyMutationInput {
+  name?: Maybe<String>;
+}
+
+export interface DataRecordUpdateWithoutUsersDataInput {
+  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
+  company?: Maybe<CompanyUpdateOneRequiredInput>;
+  startTime?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  files?: Maybe<FileUpdateManyInput>;
+}
+
+export interface MemberUpdateManyMutationInput {
+  role?: Maybe<ProjectRole>;
+}
+
+export interface FileUpdateManyInput {
+  create?: Maybe<FileCreateInput[] | FileCreateInput>;
+  update?: Maybe<
+    | FileUpdateWithWhereUniqueNestedInput[]
+    | FileUpdateWithWhereUniqueNestedInput
+  >;
+  upsert?: Maybe<
+    | FileUpsertWithWhereUniqueNestedInput[]
+    | FileUpsertWithWhereUniqueNestedInput
+  >;
+  delete?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
+  connect?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
+  set?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
+  disconnect?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
+  deleteMany?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
+  updateMany?: Maybe<
+    FileUpdateManyWithWhereNestedInput[] | FileUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface NoneCompanyWhereInput {
   id?: Maybe<ID_Input>;
   id_not?: Maybe<ID_Input>;
   id_in?: Maybe<ID_Input[] | ID_Input>;
@@ -1640,127 +3941,391 @@ export interface AccountingFirmWhereInput {
   name_not_starts_with?: Maybe<String>;
   name_ends_with?: Maybe<String>;
   name_not_ends_with?: Maybe<String>;
-  code?: Maybe<String>;
-  code_not?: Maybe<String>;
-  code_in?: Maybe<String[] | String>;
-  code_not_in?: Maybe<String[] | String>;
-  code_lt?: Maybe<String>;
-  code_lte?: Maybe<String>;
-  code_gt?: Maybe<String>;
-  code_gte?: Maybe<String>;
-  code_contains?: Maybe<String>;
-  code_not_contains?: Maybe<String>;
-  code_starts_with?: Maybe<String>;
-  code_not_starts_with?: Maybe<String>;
-  code_ends_with?: Maybe<String>;
-  code_not_ends_with?: Maybe<String>;
-  address?: Maybe<String>;
-  address_not?: Maybe<String>;
-  address_in?: Maybe<String[] | String>;
-  address_not_in?: Maybe<String[] | String>;
-  address_lt?: Maybe<String>;
-  address_lte?: Maybe<String>;
-  address_gt?: Maybe<String>;
-  address_gte?: Maybe<String>;
-  address_contains?: Maybe<String>;
-  address_not_contains?: Maybe<String>;
-  address_starts_with?: Maybe<String>;
-  address_not_starts_with?: Maybe<String>;
-  address_ends_with?: Maybe<String>;
-  address_not_ends_with?: Maybe<String>;
-  phone?: Maybe<String>;
-  phone_not?: Maybe<String>;
-  phone_in?: Maybe<String[] | String>;
-  phone_not_in?: Maybe<String[] | String>;
-  phone_lt?: Maybe<String>;
-  phone_lte?: Maybe<String>;
-  phone_gt?: Maybe<String>;
-  phone_gte?: Maybe<String>;
-  phone_contains?: Maybe<String>;
-  phone_not_contains?: Maybe<String>;
-  phone_starts_with?: Maybe<String>;
-  phone_not_starts_with?: Maybe<String>;
-  phone_ends_with?: Maybe<String>;
-  phone_not_ends_with?: Maybe<String>;
-  email?: Maybe<String>;
-  email_not?: Maybe<String>;
-  email_in?: Maybe<String[] | String>;
-  email_not_in?: Maybe<String[] | String>;
-  email_lt?: Maybe<String>;
-  email_lte?: Maybe<String>;
-  email_gt?: Maybe<String>;
-  email_gte?: Maybe<String>;
-  email_contains?: Maybe<String>;
-  email_not_contains?: Maybe<String>;
-  email_starts_with?: Maybe<String>;
-  email_not_starts_with?: Maybe<String>;
-  email_ends_with?: Maybe<String>;
-  email_not_ends_with?: Maybe<String>;
-  contact?: Maybe<String>;
-  contact_not?: Maybe<String>;
-  contact_in?: Maybe<String[] | String>;
-  contact_not_in?: Maybe<String[] | String>;
-  contact_lt?: Maybe<String>;
-  contact_lte?: Maybe<String>;
-  contact_gt?: Maybe<String>;
-  contact_gte?: Maybe<String>;
-  contact_contains?: Maybe<String>;
-  contact_not_contains?: Maybe<String>;
-  contact_starts_with?: Maybe<String>;
-  contact_not_starts_with?: Maybe<String>;
-  contact_ends_with?: Maybe<String>;
-  contact_not_ends_with?: Maybe<String>;
-  employees_every?: Maybe<UserWhereInput>;
-  employees_some?: Maybe<UserWhereInput>;
-  employees_none?: Maybe<UserWhereInput>;
-  customers_every?: Maybe<CompanyWhereInput>;
-  customers_some?: Maybe<CompanyWhereInput>;
-  customers_none?: Maybe<CompanyWhereInput>;
-  AND?: Maybe<AccountingFirmWhereInput[] | AccountingFirmWhereInput>;
-  OR?: Maybe<AccountingFirmWhereInput[] | AccountingFirmWhereInput>;
-  NOT?: Maybe<AccountingFirmWhereInput[] | AccountingFirmWhereInput>;
+  AND?: Maybe<NoneCompanyWhereInput[] | NoneCompanyWhereInput>;
+  OR?: Maybe<NoneCompanyWhereInput[] | NoneCompanyWhereInput>;
+  NOT?: Maybe<NoneCompanyWhereInput[] | NoneCompanyWhereInput>;
 }
 
-export interface UserUpdateManyWithoutAccountingFirmInput {
+export interface FileUpdateWithWhereUniqueNestedInput {
+  where: FileWhereUniqueInput;
+  data: FileUpdateDataInput;
+}
+
+export interface ProjectCreateOneWithoutMembersInput {
+  create?: Maybe<ProjectCreateWithoutMembersInput>;
+  connect?: Maybe<ProjectWhereUniqueInput>;
+}
+
+export interface FileUpdateDataInput {
+  path?: Maybe<String>;
+  filename?: Maybe<String>;
+  mimetype?: Maybe<String>;
+  type?: Maybe<FileType>;
+}
+
+export interface CompanyUpsertWithoutMainMembersInput {
+  update: CompanyUpdateWithoutMainMembersDataInput;
+  create: CompanyCreateWithoutMainMembersInput;
+}
+
+export interface FileUpsertWithWhereUniqueNestedInput {
+  where: FileWhereUniqueInput;
+  update: FileUpdateDataInput;
+  create: FileCreateInput;
+}
+
+export interface MainMemberUpdateInput {
+  name?: Maybe<String>;
+  post?: Maybe<String>;
+  company?: Maybe<CompanyUpdateOneRequiredWithoutMainMembersInput>;
+}
+
+export interface FileScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  path?: Maybe<String>;
+  path_not?: Maybe<String>;
+  path_in?: Maybe<String[] | String>;
+  path_not_in?: Maybe<String[] | String>;
+  path_lt?: Maybe<String>;
+  path_lte?: Maybe<String>;
+  path_gt?: Maybe<String>;
+  path_gte?: Maybe<String>;
+  path_contains?: Maybe<String>;
+  path_not_contains?: Maybe<String>;
+  path_starts_with?: Maybe<String>;
+  path_not_starts_with?: Maybe<String>;
+  path_ends_with?: Maybe<String>;
+  path_not_ends_with?: Maybe<String>;
+  filename?: Maybe<String>;
+  filename_not?: Maybe<String>;
+  filename_in?: Maybe<String[] | String>;
+  filename_not_in?: Maybe<String[] | String>;
+  filename_lt?: Maybe<String>;
+  filename_lte?: Maybe<String>;
+  filename_gt?: Maybe<String>;
+  filename_gte?: Maybe<String>;
+  filename_contains?: Maybe<String>;
+  filename_not_contains?: Maybe<String>;
+  filename_starts_with?: Maybe<String>;
+  filename_not_starts_with?: Maybe<String>;
+  filename_ends_with?: Maybe<String>;
+  filename_not_ends_with?: Maybe<String>;
+  mimetype?: Maybe<String>;
+  mimetype_not?: Maybe<String>;
+  mimetype_in?: Maybe<String[] | String>;
+  mimetype_not_in?: Maybe<String[] | String>;
+  mimetype_lt?: Maybe<String>;
+  mimetype_lte?: Maybe<String>;
+  mimetype_gt?: Maybe<String>;
+  mimetype_gte?: Maybe<String>;
+  mimetype_contains?: Maybe<String>;
+  mimetype_not_contains?: Maybe<String>;
+  mimetype_starts_with?: Maybe<String>;
+  mimetype_not_starts_with?: Maybe<String>;
+  mimetype_ends_with?: Maybe<String>;
+  mimetype_not_ends_with?: Maybe<String>;
+  type?: Maybe<FileType>;
+  type_not?: Maybe<FileType>;
+  type_in?: Maybe<FileType[] | FileType>;
+  type_not_in?: Maybe<FileType[] | FileType>;
+  AND?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
+  OR?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
+  NOT?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
+}
+
+export interface CompanyCreateOneWithoutMainMembersInput {
+  create?: Maybe<CompanyCreateWithoutMainMembersInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
+}
+
+export interface FileUpdateManyWithWhereNestedInput {
+  where: FileScalarWhereInput;
+  data: FileUpdateManyDataInput;
+}
+
+export type SubjectContrastWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+  origin?: Maybe<String>;
+}>;
+
+export interface FileUpdateManyDataInput {
+  path?: Maybe<String>;
+  filename?: Maybe<String>;
+  mimetype?: Maybe<String>;
+  type?: Maybe<FileType>;
+}
+
+export interface LetterOfProofUpdateInput {
+  subjectName?: Maybe<String>;
+  name?: Maybe<String>;
+  adrress?: Maybe<String>;
+  contact?: Maybe<String>;
+  telephone?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  sampleReason?: Maybe<String>;
+  currencyType?: Maybe<String>;
+  sendDate?: Maybe<String>;
+  sendNo?: Maybe<String>;
+  receiveDate?: Maybe<String>;
+  receiveNo?: Maybe<String>;
+  balance?: Maybe<Float>;
+  amount?: Maybe<Float>;
+  sendBalance?: Maybe<Float>;
+  sendAmount?: Maybe<Float>;
+  receiveBalance?: Maybe<Float>;
+  receiveAmount?: Maybe<Float>;
+  sendPhoto?: Maybe<String>;
+  receivePhoto?: Maybe<String>;
+  proofPhoto?: Maybe<String>;
+  project?: Maybe<ProjectUpdateOneRequiredInput>;
+}
+
+export interface DataRecordUpsertWithWhereUniqueWithoutUsersInput {
+  where: DataRecordWhereUniqueInput;
+  update: DataRecordUpdateWithoutUsersDataInput;
+  create: DataRecordCreateWithoutUsersInput;
+}
+
+export interface HolderUpdateManyMutationInput {
+  name?: Maybe<String>;
+  ratio?: Maybe<Float>;
+}
+
+export interface DataRecordScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  startTime?: Maybe<DateTimeInput>;
+  startTime_not?: Maybe<DateTimeInput>;
+  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_lt?: Maybe<DateTimeInput>;
+  startTime_lte?: Maybe<DateTimeInput>;
+  startTime_gt?: Maybe<DateTimeInput>;
+  startTime_gte?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  endTime_not?: Maybe<DateTimeInput>;
+  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_lt?: Maybe<DateTimeInput>;
+  endTime_lte?: Maybe<DateTimeInput>;
+  endTime_gt?: Maybe<DateTimeInput>;
+  endTime_gte?: Maybe<DateTimeInput>;
+  uploadTime?: Maybe<DateTimeInput>;
+  uploadTime_not?: Maybe<DateTimeInput>;
+  uploadTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  uploadTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  uploadTime_lt?: Maybe<DateTimeInput>;
+  uploadTime_lte?: Maybe<DateTimeInput>;
+  uploadTime_gt?: Maybe<DateTimeInput>;
+  uploadTime_gte?: Maybe<DateTimeInput>;
+  AND?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
+  OR?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
+  NOT?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
+}
+
+export interface CompanyUpdateOneRequiredWithoutHoldersInput {
+  create?: Maybe<CompanyCreateWithoutHoldersInput>;
+  update?: Maybe<CompanyUpdateWithoutHoldersDataInput>;
+  upsert?: Maybe<CompanyUpsertWithoutHoldersInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
+}
+
+export interface DataRecordUpdateManyWithWhereNestedInput {
+  where: DataRecordScalarWhereInput;
+  data: DataRecordUpdateManyDataInput;
+}
+
+export interface CompanyCreateOneWithoutHoldersInput {
+  create?: Maybe<CompanyCreateWithoutHoldersInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
+}
+
+export interface DataRecordUpdateManyDataInput {
+  startTime?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+}
+
+export interface UserCreateManyWithoutAccountingFirmInput {
   create?: Maybe<
     | UserCreateWithoutAccountingFirmInput[]
     | UserCreateWithoutAccountingFirmInput
   >;
-  delete?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
   connect?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
-  set?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
-  disconnect?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
-  update?: Maybe<
-    | UserUpdateWithWhereUniqueWithoutAccountingFirmInput[]
-    | UserUpdateWithWhereUniqueWithoutAccountingFirmInput
+}
+
+export interface UserUpsertNestedInput {
+  update: UserUpdateDataInput;
+  create: UserCreateInput;
+}
+
+export interface AccountingFirmCreateOneInput {
+  create?: Maybe<AccountingFirmCreateInput>;
+  connect?: Maybe<AccountingFirmWhereUniqueInput>;
+}
+
+export interface MemberUpsertWithWhereUniqueWithoutProjectInput {
+  where: MemberWhereUniqueInput;
+  update: MemberUpdateWithoutProjectDataInput;
+  create: MemberCreateWithoutProjectInput;
+}
+
+export interface HolderCreateWithoutCompanyInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  ratio: Float;
+}
+
+export interface MemberScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  role?: Maybe<ProjectRole>;
+  role_not?: Maybe<ProjectRole>;
+  role_in?: Maybe<ProjectRole[] | ProjectRole>;
+  role_not_in?: Maybe<ProjectRole[] | ProjectRole>;
+  AND?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
+  OR?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
+  NOT?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
+}
+
+export interface SubjectContrastSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<SubjectContrastWhereInput>;
+  AND?: Maybe<
+    | SubjectContrastSubscriptionWhereInput[]
+    | SubjectContrastSubscriptionWhereInput
   >;
-  upsert?: Maybe<
-    | UserUpsertWithWhereUniqueWithoutAccountingFirmInput[]
-    | UserUpsertWithWhereUniqueWithoutAccountingFirmInput
+  OR?: Maybe<
+    | SubjectContrastSubscriptionWhereInput[]
+    | SubjectContrastSubscriptionWhereInput
   >;
-  deleteMany?: Maybe<UserScalarWhereInput[] | UserScalarWhereInput>;
-  updateMany?: Maybe<
-    UserUpdateManyWithWhereNestedInput[] | UserUpdateManyWithWhereNestedInput
+  NOT?: Maybe<
+    | SubjectContrastSubscriptionWhereInput[]
+    | SubjectContrastSubscriptionWhereInput
   >;
 }
 
-export interface TbSubjectUpdateManyMutationInput {
-  show?: Maybe<String>;
-  subject?: Maybe<String>;
-  direction?: Maybe<String>;
-  order?: Maybe<Int>;
+export interface MemberUpdateManyWithWhereNestedInput {
+  where: MemberScalarWhereInput;
+  data: MemberUpdateManyDataInput;
 }
 
-export interface UserUpdateWithWhereUniqueWithoutAccountingFirmInput {
-  where: UserWhereUniqueInput;
-  data: UserUpdateWithoutAccountingFirmDataInput;
+export interface MainMemberWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  post?: Maybe<String>;
+  post_not?: Maybe<String>;
+  post_in?: Maybe<String[] | String>;
+  post_not_in?: Maybe<String[] | String>;
+  post_lt?: Maybe<String>;
+  post_lte?: Maybe<String>;
+  post_gt?: Maybe<String>;
+  post_gte?: Maybe<String>;
+  post_contains?: Maybe<String>;
+  post_not_contains?: Maybe<String>;
+  post_starts_with?: Maybe<String>;
+  post_not_starts_with?: Maybe<String>;
+  post_ends_with?: Maybe<String>;
+  post_not_ends_with?: Maybe<String>;
+  company?: Maybe<CompanyWhereInput>;
+  AND?: Maybe<MainMemberWhereInput[] | MainMemberWhereInput>;
+  OR?: Maybe<MainMemberWhereInput[] | MainMemberWhereInput>;
+  NOT?: Maybe<MainMemberWhereInput[] | MainMemberWhereInput>;
 }
 
-export type DataRecordWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
+export interface MemberUpdateManyDataInput {
+  role?: Maybe<ProjectRole>;
+}
 
-export interface UserUpdateWithoutAccountingFirmDataInput {
+export interface FSSubjectSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<FSSubjectWhereInput>;
+  AND?: Maybe<
+    FSSubjectSubscriptionWhereInput[] | FSSubjectSubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    FSSubjectSubscriptionWhereInput[] | FSSubjectSubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    FSSubjectSubscriptionWhereInput[] | FSSubjectSubscriptionWhereInput
+  >;
+}
+
+export interface ProjectUpsertWithWhereUniqueNestedInput {
+  where: ProjectWhereUniqueInput;
+  update: ProjectUpdateDataInput;
+  create: ProjectCreateInput;
+}
+
+export interface UserUpdateManyMutationInput {
   email?: Maybe<String>;
   emailvalidated?: Maybe<Boolean>;
   validateEmailToken?: Maybe<String>;
@@ -1769,48 +4334,42 @@ export interface UserUpdateWithoutAccountingFirmDataInput {
   resetPasswordExpires?: Maybe<Float>;
   name?: Maybe<String>;
   role?: Maybe<Role>;
-  projects?: Maybe<ProjectUpdateManyInput>;
-  dataRecords?: Maybe<DataRecordUpdateManyWithoutUsersInput>;
 }
 
-export interface SubjectContrastUpdateManyMutationInput {
-  origin?: Maybe<String>;
-  tb?: Maybe<String>;
-  fs?: Maybe<String>;
-  coefficient?: Maybe<Int>;
-  direction?: Maybe<String>;
-  firstClass?: Maybe<String>;
-  secondClass?: Maybe<String>;
-}
-
-export interface ProjectUpdateManyInput {
-  create?: Maybe<ProjectCreateInput[] | ProjectCreateInput>;
-  update?: Maybe<
-    | ProjectUpdateWithWhereUniqueNestedInput[]
-    | ProjectUpdateWithWhereUniqueNestedInput
-  >;
-  upsert?: Maybe<
-    | ProjectUpsertWithWhereUniqueNestedInput[]
-    | ProjectUpsertWithWhereUniqueNestedInput
-  >;
-  delete?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
-  connect?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
-  set?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
-  disconnect?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
-  deleteMany?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
-  updateMany?: Maybe<
-    | ProjectUpdateManyWithWhereNestedInput[]
-    | ProjectUpdateManyWithWhereNestedInput
-  >;
-}
-
-export type FSSubjectWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface ProjectUpdateWithWhereUniqueNestedInput {
-  where: ProjectWhereUniqueInput;
-  data: ProjectUpdateDataInput;
+export interface ProjectScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  startTime?: Maybe<DateTimeInput>;
+  startTime_not?: Maybe<DateTimeInput>;
+  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  startTime_lt?: Maybe<DateTimeInput>;
+  startTime_lte?: Maybe<DateTimeInput>;
+  startTime_gt?: Maybe<DateTimeInput>;
+  startTime_gte?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  endTime_not?: Maybe<DateTimeInput>;
+  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  endTime_lt?: Maybe<DateTimeInput>;
+  endTime_lte?: Maybe<DateTimeInput>;
+  endTime_gt?: Maybe<DateTimeInput>;
+  endTime_gte?: Maybe<DateTimeInput>;
+  AND?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
+  OR?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
+  NOT?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
 }
 
 export interface FSSubjectWhereInput {
@@ -1889,24 +4448,9 @@ export interface FSSubjectWhereInput {
   NOT?: Maybe<FSSubjectWhereInput[] | FSSubjectWhereInput>;
 }
 
-export interface ProjectUpdateDataInput {
-  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
-  company?: Maybe<CompanyUpdateOneRequiredInput>;
-  startTime?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-  members?: Maybe<MemberUpdateManyWithoutProjectInput>;
-}
-
-export interface StdSubjectUpdateInput {
-  code?: Maybe<String>;
-  name?: Maybe<String>;
-}
-
-export interface AccountingFirmUpdateOneRequiredInput {
-  create?: Maybe<AccountingFirmCreateInput>;
-  update?: Maybe<AccountingFirmUpdateDataInput>;
-  upsert?: Maybe<AccountingFirmUpsertNestedInput>;
-  connect?: Maybe<AccountingFirmWhereUniqueInput>;
+export interface ProjectUpdateManyWithWhereNestedInput {
+  where: ProjectScalarWhereInput;
+  data: ProjectUpdateManyDataInput;
 }
 
 export interface RelatedPartyUpdateManyMutationInput {
@@ -1916,2300 +4460,28 @@ export interface RelatedPartyUpdateManyMutationInput {
   name?: Maybe<String>;
 }
 
-export interface AccountingFirmUpdateDataInput {
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  phone?: Maybe<String>;
-  email?: Maybe<String>;
-  contact?: Maybe<String>;
-  employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
-  customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
-}
-
-export interface CompanyUpsertWithoutRelatedPartiesInput {
-  update: CompanyUpdateWithoutRelatedPartiesDataInput;
-  create: CompanyCreateWithoutRelatedPartiesInput;
-}
-
-export interface CompanyUpdateManyWithoutAccountingFirmsInput {
-  create?: Maybe<
-    | CompanyCreateWithoutAccountingFirmsInput[]
-    | CompanyCreateWithoutAccountingFirmsInput
-  >;
-  delete?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
-  connect?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
-  set?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
-  disconnect?: Maybe<CompanyWhereUniqueInput[] | CompanyWhereUniqueInput>;
-  update?: Maybe<
-    | CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput[]
-    | CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput
-  >;
-  upsert?: Maybe<
-    | CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput[]
-    | CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput
-  >;
-  deleteMany?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
-  updateMany?: Maybe<
-    | CompanyUpdateManyWithWhereNestedInput[]
-    | CompanyUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface CompanyUpdateOneRequiredWithoutRelatedPartiesInput {
-  create?: Maybe<CompanyCreateWithoutRelatedPartiesInput>;
-  update?: Maybe<CompanyUpdateWithoutRelatedPartiesDataInput>;
-  upsert?: Maybe<CompanyUpsertWithoutRelatedPartiesInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput {
-  where: CompanyWhereUniqueInput;
-  data: CompanyUpdateWithoutAccountingFirmsDataInput;
-}
-
-export interface RelatedPartyUpdateInput {
-  grade?: Maybe<Int>;
-  relationship?: Maybe<String>;
-  type?: Maybe<String>;
-  name?: Maybe<String>;
-  company?: Maybe<CompanyUpdateOneRequiredWithoutRelatedPartiesInput>;
-}
-
-export interface CompanyUpdateWithoutAccountingFirmsDataInput {
-  type?: Maybe<CompanyType>;
-  nature?: Maybe<CompanyNature>;
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
-  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
-}
-
-export interface CompanyCreateOneWithoutRelatedPartiesInput {
-  create?: Maybe<CompanyCreateWithoutRelatedPartiesInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface HolderUpdateManyWithoutCompanyInput {
-  create?: Maybe<
-    HolderCreateWithoutCompanyInput[] | HolderCreateWithoutCompanyInput
-  >;
-  delete?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
-  connect?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
-  set?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
-  disconnect?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
-  update?: Maybe<
-    | HolderUpdateWithWhereUniqueWithoutCompanyInput[]
-    | HolderUpdateWithWhereUniqueWithoutCompanyInput
-  >;
-  upsert?: Maybe<
-    | HolderUpsertWithWhereUniqueWithoutCompanyInput[]
-    | HolderUpsertWithWhereUniqueWithoutCompanyInput
-  >;
-  deleteMany?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
-  updateMany?: Maybe<
-    | HolderUpdateManyWithWhereNestedInput[]
-    | HolderUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface RelatedPartyCreateInput {
-  id?: Maybe<ID_Input>;
-  grade: Int;
-  relationship: String;
-  type: String;
-  name: String;
-  company: CompanyCreateOneWithoutRelatedPartiesInput;
-}
-
-export interface HolderUpdateWithWhereUniqueWithoutCompanyInput {
-  where: HolderWhereUniqueInput;
-  data: HolderUpdateWithoutCompanyDataInput;
-}
-
-export interface ProjectUpdateInput {
-  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
-  company?: Maybe<CompanyUpdateOneRequiredInput>;
-  startTime?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-  members?: Maybe<MemberUpdateManyWithoutProjectInput>;
-}
-
-export interface HolderUpdateWithoutCompanyDataInput {
-  name?: Maybe<String>;
-  ratio?: Maybe<Float>;
-}
-
-export interface NoneCompanyUpdateManyMutationInput {
-  name?: Maybe<String>;
-}
-
-export interface HolderUpsertWithWhereUniqueWithoutCompanyInput {
-  where: HolderWhereUniqueInput;
-  update: HolderUpdateWithoutCompanyDataInput;
-  create: HolderCreateWithoutCompanyInput;
-}
-
-export interface NoneCompanyCreateInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-}
-
-export interface HolderScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  ratio?: Maybe<Float>;
-  ratio_not?: Maybe<Float>;
-  ratio_in?: Maybe<Float[] | Float>;
-  ratio_not_in?: Maybe<Float[] | Float>;
-  ratio_lt?: Maybe<Float>;
-  ratio_lte?: Maybe<Float>;
-  ratio_gt?: Maybe<Float>;
-  ratio_gte?: Maybe<Float>;
-  AND?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
-  OR?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
-  NOT?: Maybe<HolderScalarWhereInput[] | HolderScalarWhereInput>;
-}
-
-export interface MemberUpdateManyMutationInput {
-  role?: Maybe<ProjectRole>;
-}
-
-export interface HolderUpdateManyWithWhereNestedInput {
-  where: HolderScalarWhereInput;
-  data: HolderUpdateManyDataInput;
-}
-
-export interface ProjectUpsertWithoutMembersInput {
-  update: ProjectUpdateWithoutMembersDataInput;
-  create: ProjectCreateWithoutMembersInput;
-}
-
-export interface HolderUpdateManyDataInput {
-  name?: Maybe<String>;
-  ratio?: Maybe<Float>;
-}
-
-export interface ProjectUpdateOneRequiredWithoutMembersInput {
-  create?: Maybe<ProjectCreateWithoutMembersInput>;
-  update?: Maybe<ProjectUpdateWithoutMembersDataInput>;
-  upsert?: Maybe<ProjectUpsertWithoutMembersInput>;
-  connect?: Maybe<ProjectWhereUniqueInput>;
-}
-
-export interface MainMemberUpdateManyWithoutCompanyInput {
-  create?: Maybe<
-    MainMemberCreateWithoutCompanyInput[] | MainMemberCreateWithoutCompanyInput
-  >;
-  delete?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
-  connect?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
-  set?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
-  disconnect?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
-  update?: Maybe<
-    | MainMemberUpdateWithWhereUniqueWithoutCompanyInput[]
-    | MainMemberUpdateWithWhereUniqueWithoutCompanyInput
-  >;
-  upsert?: Maybe<
-    | MainMemberUpsertWithWhereUniqueWithoutCompanyInput[]
-    | MainMemberUpsertWithWhereUniqueWithoutCompanyInput
-  >;
-  deleteMany?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
-  updateMany?: Maybe<
-    | MainMemberUpdateManyWithWhereNestedInput[]
-    | MainMemberUpdateManyWithWhereNestedInput
-  >;
-}
-
-export type ProjectWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface MainMemberUpdateWithWhereUniqueWithoutCompanyInput {
-  where: MainMemberWhereUniqueInput;
-  data: MainMemberUpdateWithoutCompanyDataInput;
-}
-
-export interface ProjectCreateOneWithoutMembersInput {
-  create?: Maybe<ProjectCreateWithoutMembersInput>;
-  connect?: Maybe<ProjectWhereUniqueInput>;
-}
-
-export interface MainMemberUpdateWithoutCompanyDataInput {
-  name?: Maybe<String>;
-  post?: Maybe<String>;
-}
-
-export type RelatedPartyWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface MainMemberUpsertWithWhereUniqueWithoutCompanyInput {
-  where: MainMemberWhereUniqueInput;
-  update: MainMemberUpdateWithoutCompanyDataInput;
-  create: MainMemberCreateWithoutCompanyInput;
-}
-
-export interface CompanyUpsertWithoutMainMembersInput {
-  update: CompanyUpdateWithoutMainMembersDataInput;
-  create: CompanyCreateWithoutMainMembersInput;
-}
-
-export interface MainMemberScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  post?: Maybe<String>;
-  post_not?: Maybe<String>;
-  post_in?: Maybe<String[] | String>;
-  post_not_in?: Maybe<String[] | String>;
-  post_lt?: Maybe<String>;
-  post_lte?: Maybe<String>;
-  post_gt?: Maybe<String>;
-  post_gte?: Maybe<String>;
-  post_contains?: Maybe<String>;
-  post_not_contains?: Maybe<String>;
-  post_starts_with?: Maybe<String>;
-  post_not_starts_with?: Maybe<String>;
-  post_ends_with?: Maybe<String>;
-  post_not_ends_with?: Maybe<String>;
-  AND?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
-  OR?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
-  NOT?: Maybe<MainMemberScalarWhereInput[] | MainMemberScalarWhereInput>;
-}
-
-export type StdSubjectWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-  code?: Maybe<String>;
-  name?: Maybe<String>;
-}>;
-
-export interface FSSubjectCreateInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  show: String;
-  subject: String;
-  direction: String;
-}
-
-export interface StdSubjectWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  code?: Maybe<String>;
-  code_not?: Maybe<String>;
-  code_in?: Maybe<String[] | String>;
-  code_not_in?: Maybe<String[] | String>;
-  code_lt?: Maybe<String>;
-  code_lte?: Maybe<String>;
-  code_gt?: Maybe<String>;
-  code_gte?: Maybe<String>;
-  code_contains?: Maybe<String>;
-  code_not_contains?: Maybe<String>;
-  code_starts_with?: Maybe<String>;
-  code_not_starts_with?: Maybe<String>;
-  code_ends_with?: Maybe<String>;
-  code_not_ends_with?: Maybe<String>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<StdSubjectWhereInput[] | StdSubjectWhereInput>;
-  OR?: Maybe<StdSubjectWhereInput[] | StdSubjectWhereInput>;
-  NOT?: Maybe<StdSubjectWhereInput[] | StdSubjectWhereInput>;
-}
-
-export interface MainMemberUpdateManyDataInput {
-  name?: Maybe<String>;
-  post?: Maybe<String>;
-}
-
-export interface CompanyCreateWithoutMainMembersInput {
-  id?: Maybe<ID_Input>;
-  type: CompanyType;
-  nature: CompanyNature;
-  name: String;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  holders?: Maybe<HolderCreateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
-  accountingFirms?: Maybe<AccountingFirmCreateManyWithoutCustomersInput>;
-}
-
-export interface RelatedPartyUpdateManyWithoutCompanyInput {
-  create?: Maybe<
-    | RelatedPartyCreateWithoutCompanyInput[]
-    | RelatedPartyCreateWithoutCompanyInput
-  >;
-  delete?: Maybe<RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput>;
-  connect?: Maybe<
-    RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput
-  >;
-  set?: Maybe<RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput>;
-  disconnect?: Maybe<
-    RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput
-  >;
-  update?: Maybe<
-    | RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput[]
-    | RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput
-  >;
-  upsert?: Maybe<
-    | RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput[]
-    | RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput
-  >;
-  deleteMany?: Maybe<
-    RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput
-  >;
-  updateMany?: Maybe<
-    | RelatedPartyUpdateManyWithWhereNestedInput[]
-    | RelatedPartyUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface MainMemberCreateInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  post: String;
-  company: CompanyCreateOneWithoutMainMembersInput;
-}
-
-export interface RelatedPartyUpdateWithWhereUniqueWithoutCompanyInput {
-  where: RelatedPartyWhereUniqueInput;
-  data: RelatedPartyUpdateWithoutCompanyDataInput;
-}
-
-export interface HolderUpdateManyMutationInput {
-  name?: Maybe<String>;
-  ratio?: Maybe<Float>;
-}
-
-export interface RelatedPartyUpdateWithoutCompanyDataInput {
-  grade?: Maybe<Int>;
-  relationship?: Maybe<String>;
-  type?: Maybe<String>;
-  name?: Maybe<String>;
-}
-
-export interface UserWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  email?: Maybe<String>;
-  email_not?: Maybe<String>;
-  email_in?: Maybe<String[] | String>;
-  email_not_in?: Maybe<String[] | String>;
-  email_lt?: Maybe<String>;
-  email_lte?: Maybe<String>;
-  email_gt?: Maybe<String>;
-  email_gte?: Maybe<String>;
-  email_contains?: Maybe<String>;
-  email_not_contains?: Maybe<String>;
-  email_starts_with?: Maybe<String>;
-  email_not_starts_with?: Maybe<String>;
-  email_ends_with?: Maybe<String>;
-  email_not_ends_with?: Maybe<String>;
-  emailvalidated?: Maybe<Boolean>;
-  emailvalidated_not?: Maybe<Boolean>;
-  validateEmailToken?: Maybe<String>;
-  validateEmailToken_not?: Maybe<String>;
-  validateEmailToken_in?: Maybe<String[] | String>;
-  validateEmailToken_not_in?: Maybe<String[] | String>;
-  validateEmailToken_lt?: Maybe<String>;
-  validateEmailToken_lte?: Maybe<String>;
-  validateEmailToken_gt?: Maybe<String>;
-  validateEmailToken_gte?: Maybe<String>;
-  validateEmailToken_contains?: Maybe<String>;
-  validateEmailToken_not_contains?: Maybe<String>;
-  validateEmailToken_starts_with?: Maybe<String>;
-  validateEmailToken_not_starts_with?: Maybe<String>;
-  validateEmailToken_ends_with?: Maybe<String>;
-  validateEmailToken_not_ends_with?: Maybe<String>;
-  createdAt?: Maybe<DateTimeInput>;
-  createdAt_not?: Maybe<DateTimeInput>;
-  createdAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  createdAt_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  createdAt_lt?: Maybe<DateTimeInput>;
-  createdAt_lte?: Maybe<DateTimeInput>;
-  createdAt_gt?: Maybe<DateTimeInput>;
-  createdAt_gte?: Maybe<DateTimeInput>;
-  updatedAt?: Maybe<DateTimeInput>;
-  updatedAt_not?: Maybe<DateTimeInput>;
-  updatedAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  updatedAt_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  updatedAt_lt?: Maybe<DateTimeInput>;
-  updatedAt_lte?: Maybe<DateTimeInput>;
-  updatedAt_gt?: Maybe<DateTimeInput>;
-  updatedAt_gte?: Maybe<DateTimeInput>;
-  password?: Maybe<String>;
-  password_not?: Maybe<String>;
-  password_in?: Maybe<String[] | String>;
-  password_not_in?: Maybe<String[] | String>;
-  password_lt?: Maybe<String>;
-  password_lte?: Maybe<String>;
-  password_gt?: Maybe<String>;
-  password_gte?: Maybe<String>;
-  password_contains?: Maybe<String>;
-  password_not_contains?: Maybe<String>;
-  password_starts_with?: Maybe<String>;
-  password_not_starts_with?: Maybe<String>;
-  password_ends_with?: Maybe<String>;
-  password_not_ends_with?: Maybe<String>;
-  resetPasswordToken?: Maybe<String>;
-  resetPasswordToken_not?: Maybe<String>;
-  resetPasswordToken_in?: Maybe<String[] | String>;
-  resetPasswordToken_not_in?: Maybe<String[] | String>;
-  resetPasswordToken_lt?: Maybe<String>;
-  resetPasswordToken_lte?: Maybe<String>;
-  resetPasswordToken_gt?: Maybe<String>;
-  resetPasswordToken_gte?: Maybe<String>;
-  resetPasswordToken_contains?: Maybe<String>;
-  resetPasswordToken_not_contains?: Maybe<String>;
-  resetPasswordToken_starts_with?: Maybe<String>;
-  resetPasswordToken_not_starts_with?: Maybe<String>;
-  resetPasswordToken_ends_with?: Maybe<String>;
-  resetPasswordToken_not_ends_with?: Maybe<String>;
-  resetPasswordExpires?: Maybe<Float>;
-  resetPasswordExpires_not?: Maybe<Float>;
-  resetPasswordExpires_in?: Maybe<Float[] | Float>;
-  resetPasswordExpires_not_in?: Maybe<Float[] | Float>;
-  resetPasswordExpires_lt?: Maybe<Float>;
-  resetPasswordExpires_lte?: Maybe<Float>;
-  resetPasswordExpires_gt?: Maybe<Float>;
-  resetPasswordExpires_gte?: Maybe<Float>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  role?: Maybe<Role>;
-  role_not?: Maybe<Role>;
-  role_in?: Maybe<Role[] | Role>;
-  role_not_in?: Maybe<Role[] | Role>;
-  accountingFirm?: Maybe<AccountingFirmWhereInput>;
-  projects_every?: Maybe<ProjectWhereInput>;
-  projects_some?: Maybe<ProjectWhereInput>;
-  projects_none?: Maybe<ProjectWhereInput>;
-  dataRecords_every?: Maybe<DataRecordWhereInput>;
-  dataRecords_some?: Maybe<DataRecordWhereInput>;
-  dataRecords_none?: Maybe<DataRecordWhereInput>;
-  AND?: Maybe<UserWhereInput[] | UserWhereInput>;
-  OR?: Maybe<UserWhereInput[] | UserWhereInput>;
-  NOT?: Maybe<UserWhereInput[] | UserWhereInput>;
-}
-
-export interface RelatedPartyUpsertWithWhereUniqueWithoutCompanyInput {
-  where: RelatedPartyWhereUniqueInput;
-  update: RelatedPartyUpdateWithoutCompanyDataInput;
-  create: RelatedPartyCreateWithoutCompanyInput;
-}
-
-export interface CompanyUpdateWithoutHoldersDataInput {
-  type?: Maybe<CompanyType>;
-  nature?: Maybe<CompanyNature>;
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
-  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
-}
-
-export interface RelatedPartyScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  grade?: Maybe<Int>;
-  grade_not?: Maybe<Int>;
-  grade_in?: Maybe<Int[] | Int>;
-  grade_not_in?: Maybe<Int[] | Int>;
-  grade_lt?: Maybe<Int>;
-  grade_lte?: Maybe<Int>;
-  grade_gt?: Maybe<Int>;
-  grade_gte?: Maybe<Int>;
-  relationship?: Maybe<String>;
-  relationship_not?: Maybe<String>;
-  relationship_in?: Maybe<String[] | String>;
-  relationship_not_in?: Maybe<String[] | String>;
-  relationship_lt?: Maybe<String>;
-  relationship_lte?: Maybe<String>;
-  relationship_gt?: Maybe<String>;
-  relationship_gte?: Maybe<String>;
-  relationship_contains?: Maybe<String>;
-  relationship_not_contains?: Maybe<String>;
-  relationship_starts_with?: Maybe<String>;
-  relationship_not_starts_with?: Maybe<String>;
-  relationship_ends_with?: Maybe<String>;
-  relationship_not_ends_with?: Maybe<String>;
-  type?: Maybe<String>;
-  type_not?: Maybe<String>;
-  type_in?: Maybe<String[] | String>;
-  type_not_in?: Maybe<String[] | String>;
-  type_lt?: Maybe<String>;
-  type_lte?: Maybe<String>;
-  type_gt?: Maybe<String>;
-  type_gte?: Maybe<String>;
-  type_contains?: Maybe<String>;
-  type_not_contains?: Maybe<String>;
-  type_starts_with?: Maybe<String>;
-  type_not_starts_with?: Maybe<String>;
-  type_ends_with?: Maybe<String>;
-  type_not_ends_with?: Maybe<String>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput>;
-  OR?: Maybe<RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput>;
-  NOT?: Maybe<RelatedPartyScalarWhereInput[] | RelatedPartyScalarWhereInput>;
-}
-
-export type TbSubjectWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-  show?: Maybe<String>;
-}>;
-
-export interface RelatedPartyUpdateManyWithWhereNestedInput {
-  where: RelatedPartyScalarWhereInput;
-  data: RelatedPartyUpdateManyDataInput;
-}
-
-export interface TbSubjectWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  show?: Maybe<String>;
-  show_not?: Maybe<String>;
-  show_in?: Maybe<String[] | String>;
-  show_not_in?: Maybe<String[] | String>;
-  show_lt?: Maybe<String>;
-  show_lte?: Maybe<String>;
-  show_gt?: Maybe<String>;
-  show_gte?: Maybe<String>;
-  show_contains?: Maybe<String>;
-  show_not_contains?: Maybe<String>;
-  show_starts_with?: Maybe<String>;
-  show_not_starts_with?: Maybe<String>;
-  show_ends_with?: Maybe<String>;
-  show_not_ends_with?: Maybe<String>;
-  subject?: Maybe<String>;
-  subject_not?: Maybe<String>;
-  subject_in?: Maybe<String[] | String>;
-  subject_not_in?: Maybe<String[] | String>;
-  subject_lt?: Maybe<String>;
-  subject_lte?: Maybe<String>;
-  subject_gt?: Maybe<String>;
-  subject_gte?: Maybe<String>;
-  subject_contains?: Maybe<String>;
-  subject_not_contains?: Maybe<String>;
-  subject_starts_with?: Maybe<String>;
-  subject_not_starts_with?: Maybe<String>;
-  subject_ends_with?: Maybe<String>;
-  subject_not_ends_with?: Maybe<String>;
-  direction?: Maybe<String>;
-  direction_not?: Maybe<String>;
-  direction_in?: Maybe<String[] | String>;
-  direction_not_in?: Maybe<String[] | String>;
-  direction_lt?: Maybe<String>;
-  direction_lte?: Maybe<String>;
-  direction_gt?: Maybe<String>;
-  direction_gte?: Maybe<String>;
-  direction_contains?: Maybe<String>;
-  direction_not_contains?: Maybe<String>;
-  direction_starts_with?: Maybe<String>;
-  direction_not_starts_with?: Maybe<String>;
-  direction_ends_with?: Maybe<String>;
-  direction_not_ends_with?: Maybe<String>;
-  order?: Maybe<Int>;
-  order_not?: Maybe<Int>;
-  order_in?: Maybe<Int[] | Int>;
-  order_not_in?: Maybe<Int[] | Int>;
-  order_lt?: Maybe<Int>;
-  order_lte?: Maybe<Int>;
-  order_gt?: Maybe<Int>;
-  order_gte?: Maybe<Int>;
-  AND?: Maybe<TbSubjectWhereInput[] | TbSubjectWhereInput>;
-  OR?: Maybe<TbSubjectWhereInput[] | TbSubjectWhereInput>;
-  NOT?: Maybe<TbSubjectWhereInput[] | TbSubjectWhereInput>;
-}
-
-export interface RelatedPartyUpdateManyDataInput {
-  grade?: Maybe<Int>;
-  relationship?: Maybe<String>;
-  type?: Maybe<String>;
-  name?: Maybe<String>;
-}
-
-export interface CompanyCreateOneWithoutHoldersInput {
-  create?: Maybe<CompanyCreateWithoutHoldersInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput {
-  where: CompanyWhereUniqueInput;
-  update: CompanyUpdateWithoutAccountingFirmsDataInput;
-  create: CompanyCreateWithoutAccountingFirmsInput;
-}
-
-export interface FileUpdateManyMutationInput {
-  path?: Maybe<String>;
-  filename?: Maybe<String>;
-  mimetype?: Maybe<String>;
-  type?: Maybe<FileType>;
-}
-
-export interface CompanyScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  type?: Maybe<CompanyType>;
-  type_not?: Maybe<CompanyType>;
-  type_in?: Maybe<CompanyType[] | CompanyType>;
-  type_not_in?: Maybe<CompanyType[] | CompanyType>;
-  nature?: Maybe<CompanyNature>;
-  nature_not?: Maybe<CompanyNature>;
-  nature_in?: Maybe<CompanyNature[] | CompanyNature>;
-  nature_not_in?: Maybe<CompanyNature[] | CompanyNature>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  code?: Maybe<String>;
-  code_not?: Maybe<String>;
-  code_in?: Maybe<String[] | String>;
-  code_not_in?: Maybe<String[] | String>;
-  code_lt?: Maybe<String>;
-  code_lte?: Maybe<String>;
-  code_gt?: Maybe<String>;
-  code_gte?: Maybe<String>;
-  code_contains?: Maybe<String>;
-  code_not_contains?: Maybe<String>;
-  code_starts_with?: Maybe<String>;
-  code_not_starts_with?: Maybe<String>;
-  code_ends_with?: Maybe<String>;
-  code_not_ends_with?: Maybe<String>;
-  address?: Maybe<String>;
-  address_not?: Maybe<String>;
-  address_in?: Maybe<String[] | String>;
-  address_not_in?: Maybe<String[] | String>;
-  address_lt?: Maybe<String>;
-  address_lte?: Maybe<String>;
-  address_gt?: Maybe<String>;
-  address_gte?: Maybe<String>;
-  address_contains?: Maybe<String>;
-  address_not_contains?: Maybe<String>;
-  address_starts_with?: Maybe<String>;
-  address_not_starts_with?: Maybe<String>;
-  address_ends_with?: Maybe<String>;
-  address_not_ends_with?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  legalRepresentative_not?: Maybe<String>;
-  legalRepresentative_in?: Maybe<String[] | String>;
-  legalRepresentative_not_in?: Maybe<String[] | String>;
-  legalRepresentative_lt?: Maybe<String>;
-  legalRepresentative_lte?: Maybe<String>;
-  legalRepresentative_gt?: Maybe<String>;
-  legalRepresentative_gte?: Maybe<String>;
-  legalRepresentative_contains?: Maybe<String>;
-  legalRepresentative_not_contains?: Maybe<String>;
-  legalRepresentative_starts_with?: Maybe<String>;
-  legalRepresentative_not_starts_with?: Maybe<String>;
-  legalRepresentative_ends_with?: Maybe<String>;
-  legalRepresentative_not_ends_with?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  establishDate_not?: Maybe<DateTimeInput>;
-  establishDate_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  establishDate_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  establishDate_lt?: Maybe<DateTimeInput>;
-  establishDate_lte?: Maybe<DateTimeInput>;
-  establishDate_gt?: Maybe<DateTimeInput>;
-  establishDate_gte?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  registeredCapital_not?: Maybe<String>;
-  registeredCapital_in?: Maybe<String[] | String>;
-  registeredCapital_not_in?: Maybe<String[] | String>;
-  registeredCapital_lt?: Maybe<String>;
-  registeredCapital_lte?: Maybe<String>;
-  registeredCapital_gt?: Maybe<String>;
-  registeredCapital_gte?: Maybe<String>;
-  registeredCapital_contains?: Maybe<String>;
-  registeredCapital_not_contains?: Maybe<String>;
-  registeredCapital_starts_with?: Maybe<String>;
-  registeredCapital_not_starts_with?: Maybe<String>;
-  registeredCapital_ends_with?: Maybe<String>;
-  registeredCapital_not_ends_with?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  paidinCapital_not?: Maybe<String>;
-  paidinCapital_in?: Maybe<String[] | String>;
-  paidinCapital_not_in?: Maybe<String[] | String>;
-  paidinCapital_lt?: Maybe<String>;
-  paidinCapital_lte?: Maybe<String>;
-  paidinCapital_gt?: Maybe<String>;
-  paidinCapital_gte?: Maybe<String>;
-  paidinCapital_contains?: Maybe<String>;
-  paidinCapital_not_contains?: Maybe<String>;
-  paidinCapital_starts_with?: Maybe<String>;
-  paidinCapital_not_starts_with?: Maybe<String>;
-  paidinCapital_ends_with?: Maybe<String>;
-  paidinCapital_not_ends_with?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  businessScope_not?: Maybe<String>;
-  businessScope_in?: Maybe<String[] | String>;
-  businessScope_not_in?: Maybe<String[] | String>;
-  businessScope_lt?: Maybe<String>;
-  businessScope_lte?: Maybe<String>;
-  businessScope_gt?: Maybe<String>;
-  businessScope_gte?: Maybe<String>;
-  businessScope_contains?: Maybe<String>;
-  businessScope_not_contains?: Maybe<String>;
-  businessScope_starts_with?: Maybe<String>;
-  businessScope_not_starts_with?: Maybe<String>;
-  businessScope_ends_with?: Maybe<String>;
-  businessScope_not_ends_with?: Maybe<String>;
-  lastControllCompany?: Maybe<String>;
-  lastControllCompany_not?: Maybe<String>;
-  lastControllCompany_in?: Maybe<String[] | String>;
-  lastControllCompany_not_in?: Maybe<String[] | String>;
-  lastControllCompany_lt?: Maybe<String>;
-  lastControllCompany_lte?: Maybe<String>;
-  lastControllCompany_gt?: Maybe<String>;
-  lastControllCompany_gte?: Maybe<String>;
-  lastControllCompany_contains?: Maybe<String>;
-  lastControllCompany_not_contains?: Maybe<String>;
-  lastControllCompany_starts_with?: Maybe<String>;
-  lastControllCompany_not_starts_with?: Maybe<String>;
-  lastControllCompany_ends_with?: Maybe<String>;
-  lastControllCompany_not_ends_with?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  lastControllPerson_not?: Maybe<String>;
-  lastControllPerson_in?: Maybe<String[] | String>;
-  lastControllPerson_not_in?: Maybe<String[] | String>;
-  lastControllPerson_lt?: Maybe<String>;
-  lastControllPerson_lte?: Maybe<String>;
-  lastControllPerson_gt?: Maybe<String>;
-  lastControllPerson_gte?: Maybe<String>;
-  lastControllPerson_contains?: Maybe<String>;
-  lastControllPerson_not_contains?: Maybe<String>;
-  lastControllPerson_starts_with?: Maybe<String>;
-  lastControllPerson_not_starts_with?: Maybe<String>;
-  lastControllPerson_ends_with?: Maybe<String>;
-  lastControllPerson_not_ends_with?: Maybe<String>;
-  AND?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
-  OR?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
-  NOT?: Maybe<CompanyScalarWhereInput[] | CompanyScalarWhereInput>;
-}
-
-export interface FileUpdateInput {
-  path?: Maybe<String>;
-  filename?: Maybe<String>;
-  mimetype?: Maybe<String>;
-  type?: Maybe<FileType>;
-}
-
-export interface CompanyUpdateManyWithWhereNestedInput {
-  where: CompanyScalarWhereInput;
-  data: CompanyUpdateManyDataInput;
-}
-
-export interface FSSubjectUpdateInput {
-  name?: Maybe<String>;
-  show?: Maybe<String>;
-  subject?: Maybe<String>;
-  direction?: Maybe<String>;
-}
-
-export interface FileWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  path?: Maybe<String>;
-  path_not?: Maybe<String>;
-  path_in?: Maybe<String[] | String>;
-  path_not_in?: Maybe<String[] | String>;
-  path_lt?: Maybe<String>;
-  path_lte?: Maybe<String>;
-  path_gt?: Maybe<String>;
-  path_gte?: Maybe<String>;
-  path_contains?: Maybe<String>;
-  path_not_contains?: Maybe<String>;
-  path_starts_with?: Maybe<String>;
-  path_not_starts_with?: Maybe<String>;
-  path_ends_with?: Maybe<String>;
-  path_not_ends_with?: Maybe<String>;
-  filename?: Maybe<String>;
-  filename_not?: Maybe<String>;
-  filename_in?: Maybe<String[] | String>;
-  filename_not_in?: Maybe<String[] | String>;
-  filename_lt?: Maybe<String>;
-  filename_lte?: Maybe<String>;
-  filename_gt?: Maybe<String>;
-  filename_gte?: Maybe<String>;
-  filename_contains?: Maybe<String>;
-  filename_not_contains?: Maybe<String>;
-  filename_starts_with?: Maybe<String>;
-  filename_not_starts_with?: Maybe<String>;
-  filename_ends_with?: Maybe<String>;
-  filename_not_ends_with?: Maybe<String>;
-  mimetype?: Maybe<String>;
-  mimetype_not?: Maybe<String>;
-  mimetype_in?: Maybe<String[] | String>;
-  mimetype_not_in?: Maybe<String[] | String>;
-  mimetype_lt?: Maybe<String>;
-  mimetype_lte?: Maybe<String>;
-  mimetype_gt?: Maybe<String>;
-  mimetype_gte?: Maybe<String>;
-  mimetype_contains?: Maybe<String>;
-  mimetype_not_contains?: Maybe<String>;
-  mimetype_starts_with?: Maybe<String>;
-  mimetype_not_starts_with?: Maybe<String>;
-  mimetype_ends_with?: Maybe<String>;
-  mimetype_not_ends_with?: Maybe<String>;
-  type?: Maybe<FileType>;
-  type_not?: Maybe<FileType>;
-  type_in?: Maybe<FileType[] | FileType>;
-  type_not_in?: Maybe<FileType[] | FileType>;
-  AND?: Maybe<FileWhereInput[] | FileWhereInput>;
-  OR?: Maybe<FileWhereInput[] | FileWhereInput>;
-  NOT?: Maybe<FileWhereInput[] | FileWhereInput>;
-}
-
-export interface AccountingFirmCreateInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  code: String;
-  address: String;
-  phone: String;
-  email: String;
-  contact: String;
-  employees?: Maybe<UserCreateManyWithoutAccountingFirmInput>;
-  customers?: Maybe<CompanyCreateManyWithoutAccountingFirmsInput>;
-}
-
-export interface AccountingFirmUpsertNestedInput {
-  update: AccountingFirmUpdateDataInput;
-  create: AccountingFirmCreateInput;
-}
-
-export interface UserCreateWithoutAccountingFirmInput {
-  id?: Maybe<ID_Input>;
-  email: String;
-  emailvalidated?: Maybe<Boolean>;
-  validateEmailToken: String;
-  password: String;
-  resetPasswordToken: String;
-  resetPasswordExpires?: Maybe<Float>;
-  name: String;
-  role?: Maybe<Role>;
-  projects?: Maybe<ProjectCreateManyInput>;
-  dataRecords?: Maybe<DataRecordCreateManyWithoutUsersInput>;
-}
-
-export interface CompanyUpdateOneRequiredInput {
-  create?: Maybe<CompanyCreateInput>;
-  update?: Maybe<CompanyUpdateDataInput>;
-  upsert?: Maybe<CompanyUpsertNestedInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface ProjectCreateInput {
-  id?: Maybe<ID_Input>;
-  accountingFirm: AccountingFirmCreateOneInput;
-  company: CompanyCreateOneInput;
-  startTime: DateTimeInput;
-  endTime: DateTimeInput;
-  members?: Maybe<MemberCreateManyWithoutProjectInput>;
-}
-
-export interface CompanyUpdateDataInput {
-  type?: Maybe<CompanyType>;
-  nature?: Maybe<CompanyNature>;
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
-  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
-  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
-}
-
-export interface CompanyCreateOneInput {
-  create?: Maybe<CompanyCreateInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface AccountingFirmUpdateManyWithoutCustomersInput {
-  create?: Maybe<
-    | AccountingFirmCreateWithoutCustomersInput[]
-    | AccountingFirmCreateWithoutCustomersInput
-  >;
-  delete?: Maybe<
-    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
-  >;
-  connect?: Maybe<
-    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
-  >;
-  set?: Maybe<
-    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
-  >;
-  disconnect?: Maybe<
-    AccountingFirmWhereUniqueInput[] | AccountingFirmWhereUniqueInput
-  >;
-  update?: Maybe<
-    | AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput[]
-    | AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput
-  >;
-  upsert?: Maybe<
-    | AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput[]
-    | AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput
-  >;
-  deleteMany?: Maybe<
-    AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput
-  >;
-  updateMany?: Maybe<
-    | AccountingFirmUpdateManyWithWhereNestedInput[]
-    | AccountingFirmUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface HolderCreateManyWithoutCompanyInput {
-  create?: Maybe<
-    HolderCreateWithoutCompanyInput[] | HolderCreateWithoutCompanyInput
-  >;
-  connect?: Maybe<HolderWhereUniqueInput[] | HolderWhereUniqueInput>;
-}
-
-export interface AccountingFirmUpdateWithWhereUniqueWithoutCustomersInput {
-  where: AccountingFirmWhereUniqueInput;
-  data: AccountingFirmUpdateWithoutCustomersDataInput;
-}
-
-export interface MainMemberCreateManyWithoutCompanyInput {
-  create?: Maybe<
-    MainMemberCreateWithoutCompanyInput[] | MainMemberCreateWithoutCompanyInput
-  >;
-  connect?: Maybe<MainMemberWhereUniqueInput[] | MainMemberWhereUniqueInput>;
-}
-
-export interface AccountingFirmUpdateWithoutCustomersDataInput {
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  phone?: Maybe<String>;
-  email?: Maybe<String>;
-  contact?: Maybe<String>;
-  employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
-}
-
-export interface RelatedPartyCreateManyWithoutCompanyInput {
-  create?: Maybe<
-    | RelatedPartyCreateWithoutCompanyInput[]
-    | RelatedPartyCreateWithoutCompanyInput
-  >;
-  connect?: Maybe<
-    RelatedPartyWhereUniqueInput[] | RelatedPartyWhereUniqueInput
-  >;
-}
-
-export interface AccountingFirmUpsertWithWhereUniqueWithoutCustomersInput {
-  where: AccountingFirmWhereUniqueInput;
-  update: AccountingFirmUpdateWithoutCustomersDataInput;
-  create: AccountingFirmCreateWithoutCustomersInput;
-}
-
-export interface DataRecordWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  accountingFirm?: Maybe<AccountingFirmWhereInput>;
-  company?: Maybe<CompanyWhereInput>;
-  startTime?: Maybe<DateTimeInput>;
-  startTime_not?: Maybe<DateTimeInput>;
-  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_lt?: Maybe<DateTimeInput>;
-  startTime_lte?: Maybe<DateTimeInput>;
-  startTime_gt?: Maybe<DateTimeInput>;
-  startTime_gte?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-  endTime_not?: Maybe<DateTimeInput>;
-  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_lt?: Maybe<DateTimeInput>;
-  endTime_lte?: Maybe<DateTimeInput>;
-  endTime_gt?: Maybe<DateTimeInput>;
-  endTime_gte?: Maybe<DateTimeInput>;
-  uploadTime?: Maybe<DateTimeInput>;
-  uploadTime_not?: Maybe<DateTimeInput>;
-  uploadTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  uploadTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  uploadTime_lt?: Maybe<DateTimeInput>;
-  uploadTime_lte?: Maybe<DateTimeInput>;
-  uploadTime_gt?: Maybe<DateTimeInput>;
-  uploadTime_gte?: Maybe<DateTimeInput>;
-  files_every?: Maybe<FileWhereInput>;
-  files_some?: Maybe<FileWhereInput>;
-  files_none?: Maybe<FileWhereInput>;
-  users_every?: Maybe<UserWhereInput>;
-  users_some?: Maybe<UserWhereInput>;
-  users_none?: Maybe<UserWhereInput>;
-  AND?: Maybe<DataRecordWhereInput[] | DataRecordWhereInput>;
-  OR?: Maybe<DataRecordWhereInput[] | DataRecordWhereInput>;
-  NOT?: Maybe<DataRecordWhereInput[] | DataRecordWhereInput>;
-}
-
-export interface AccountingFirmScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  code?: Maybe<String>;
-  code_not?: Maybe<String>;
-  code_in?: Maybe<String[] | String>;
-  code_not_in?: Maybe<String[] | String>;
-  code_lt?: Maybe<String>;
-  code_lte?: Maybe<String>;
-  code_gt?: Maybe<String>;
-  code_gte?: Maybe<String>;
-  code_contains?: Maybe<String>;
-  code_not_contains?: Maybe<String>;
-  code_starts_with?: Maybe<String>;
-  code_not_starts_with?: Maybe<String>;
-  code_ends_with?: Maybe<String>;
-  code_not_ends_with?: Maybe<String>;
-  address?: Maybe<String>;
-  address_not?: Maybe<String>;
-  address_in?: Maybe<String[] | String>;
-  address_not_in?: Maybe<String[] | String>;
-  address_lt?: Maybe<String>;
-  address_lte?: Maybe<String>;
-  address_gt?: Maybe<String>;
-  address_gte?: Maybe<String>;
-  address_contains?: Maybe<String>;
-  address_not_contains?: Maybe<String>;
-  address_starts_with?: Maybe<String>;
-  address_not_starts_with?: Maybe<String>;
-  address_ends_with?: Maybe<String>;
-  address_not_ends_with?: Maybe<String>;
-  phone?: Maybe<String>;
-  phone_not?: Maybe<String>;
-  phone_in?: Maybe<String[] | String>;
-  phone_not_in?: Maybe<String[] | String>;
-  phone_lt?: Maybe<String>;
-  phone_lte?: Maybe<String>;
-  phone_gt?: Maybe<String>;
-  phone_gte?: Maybe<String>;
-  phone_contains?: Maybe<String>;
-  phone_not_contains?: Maybe<String>;
-  phone_starts_with?: Maybe<String>;
-  phone_not_starts_with?: Maybe<String>;
-  phone_ends_with?: Maybe<String>;
-  phone_not_ends_with?: Maybe<String>;
-  email?: Maybe<String>;
-  email_not?: Maybe<String>;
-  email_in?: Maybe<String[] | String>;
-  email_not_in?: Maybe<String[] | String>;
-  email_lt?: Maybe<String>;
-  email_lte?: Maybe<String>;
-  email_gt?: Maybe<String>;
-  email_gte?: Maybe<String>;
-  email_contains?: Maybe<String>;
-  email_not_contains?: Maybe<String>;
-  email_starts_with?: Maybe<String>;
-  email_not_starts_with?: Maybe<String>;
-  email_ends_with?: Maybe<String>;
-  email_not_ends_with?: Maybe<String>;
-  contact?: Maybe<String>;
-  contact_not?: Maybe<String>;
-  contact_in?: Maybe<String[] | String>;
-  contact_not_in?: Maybe<String[] | String>;
-  contact_lt?: Maybe<String>;
-  contact_lte?: Maybe<String>;
-  contact_gt?: Maybe<String>;
-  contact_gte?: Maybe<String>;
-  contact_contains?: Maybe<String>;
-  contact_not_contains?: Maybe<String>;
-  contact_starts_with?: Maybe<String>;
-  contact_not_starts_with?: Maybe<String>;
-  contact_ends_with?: Maybe<String>;
-  contact_not_ends_with?: Maybe<String>;
-  AND?: Maybe<
-    AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput
-  >;
-  OR?: Maybe<AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput>;
-  NOT?: Maybe<
-    AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput
-  >;
-}
-
-export interface ProjectWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  accountingFirm?: Maybe<AccountingFirmWhereInput>;
-  company?: Maybe<CompanyWhereInput>;
-  startTime?: Maybe<DateTimeInput>;
-  startTime_not?: Maybe<DateTimeInput>;
-  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_lt?: Maybe<DateTimeInput>;
-  startTime_lte?: Maybe<DateTimeInput>;
-  startTime_gt?: Maybe<DateTimeInput>;
-  startTime_gte?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-  endTime_not?: Maybe<DateTimeInput>;
-  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_lt?: Maybe<DateTimeInput>;
-  endTime_lte?: Maybe<DateTimeInput>;
-  endTime_gt?: Maybe<DateTimeInput>;
-  endTime_gte?: Maybe<DateTimeInput>;
-  members_every?: Maybe<MemberWhereInput>;
-  members_some?: Maybe<MemberWhereInput>;
-  members_none?: Maybe<MemberWhereInput>;
-  AND?: Maybe<ProjectWhereInput[] | ProjectWhereInput>;
-  OR?: Maybe<ProjectWhereInput[] | ProjectWhereInput>;
-  NOT?: Maybe<ProjectWhereInput[] | ProjectWhereInput>;
-}
-
-export interface AccountingFirmUpdateManyWithWhereNestedInput {
-  where: AccountingFirmScalarWhereInput;
-  data: AccountingFirmUpdateManyDataInput;
-}
-
-export interface NoneCompanySubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<NoneCompanyWhereInput>;
-  AND?: Maybe<
-    NoneCompanySubscriptionWhereInput[] | NoneCompanySubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    NoneCompanySubscriptionWhereInput[] | NoneCompanySubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    NoneCompanySubscriptionWhereInput[] | NoneCompanySubscriptionWhereInput
-  >;
-}
-
-export interface AccountingFirmUpdateManyDataInput {
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  phone?: Maybe<String>;
-  email?: Maybe<String>;
-  contact?: Maybe<String>;
-}
-
-export interface MainMemberSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<MainMemberWhereInput>;
-  AND?: Maybe<
-    MainMemberSubscriptionWhereInput[] | MainMemberSubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    MainMemberSubscriptionWhereInput[] | MainMemberSubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    MainMemberSubscriptionWhereInput[] | MainMemberSubscriptionWhereInput
-  >;
-}
-
-export interface CompanyUpsertNestedInput {
-  update: CompanyUpdateDataInput;
-  create: CompanyCreateInput;
-}
-
-export interface FSSubjectSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<FSSubjectWhereInput>;
-  AND?: Maybe<
-    FSSubjectSubscriptionWhereInput[] | FSSubjectSubscriptionWhereInput
-  >;
-  OR?: Maybe<
-    FSSubjectSubscriptionWhereInput[] | FSSubjectSubscriptionWhereInput
-  >;
-  NOT?: Maybe<
-    FSSubjectSubscriptionWhereInput[] | FSSubjectSubscriptionWhereInput
-  >;
-}
-
-export interface MemberUpdateManyWithoutProjectInput {
-  create?: Maybe<
-    MemberCreateWithoutProjectInput[] | MemberCreateWithoutProjectInput
-  >;
-  delete?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
-  connect?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
-  set?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
-  disconnect?: Maybe<MemberWhereUniqueInput[] | MemberWhereUniqueInput>;
-  update?: Maybe<
-    | MemberUpdateWithWhereUniqueWithoutProjectInput[]
-    | MemberUpdateWithWhereUniqueWithoutProjectInput
-  >;
-  upsert?: Maybe<
-    | MemberUpsertWithWhereUniqueWithoutProjectInput[]
-    | MemberUpsertWithWhereUniqueWithoutProjectInput
-  >;
-  deleteMany?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
-  updateMany?: Maybe<
-    | MemberUpdateManyWithWhereNestedInput[]
-    | MemberUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface CompanySubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<CompanyWhereInput>;
-  AND?: Maybe<CompanySubscriptionWhereInput[] | CompanySubscriptionWhereInput>;
-  OR?: Maybe<CompanySubscriptionWhereInput[] | CompanySubscriptionWhereInput>;
-  NOT?: Maybe<CompanySubscriptionWhereInput[] | CompanySubscriptionWhereInput>;
-}
-
-export interface MemberUpdateWithWhereUniqueWithoutProjectInput {
-  where: MemberWhereUniqueInput;
-  data: MemberUpdateWithoutProjectDataInput;
-}
-
-export interface CompanyStdNameWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  dbName?: Maybe<String>;
-  dbName_not?: Maybe<String>;
-  dbName_in?: Maybe<String[] | String>;
-  dbName_not_in?: Maybe<String[] | String>;
-  dbName_lt?: Maybe<String>;
-  dbName_lte?: Maybe<String>;
-  dbName_gt?: Maybe<String>;
-  dbName_gte?: Maybe<String>;
-  dbName_contains?: Maybe<String>;
-  dbName_not_contains?: Maybe<String>;
-  dbName_starts_with?: Maybe<String>;
-  dbName_not_starts_with?: Maybe<String>;
-  dbName_ends_with?: Maybe<String>;
-  dbName_not_ends_with?: Maybe<String>;
-  originName?: Maybe<String>;
-  originName_not?: Maybe<String>;
-  originName_in?: Maybe<String[] | String>;
-  originName_not_in?: Maybe<String[] | String>;
-  originName_lt?: Maybe<String>;
-  originName_lte?: Maybe<String>;
-  originName_gt?: Maybe<String>;
-  originName_gte?: Maybe<String>;
-  originName_contains?: Maybe<String>;
-  originName_not_contains?: Maybe<String>;
-  originName_starts_with?: Maybe<String>;
-  originName_not_starts_with?: Maybe<String>;
-  originName_ends_with?: Maybe<String>;
-  originName_not_ends_with?: Maybe<String>;
-  stdName?: Maybe<String>;
-  stdName_not?: Maybe<String>;
-  stdName_in?: Maybe<String[] | String>;
-  stdName_not_in?: Maybe<String[] | String>;
-  stdName_lt?: Maybe<String>;
-  stdName_lte?: Maybe<String>;
-  stdName_gt?: Maybe<String>;
-  stdName_gte?: Maybe<String>;
-  stdName_contains?: Maybe<String>;
-  stdName_not_contains?: Maybe<String>;
-  stdName_starts_with?: Maybe<String>;
-  stdName_not_starts_with?: Maybe<String>;
-  stdName_ends_with?: Maybe<String>;
-  stdName_not_ends_with?: Maybe<String>;
-  AND?: Maybe<CompanyStdNameWhereInput[] | CompanyStdNameWhereInput>;
-  OR?: Maybe<CompanyStdNameWhereInput[] | CompanyStdNameWhereInput>;
-  NOT?: Maybe<CompanyStdNameWhereInput[] | CompanyStdNameWhereInput>;
-}
-
-export interface MemberUpdateWithoutProjectDataInput {
-  user?: Maybe<UserUpdateOneRequiredInput>;
-  role?: Maybe<ProjectRole>;
-}
-
-export interface TbSubjectUpdateInput {
-  show?: Maybe<String>;
-  subject?: Maybe<String>;
-  direction?: Maybe<String>;
-  order?: Maybe<Int>;
-}
-
-export interface UserUpdateOneRequiredInput {
-  create?: Maybe<UserCreateInput>;
-  update?: Maybe<UserUpdateDataInput>;
-  upsert?: Maybe<UserUpsertNestedInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface SubjectContrastUpdateInput {
-  origin?: Maybe<String>;
-  tb?: Maybe<String>;
-  fs?: Maybe<String>;
-  coefficient?: Maybe<Int>;
-  direction?: Maybe<String>;
-  firstClass?: Maybe<String>;
-  secondClass?: Maybe<String>;
-}
-
-export interface UserUpdateDataInput {
-  email?: Maybe<String>;
-  emailvalidated?: Maybe<Boolean>;
-  validateEmailToken?: Maybe<String>;
-  password?: Maybe<String>;
-  resetPasswordToken?: Maybe<String>;
-  resetPasswordExpires?: Maybe<Float>;
-  name?: Maybe<String>;
-  role?: Maybe<Role>;
-  accountingFirm?: Maybe<AccountingFirmUpdateOneWithoutEmployeesInput>;
-  projects?: Maybe<ProjectUpdateManyInput>;
-  dataRecords?: Maybe<DataRecordUpdateManyWithoutUsersInput>;
-}
-
-export interface StdSubjectUpdateManyMutationInput {
-  code?: Maybe<String>;
-  name?: Maybe<String>;
-}
-
-export interface AccountingFirmUpdateOneWithoutEmployeesInput {
-  create?: Maybe<AccountingFirmCreateWithoutEmployeesInput>;
-  update?: Maybe<AccountingFirmUpdateWithoutEmployeesDataInput>;
-  upsert?: Maybe<AccountingFirmUpsertWithoutEmployeesInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<AccountingFirmWhereUniqueInput>;
-}
-
-export type FileWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface AccountingFirmUpdateWithoutEmployeesDataInput {
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  phone?: Maybe<String>;
-  email?: Maybe<String>;
-  contact?: Maybe<String>;
-  customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
-}
-
-export type HolderWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface AccountingFirmUpsertWithoutEmployeesInput {
-  update: AccountingFirmUpdateWithoutEmployeesDataInput;
-  create: AccountingFirmCreateWithoutEmployeesInput;
-}
-
-export type MainMemberWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface DataRecordUpdateManyWithoutUsersInput {
-  create?: Maybe<
-    DataRecordCreateWithoutUsersInput[] | DataRecordCreateWithoutUsersInput
-  >;
-  delete?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
-  connect?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
-  set?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
-  disconnect?: Maybe<DataRecordWhereUniqueInput[] | DataRecordWhereUniqueInput>;
-  update?: Maybe<
-    | DataRecordUpdateWithWhereUniqueWithoutUsersInput[]
-    | DataRecordUpdateWithWhereUniqueWithoutUsersInput
-  >;
-  upsert?: Maybe<
-    | DataRecordUpsertWithWhereUniqueWithoutUsersInput[]
-    | DataRecordUpsertWithWhereUniqueWithoutUsersInput
-  >;
-  deleteMany?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
-  updateMany?: Maybe<
-    | DataRecordUpdateManyWithWhereNestedInput[]
-    | DataRecordUpdateManyWithWhereNestedInput
-  >;
-}
-
-export type MemberWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface DataRecordUpdateWithWhereUniqueWithoutUsersInput {
-  where: DataRecordWhereUniqueInput;
-  data: DataRecordUpdateWithoutUsersDataInput;
-}
-
-export type NoneCompanyWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-  name?: Maybe<String>;
-}>;
-
-export interface DataRecordUpdateWithoutUsersDataInput {
-  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
-  company?: Maybe<CompanyUpdateOneRequiredInput>;
-  startTime?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-  files?: Maybe<FileUpdateManyInput>;
-}
-
-export interface ProjectUpdateWithoutMembersDataInput {
-  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
-  company?: Maybe<CompanyUpdateOneRequiredInput>;
-  startTime?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-}
-
-export interface FileUpdateManyInput {
-  create?: Maybe<FileCreateInput[] | FileCreateInput>;
-  update?: Maybe<
-    | FileUpdateWithWhereUniqueNestedInput[]
-    | FileUpdateWithWhereUniqueNestedInput
-  >;
-  upsert?: Maybe<
-    | FileUpsertWithWhereUniqueNestedInput[]
-    | FileUpsertWithWhereUniqueNestedInput
-  >;
-  delete?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
-  connect?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
-  set?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
-  disconnect?: Maybe<FileWhereUniqueInput[] | FileWhereUniqueInput>;
-  deleteMany?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
-  updateMany?: Maybe<
-    FileUpdateManyWithWhereNestedInput[] | FileUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface ProjectCreateWithoutMembersInput {
-  id?: Maybe<ID_Input>;
-  accountingFirm: AccountingFirmCreateOneInput;
-  company: CompanyCreateOneInput;
-  startTime: DateTimeInput;
-  endTime: DateTimeInput;
-}
-
-export interface FileUpdateWithWhereUniqueNestedInput {
-  where: FileWhereUniqueInput;
-  data: FileUpdateDataInput;
-}
-
-export interface MainMemberUpdateManyMutationInput {
-  name?: Maybe<String>;
-  post?: Maybe<String>;
-}
-
-export interface FileUpdateDataInput {
-  path?: Maybe<String>;
-  filename?: Maybe<String>;
-  mimetype?: Maybe<String>;
-  type?: Maybe<FileType>;
-}
-
-export interface CompanyUpdateOneRequiredWithoutMainMembersInput {
-  create?: Maybe<CompanyCreateWithoutMainMembersInput>;
-  update?: Maybe<CompanyUpdateWithoutMainMembersDataInput>;
-  upsert?: Maybe<CompanyUpsertWithoutMainMembersInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface FileUpsertWithWhereUniqueNestedInput {
-  where: FileWhereUniqueInput;
-  update: FileUpdateDataInput;
-  create: FileCreateInput;
-}
-
-export interface CompanyCreateOneWithoutMainMembersInput {
-  create?: Maybe<CompanyCreateWithoutMainMembersInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface FileScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  path?: Maybe<String>;
-  path_not?: Maybe<String>;
-  path_in?: Maybe<String[] | String>;
-  path_not_in?: Maybe<String[] | String>;
-  path_lt?: Maybe<String>;
-  path_lte?: Maybe<String>;
-  path_gt?: Maybe<String>;
-  path_gte?: Maybe<String>;
-  path_contains?: Maybe<String>;
-  path_not_contains?: Maybe<String>;
-  path_starts_with?: Maybe<String>;
-  path_not_starts_with?: Maybe<String>;
-  path_ends_with?: Maybe<String>;
-  path_not_ends_with?: Maybe<String>;
-  filename?: Maybe<String>;
-  filename_not?: Maybe<String>;
-  filename_in?: Maybe<String[] | String>;
-  filename_not_in?: Maybe<String[] | String>;
-  filename_lt?: Maybe<String>;
-  filename_lte?: Maybe<String>;
-  filename_gt?: Maybe<String>;
-  filename_gte?: Maybe<String>;
-  filename_contains?: Maybe<String>;
-  filename_not_contains?: Maybe<String>;
-  filename_starts_with?: Maybe<String>;
-  filename_not_starts_with?: Maybe<String>;
-  filename_ends_with?: Maybe<String>;
-  filename_not_ends_with?: Maybe<String>;
-  mimetype?: Maybe<String>;
-  mimetype_not?: Maybe<String>;
-  mimetype_in?: Maybe<String[] | String>;
-  mimetype_not_in?: Maybe<String[] | String>;
-  mimetype_lt?: Maybe<String>;
-  mimetype_lte?: Maybe<String>;
-  mimetype_gt?: Maybe<String>;
-  mimetype_gte?: Maybe<String>;
-  mimetype_contains?: Maybe<String>;
-  mimetype_not_contains?: Maybe<String>;
-  mimetype_starts_with?: Maybe<String>;
-  mimetype_not_starts_with?: Maybe<String>;
-  mimetype_ends_with?: Maybe<String>;
-  mimetype_not_ends_with?: Maybe<String>;
-  type?: Maybe<FileType>;
-  type_not?: Maybe<FileType>;
-  type_in?: Maybe<FileType[] | FileType>;
-  type_not_in?: Maybe<FileType[] | FileType>;
-  AND?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
-  OR?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
-  NOT?: Maybe<FileScalarWhereInput[] | FileScalarWhereInput>;
-}
-
-export interface SubjectContrastWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  origin?: Maybe<String>;
-  origin_not?: Maybe<String>;
-  origin_in?: Maybe<String[] | String>;
-  origin_not_in?: Maybe<String[] | String>;
-  origin_lt?: Maybe<String>;
-  origin_lte?: Maybe<String>;
-  origin_gt?: Maybe<String>;
-  origin_gte?: Maybe<String>;
-  origin_contains?: Maybe<String>;
-  origin_not_contains?: Maybe<String>;
-  origin_starts_with?: Maybe<String>;
-  origin_not_starts_with?: Maybe<String>;
-  origin_ends_with?: Maybe<String>;
-  origin_not_ends_with?: Maybe<String>;
-  tb?: Maybe<String>;
-  tb_not?: Maybe<String>;
-  tb_in?: Maybe<String[] | String>;
-  tb_not_in?: Maybe<String[] | String>;
-  tb_lt?: Maybe<String>;
-  tb_lte?: Maybe<String>;
-  tb_gt?: Maybe<String>;
-  tb_gte?: Maybe<String>;
-  tb_contains?: Maybe<String>;
-  tb_not_contains?: Maybe<String>;
-  tb_starts_with?: Maybe<String>;
-  tb_not_starts_with?: Maybe<String>;
-  tb_ends_with?: Maybe<String>;
-  tb_not_ends_with?: Maybe<String>;
-  fs?: Maybe<String>;
-  fs_not?: Maybe<String>;
-  fs_in?: Maybe<String[] | String>;
-  fs_not_in?: Maybe<String[] | String>;
-  fs_lt?: Maybe<String>;
-  fs_lte?: Maybe<String>;
-  fs_gt?: Maybe<String>;
-  fs_gte?: Maybe<String>;
-  fs_contains?: Maybe<String>;
-  fs_not_contains?: Maybe<String>;
-  fs_starts_with?: Maybe<String>;
-  fs_not_starts_with?: Maybe<String>;
-  fs_ends_with?: Maybe<String>;
-  fs_not_ends_with?: Maybe<String>;
-  coefficient?: Maybe<Int>;
-  coefficient_not?: Maybe<Int>;
-  coefficient_in?: Maybe<Int[] | Int>;
-  coefficient_not_in?: Maybe<Int[] | Int>;
-  coefficient_lt?: Maybe<Int>;
-  coefficient_lte?: Maybe<Int>;
-  coefficient_gt?: Maybe<Int>;
-  coefficient_gte?: Maybe<Int>;
-  direction?: Maybe<String>;
-  direction_not?: Maybe<String>;
-  direction_in?: Maybe<String[] | String>;
-  direction_not_in?: Maybe<String[] | String>;
-  direction_lt?: Maybe<String>;
-  direction_lte?: Maybe<String>;
-  direction_gt?: Maybe<String>;
-  direction_gte?: Maybe<String>;
-  direction_contains?: Maybe<String>;
-  direction_not_contains?: Maybe<String>;
-  direction_starts_with?: Maybe<String>;
-  direction_not_starts_with?: Maybe<String>;
-  direction_ends_with?: Maybe<String>;
-  direction_not_ends_with?: Maybe<String>;
-  firstClass?: Maybe<String>;
-  firstClass_not?: Maybe<String>;
-  firstClass_in?: Maybe<String[] | String>;
-  firstClass_not_in?: Maybe<String[] | String>;
-  firstClass_lt?: Maybe<String>;
-  firstClass_lte?: Maybe<String>;
-  firstClass_gt?: Maybe<String>;
-  firstClass_gte?: Maybe<String>;
-  firstClass_contains?: Maybe<String>;
-  firstClass_not_contains?: Maybe<String>;
-  firstClass_starts_with?: Maybe<String>;
-  firstClass_not_starts_with?: Maybe<String>;
-  firstClass_ends_with?: Maybe<String>;
-  firstClass_not_ends_with?: Maybe<String>;
-  secondClass?: Maybe<String>;
-  secondClass_not?: Maybe<String>;
-  secondClass_in?: Maybe<String[] | String>;
-  secondClass_not_in?: Maybe<String[] | String>;
-  secondClass_lt?: Maybe<String>;
-  secondClass_lte?: Maybe<String>;
-  secondClass_gt?: Maybe<String>;
-  secondClass_gte?: Maybe<String>;
-  secondClass_contains?: Maybe<String>;
-  secondClass_not_contains?: Maybe<String>;
-  secondClass_starts_with?: Maybe<String>;
-  secondClass_not_starts_with?: Maybe<String>;
-  secondClass_ends_with?: Maybe<String>;
-  secondClass_not_ends_with?: Maybe<String>;
-  AND?: Maybe<SubjectContrastWhereInput[] | SubjectContrastWhereInput>;
-  OR?: Maybe<SubjectContrastWhereInput[] | SubjectContrastWhereInput>;
-  NOT?: Maybe<SubjectContrastWhereInput[] | SubjectContrastWhereInput>;
-}
-
-export interface FileUpdateManyWithWhereNestedInput {
-  where: FileScalarWhereInput;
-  data: FileUpdateManyDataInput;
-}
-
-export interface CompanyUpdateOneRequiredWithoutHoldersInput {
-  create?: Maybe<CompanyCreateWithoutHoldersInput>;
-  update?: Maybe<CompanyUpdateWithoutHoldersDataInput>;
-  upsert?: Maybe<CompanyUpsertWithoutHoldersInput>;
-  connect?: Maybe<CompanyWhereUniqueInput>;
-}
-
-export interface FileUpdateManyDataInput {
-  path?: Maybe<String>;
-  filename?: Maybe<String>;
-  mimetype?: Maybe<String>;
-  type?: Maybe<FileType>;
-}
-
-export interface CompanyCreateWithoutHoldersInput {
-  id?: Maybe<ID_Input>;
-  type: CompanyType;
-  nature: CompanyNature;
-  name: String;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  mainMembers?: Maybe<MainMemberCreateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
-  accountingFirms?: Maybe<AccountingFirmCreateManyWithoutCustomersInput>;
-}
-
-export interface DataRecordUpsertWithWhereUniqueWithoutUsersInput {
-  where: DataRecordWhereUniqueInput;
-  update: DataRecordUpdateWithoutUsersDataInput;
-  create: DataRecordCreateWithoutUsersInput;
-}
-
-export type UserWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-  email?: Maybe<String>;
-  validateEmailToken?: Maybe<String>;
-  resetPasswordToken?: Maybe<String>;
-}>;
-
-export interface DataRecordScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  startTime?: Maybe<DateTimeInput>;
-  startTime_not?: Maybe<DateTimeInput>;
-  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_lt?: Maybe<DateTimeInput>;
-  startTime_lte?: Maybe<DateTimeInput>;
-  startTime_gt?: Maybe<DateTimeInput>;
-  startTime_gte?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-  endTime_not?: Maybe<DateTimeInput>;
-  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_lt?: Maybe<DateTimeInput>;
-  endTime_lte?: Maybe<DateTimeInput>;
-  endTime_gt?: Maybe<DateTimeInput>;
-  endTime_gte?: Maybe<DateTimeInput>;
-  uploadTime?: Maybe<DateTimeInput>;
-  uploadTime_not?: Maybe<DateTimeInput>;
-  uploadTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  uploadTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  uploadTime_lt?: Maybe<DateTimeInput>;
-  uploadTime_lte?: Maybe<DateTimeInput>;
-  uploadTime_gt?: Maybe<DateTimeInput>;
-  uploadTime_gte?: Maybe<DateTimeInput>;
-  AND?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
-  OR?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
-  NOT?: Maybe<DataRecordScalarWhereInput[] | DataRecordScalarWhereInput>;
-}
-
-export interface ProjectCreateManyInput {
-  create?: Maybe<ProjectCreateInput[] | ProjectCreateInput>;
-  connect?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
-}
-
-export interface DataRecordUpdateManyWithWhereNestedInput {
-  where: DataRecordScalarWhereInput;
-  data: DataRecordUpdateManyDataInput;
-}
-
-export interface CompanyCreateInput {
-  id?: Maybe<ID_Input>;
-  type: CompanyType;
-  nature: CompanyNature;
-  name: String;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  holders?: Maybe<HolderCreateManyWithoutCompanyInput>;
-  mainMembers?: Maybe<MainMemberCreateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
-  accountingFirms?: Maybe<AccountingFirmCreateManyWithoutCustomersInput>;
-}
-
-export interface DataRecordUpdateManyDataInput {
-  startTime?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-}
-
-export interface MainMemberCreateWithoutCompanyInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  post: String;
-}
-
-export interface UserUpsertNestedInput {
-  update: UserUpdateDataInput;
-  create: UserCreateInput;
-}
-
-export interface MemberWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  project?: Maybe<ProjectWhereInput>;
-  user?: Maybe<UserWhereInput>;
-  role?: Maybe<ProjectRole>;
-  role_not?: Maybe<ProjectRole>;
-  role_in?: Maybe<ProjectRole[] | ProjectRole>;
-  role_not_in?: Maybe<ProjectRole[] | ProjectRole>;
-  AND?: Maybe<MemberWhereInput[] | MemberWhereInput>;
-  OR?: Maybe<MemberWhereInput[] | MemberWhereInput>;
-  NOT?: Maybe<MemberWhereInput[] | MemberWhereInput>;
-}
-
-export interface MemberUpsertWithWhereUniqueWithoutProjectInput {
-  where: MemberWhereUniqueInput;
-  update: MemberUpdateWithoutProjectDataInput;
-  create: MemberCreateWithoutProjectInput;
-}
-
-export interface MemberSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<MemberWhereInput>;
-  AND?: Maybe<MemberSubscriptionWhereInput[] | MemberSubscriptionWhereInput>;
-  OR?: Maybe<MemberSubscriptionWhereInput[] | MemberSubscriptionWhereInput>;
-  NOT?: Maybe<MemberSubscriptionWhereInput[] | MemberSubscriptionWhereInput>;
-}
-
-export interface MemberScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  role?: Maybe<ProjectRole>;
-  role_not?: Maybe<ProjectRole>;
-  role_in?: Maybe<ProjectRole[] | ProjectRole>;
-  role_not_in?: Maybe<ProjectRole[] | ProjectRole>;
-  AND?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
-  OR?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
-  NOT?: Maybe<MemberScalarWhereInput[] | MemberScalarWhereInput>;
-}
-
-export type CompanyWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-  name?: Maybe<String>;
-}>;
-
-export interface MemberUpdateManyWithWhereNestedInput {
-  where: MemberScalarWhereInput;
-  data: MemberUpdateManyDataInput;
-}
-
-export interface UserUpdateInput {
-  email?: Maybe<String>;
-  emailvalidated?: Maybe<Boolean>;
-  validateEmailToken?: Maybe<String>;
-  password?: Maybe<String>;
-  resetPasswordToken?: Maybe<String>;
-  resetPasswordExpires?: Maybe<Float>;
-  name?: Maybe<String>;
-  role?: Maybe<Role>;
-  accountingFirm?: Maybe<AccountingFirmUpdateOneWithoutEmployeesInput>;
-  projects?: Maybe<ProjectUpdateManyInput>;
-  dataRecords?: Maybe<DataRecordUpdateManyWithoutUsersInput>;
-}
-
-export interface MemberUpdateManyDataInput {
-  role?: Maybe<ProjectRole>;
-}
-
-export interface SubjectContrastCreateInput {
-  id?: Maybe<ID_Input>;
-  origin: String;
-  tb: String;
-  fs: String;
-  coefficient: Int;
-  direction: String;
-  firstClass: String;
-  secondClass: String;
-}
-
-export interface ProjectUpsertWithWhereUniqueNestedInput {
-  where: ProjectWhereUniqueInput;
-  update: ProjectUpdateDataInput;
-  create: ProjectCreateInput;
-}
-
-export interface CompanyUpdateWithoutRelatedPartiesDataInput {
-  type?: Maybe<CompanyType>;
-  nature?: Maybe<CompanyNature>;
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
-  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
-}
-
-export interface ProjectScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  startTime?: Maybe<DateTimeInput>;
-  startTime_not?: Maybe<DateTimeInput>;
-  startTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  startTime_lt?: Maybe<DateTimeInput>;
-  startTime_lte?: Maybe<DateTimeInput>;
-  startTime_gt?: Maybe<DateTimeInput>;
-  startTime_gte?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-  endTime_not?: Maybe<DateTimeInput>;
-  endTime_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
-  endTime_lt?: Maybe<DateTimeInput>;
-  endTime_lte?: Maybe<DateTimeInput>;
-  endTime_gt?: Maybe<DateTimeInput>;
-  endTime_gte?: Maybe<DateTimeInput>;
-  AND?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
-  OR?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
-  NOT?: Maybe<ProjectScalarWhereInput[] | ProjectScalarWhereInput>;
-}
-
-export interface ProjectUpdateManyMutationInput {
-  startTime?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-}
-
-export interface ProjectUpdateManyWithWhereNestedInput {
-  where: ProjectScalarWhereInput;
-  data: ProjectUpdateManyDataInput;
-}
-
-export interface NoneCompanyWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<NoneCompanyWhereInput[] | NoneCompanyWhereInput>;
-  OR?: Maybe<NoneCompanyWhereInput[] | NoneCompanyWhereInput>;
-  NOT?: Maybe<NoneCompanyWhereInput[] | NoneCompanyWhereInput>;
-}
-
 export interface ProjectUpdateManyDataInput {
   startTime?: Maybe<DateTimeInput>;
   endTime?: Maybe<DateTimeInput>;
 }
 
-export interface MemberCreateInput {
+export interface CompanyCreateWithoutRelatedPartiesInput {
   id?: Maybe<ID_Input>;
-  project: ProjectCreateOneWithoutMembersInput;
-  user: UserCreateOneInput;
-  role: ProjectRole;
+  type: CompanyType;
+  nature: CompanyNature;
+  name: String;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  holders?: Maybe<HolderCreateManyWithoutCompanyInput>;
+  mainMembers?: Maybe<MainMemberCreateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  accountingFirms?: Maybe<AccountingFirmCreateManyWithoutCustomersInput>;
 }
 
 export interface UserUpsertWithWhereUniqueWithoutAccountingFirmInput {
@@ -4218,11 +4490,9 @@ export interface UserUpsertWithWhereUniqueWithoutAccountingFirmInput {
   create: UserCreateWithoutAccountingFirmInput;
 }
 
-export interface MainMemberUpdateInput {
-  name?: Maybe<String>;
-  post?: Maybe<String>;
-  company?: Maybe<CompanyUpdateOneRequiredWithoutMainMembersInput>;
-}
+export type MemberWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
 
 export interface UserScalarWhereInput {
   id?: Maybe<ID_Input>;
@@ -4344,132 +4614,15 @@ export interface UserScalarWhereInput {
   NOT?: Maybe<UserScalarWhereInput[] | UserScalarWhereInput>;
 }
 
-export interface CompanyUpsertWithoutHoldersInput {
-  update: CompanyUpdateWithoutHoldersDataInput;
-  create: CompanyCreateWithoutHoldersInput;
+export interface MemberUpdateInput {
+  project?: Maybe<ProjectUpdateOneRequiredWithoutMembersInput>;
+  user?: Maybe<UserUpdateOneRequiredInput>;
+  role?: Maybe<ProjectRole>;
 }
 
 export interface UserUpdateManyWithWhereNestedInput {
   where: UserScalarWhereInput;
   data: UserUpdateManyDataInput;
-}
-
-export interface HolderCreateInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  ratio: Float;
-  company: CompanyCreateOneWithoutHoldersInput;
-}
-
-export interface UserUpdateManyDataInput {
-  email?: Maybe<String>;
-  emailvalidated?: Maybe<Boolean>;
-  validateEmailToken?: Maybe<String>;
-  password?: Maybe<String>;
-  resetPasswordToken?: Maybe<String>;
-  resetPasswordExpires?: Maybe<Float>;
-  name?: Maybe<String>;
-  role?: Maybe<Role>;
-}
-
-export interface UserCreateManyWithoutAccountingFirmInput {
-  create?: Maybe<
-    | UserCreateWithoutAccountingFirmInput[]
-    | UserCreateWithoutAccountingFirmInput
-  >;
-  connect?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
-}
-
-export interface AccountingFirmUpdateManyMutationInput {
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  phone?: Maybe<String>;
-  email?: Maybe<String>;
-  contact?: Maybe<String>;
-}
-
-export interface HolderCreateWithoutCompanyInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  ratio: Float;
-}
-
-export interface DataRecordUpdateManyMutationInput {
-  startTime?: Maybe<DateTimeInput>;
-  endTime?: Maybe<DateTimeInput>;
-}
-
-export interface ProjectSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<ProjectWhereInput>;
-  AND?: Maybe<ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput>;
-  OR?: Maybe<ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput>;
-  NOT?: Maybe<ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput>;
-}
-
-export interface UserUpsertWithWhereUniqueWithoutDataRecordsInput {
-  where: UserWhereUniqueInput;
-  update: UserUpdateWithoutDataRecordsDataInput;
-  create: UserCreateWithoutDataRecordsInput;
-}
-
-export type CompanyStdNameWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface CompanyUpdateInput {
-  type?: Maybe<CompanyType>;
-  nature?: Maybe<CompanyNature>;
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
-  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
-  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
-}
-
-export interface StdSubjectCreateInput {
-  id?: Maybe<ID_Input>;
-  code: String;
-  name: String;
-}
-
-export interface CompanyUpdateManyMutationInput {
-  type?: Maybe<CompanyType>;
-  nature?: Maybe<CompanyNature>;
-  name?: Maybe<String>;
-  code?: Maybe<String>;
-  address?: Maybe<String>;
-  legalRepresentative?: Maybe<String>;
-  establishDate?: Maybe<DateTimeInput>;
-  registeredCapital?: Maybe<String>;
-  paidinCapital?: Maybe<String>;
-  businessScope?: Maybe<String>;
-  lastControllCompany?: Maybe<String>;
-  lastControllPerson?: Maybe<String>;
-}
-
-export interface NoneCompanyUpdateInput {
-  name?: Maybe<String>;
-}
-
-export interface CompanyStdNameCreateInput {
-  id?: Maybe<ID_Input>;
-  dbName: String;
-  originName: String;
-  stdName: String;
 }
 
 export interface CompanyUpdateWithoutMainMembersDataInput {
@@ -4490,16 +4643,189 @@ export interface CompanyUpdateWithoutMainMembersDataInput {
   accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
 }
 
+export interface UserUpdateManyDataInput {
+  email?: Maybe<String>;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken?: Maybe<String>;
+  password?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+  resetPasswordExpires?: Maybe<Float>;
+  name?: Maybe<String>;
+  role?: Maybe<Role>;
+}
+
+export interface LetterOfProofUpdateManyMutationInput {
+  subjectName?: Maybe<String>;
+  name?: Maybe<String>;
+  adrress?: Maybe<String>;
+  contact?: Maybe<String>;
+  telephone?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  sampleReason?: Maybe<String>;
+  currencyType?: Maybe<String>;
+  sendDate?: Maybe<String>;
+  sendNo?: Maybe<String>;
+  receiveDate?: Maybe<String>;
+  receiveNo?: Maybe<String>;
+  balance?: Maybe<Float>;
+  amount?: Maybe<Float>;
+  sendBalance?: Maybe<Float>;
+  sendAmount?: Maybe<Float>;
+  receiveBalance?: Maybe<Float>;
+  receiveAmount?: Maybe<Float>;
+  sendPhoto?: Maybe<String>;
+  receivePhoto?: Maybe<String>;
+  proofPhoto?: Maybe<String>;
+}
+
+export interface AccountingFirmUpdateManyMutationInput {
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  phone?: Maybe<String>;
+  email?: Maybe<String>;
+  contact?: Maybe<String>;
+}
+
+export interface LetterOfProofCreateInput {
+  id?: Maybe<ID_Input>;
+  subjectName: String;
+  name: String;
+  adrress?: Maybe<String>;
+  contact?: Maybe<String>;
+  telephone?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  sampleReason?: Maybe<String>;
+  currencyType?: Maybe<String>;
+  sendDate?: Maybe<String>;
+  sendNo?: Maybe<String>;
+  receiveDate?: Maybe<String>;
+  receiveNo?: Maybe<String>;
+  balance?: Maybe<Float>;
+  amount?: Maybe<Float>;
+  sendBalance?: Maybe<Float>;
+  sendAmount?: Maybe<Float>;
+  receiveBalance?: Maybe<Float>;
+  receiveAmount?: Maybe<Float>;
+  sendPhoto?: Maybe<String>;
+  receivePhoto?: Maybe<String>;
+  proofPhoto?: Maybe<String>;
+  project: ProjectCreateOneInput;
+}
+
+export interface FSSubjectUpdateManyMutationInput {
+  name?: Maybe<String>;
+  show?: Maybe<String>;
+  subject?: Maybe<String>;
+  direction?: Maybe<String>;
+}
+
+export type UserWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+  email?: Maybe<String>;
+  validateEmailToken?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
+}>;
+
+export interface FSSubjectUpdateInput {
+  name?: Maybe<String>;
+  show?: Maybe<String>;
+  subject?: Maybe<String>;
+  direction?: Maybe<String>;
+}
+
+export interface ProjectCreateManyInput {
+  create?: Maybe<ProjectCreateInput[] | ProjectCreateInput>;
+  connect?: Maybe<ProjectWhereUniqueInput[] | ProjectWhereUniqueInput>;
+}
+
+export interface CompanyUpdateInput {
+  type?: Maybe<CompanyType>;
+  nature?: Maybe<CompanyNature>;
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  holders?: Maybe<HolderUpdateManyWithoutCompanyInput>;
+  mainMembers?: Maybe<MainMemberUpdateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyUpdateManyWithoutCompanyInput>;
+  accountingFirms?: Maybe<AccountingFirmUpdateManyWithoutCustomersInput>;
+}
+
+export interface UserSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<UserWhereInput>;
+  AND?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
+  OR?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
+  NOT?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
+}
+
+export interface CompanyUpdateManyMutationInput {
+  type?: Maybe<CompanyType>;
+  nature?: Maybe<CompanyNature>;
+  name?: Maybe<String>;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+}
+
+export interface LetterOfProofSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<LetterOfProofWhereInput>;
+  AND?: Maybe<
+    LetterOfProofSubscriptionWhereInput[] | LetterOfProofSubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    LetterOfProofSubscriptionWhereInput[] | LetterOfProofSubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    LetterOfProofSubscriptionWhereInput[] | LetterOfProofSubscriptionWhereInput
+  >;
+}
+
+export interface CompanyStdNameCreateInput {
+  id?: Maybe<ID_Input>;
+  dbName: String;
+  originName: String;
+  stdName: String;
+}
+
+export interface TbSubjectUpdateInput {
+  show?: Maybe<String>;
+  subject?: Maybe<String>;
+  direction?: Maybe<String>;
+  order?: Maybe<Int>;
+}
+
 export interface CompanyStdNameUpdateInput {
   dbName?: Maybe<String>;
   originName?: Maybe<String>;
   stdName?: Maybe<String>;
 }
 
-export interface HolderUpdateInput {
-  name?: Maybe<String>;
-  ratio?: Maybe<Float>;
-  company?: Maybe<CompanyUpdateOneRequiredWithoutHoldersInput>;
+export interface CompanyUpdateOneRequiredWithoutRelatedPartiesInput {
+  create?: Maybe<CompanyCreateWithoutRelatedPartiesInput>;
+  update?: Maybe<CompanyUpdateWithoutRelatedPartiesDataInput>;
+  upsert?: Maybe<CompanyUpsertWithoutRelatedPartiesInput>;
+  connect?: Maybe<CompanyWhereUniqueInput>;
 }
 
 export interface CompanyStdNameUpdateManyMutationInput {
@@ -4508,10 +4834,10 @@ export interface CompanyStdNameUpdateManyMutationInput {
   stdName?: Maybe<String>;
 }
 
-export interface AccountingFirmCreateOneInput {
-  create?: Maybe<AccountingFirmCreateInput>;
-  connect?: Maybe<AccountingFirmWhereUniqueInput>;
-}
+export type NoneCompanyWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+  name?: Maybe<String>;
+}>;
 
 export interface DataRecordCreateInput {
   id?: Maybe<ID_Input>;
@@ -4523,15 +4849,23 @@ export interface DataRecordCreateInput {
   users?: Maybe<UserCreateManyWithoutDataRecordsInput>;
 }
 
-export interface HolderSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<HolderWhereInput>;
-  AND?: Maybe<HolderSubscriptionWhereInput[] | HolderSubscriptionWhereInput>;
-  OR?: Maybe<HolderSubscriptionWhereInput[] | HolderSubscriptionWhereInput>;
-  NOT?: Maybe<HolderSubscriptionWhereInput[] | HolderSubscriptionWhereInput>;
+export interface CompanyCreateWithoutMainMembersInput {
+  id?: Maybe<ID_Input>;
+  type: CompanyType;
+  nature: CompanyNature;
+  name: String;
+  code?: Maybe<String>;
+  address?: Maybe<String>;
+  legalRepresentative?: Maybe<String>;
+  establishDate?: Maybe<DateTimeInput>;
+  registeredCapital?: Maybe<String>;
+  paidinCapital?: Maybe<String>;
+  businessScope?: Maybe<String>;
+  holders?: Maybe<HolderCreateManyWithoutCompanyInput>;
+  lastControllCompany?: Maybe<String>;
+  lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
+  accountingFirms?: Maybe<AccountingFirmCreateManyWithoutCustomersInput>;
 }
 
 export interface UserCreateManyWithoutDataRecordsInput {
@@ -4541,7 +4875,26 @@ export interface UserCreateManyWithoutDataRecordsInput {
   connect?: Maybe<UserWhereUniqueInput[] | UserWhereUniqueInput>;
 }
 
-export interface CompanyCreateWithoutRelatedPartiesInput {
+export interface CompanyUpsertWithoutHoldersInput {
+  update: CompanyUpdateWithoutHoldersDataInput;
+  create: CompanyCreateWithoutHoldersInput;
+}
+
+export interface UserCreateWithoutDataRecordsInput {
+  id?: Maybe<ID_Input>;
+  email: String;
+  emailvalidated?: Maybe<Boolean>;
+  validateEmailToken: String;
+  password: String;
+  resetPasswordToken: String;
+  resetPasswordExpires?: Maybe<Float>;
+  name: String;
+  role?: Maybe<Role>;
+  accountingFirm?: Maybe<AccountingFirmCreateOneWithoutEmployeesInput>;
+  projects?: Maybe<ProjectCreateManyInput>;
+}
+
+export interface CompanyCreateInput {
   id?: Maybe<ID_Input>;
   type: CompanyType;
   nature: CompanyNature;
@@ -4557,12 +4910,28 @@ export interface CompanyCreateWithoutRelatedPartiesInput {
   mainMembers?: Maybe<MainMemberCreateManyWithoutCompanyInput>;
   lastControllCompany?: Maybe<String>;
   lastControllPerson?: Maybe<String>;
+  relatedParties?: Maybe<RelatedPartyCreateManyWithoutCompanyInput>;
   accountingFirms?: Maybe<AccountingFirmCreateManyWithoutCustomersInput>;
 }
 
-export interface UserUpdateWithWhereUniqueWithoutDataRecordsInput {
-  where: UserWhereUniqueInput;
-  data: UserUpdateWithoutDataRecordsDataInput;
+export interface DataRecordUpdateInput {
+  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
+  company?: Maybe<CompanyUpdateOneRequiredInput>;
+  startTime?: Maybe<DateTimeInput>;
+  endTime?: Maybe<DateTimeInput>;
+  files?: Maybe<FileUpdateManyInput>;
+  users?: Maybe<UserUpdateManyWithoutDataRecordsInput>;
+}
+
+export interface CompanySubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<CompanyWhereInput>;
+  AND?: Maybe<CompanySubscriptionWhereInput[] | CompanySubscriptionWhereInput>;
+  OR?: Maybe<CompanySubscriptionWhereInput[] | CompanySubscriptionWhereInput>;
+  NOT?: Maybe<CompanySubscriptionWhereInput[] | CompanySubscriptionWhereInput>;
 }
 
 export interface UserUpdateManyWithoutDataRecordsInput {
@@ -4587,65 +4956,179 @@ export interface UserUpdateManyWithoutDataRecordsInput {
   >;
 }
 
-export interface DataRecordUpdateInput {
-  accountingFirm?: Maybe<AccountingFirmUpdateOneRequiredInput>;
-  company?: Maybe<CompanyUpdateOneRequiredInput>;
+export type MainMemberWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface SubjectContrastWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  origin?: Maybe<String>;
+  origin_not?: Maybe<String>;
+  origin_in?: Maybe<String[] | String>;
+  origin_not_in?: Maybe<String[] | String>;
+  origin_lt?: Maybe<String>;
+  origin_lte?: Maybe<String>;
+  origin_gt?: Maybe<String>;
+  origin_gte?: Maybe<String>;
+  origin_contains?: Maybe<String>;
+  origin_not_contains?: Maybe<String>;
+  origin_starts_with?: Maybe<String>;
+  origin_not_starts_with?: Maybe<String>;
+  origin_ends_with?: Maybe<String>;
+  origin_not_ends_with?: Maybe<String>;
+  tb?: Maybe<String>;
+  tb_not?: Maybe<String>;
+  tb_in?: Maybe<String[] | String>;
+  tb_not_in?: Maybe<String[] | String>;
+  tb_lt?: Maybe<String>;
+  tb_lte?: Maybe<String>;
+  tb_gt?: Maybe<String>;
+  tb_gte?: Maybe<String>;
+  tb_contains?: Maybe<String>;
+  tb_not_contains?: Maybe<String>;
+  tb_starts_with?: Maybe<String>;
+  tb_not_starts_with?: Maybe<String>;
+  tb_ends_with?: Maybe<String>;
+  tb_not_ends_with?: Maybe<String>;
+  fs?: Maybe<String>;
+  fs_not?: Maybe<String>;
+  fs_in?: Maybe<String[] | String>;
+  fs_not_in?: Maybe<String[] | String>;
+  fs_lt?: Maybe<String>;
+  fs_lte?: Maybe<String>;
+  fs_gt?: Maybe<String>;
+  fs_gte?: Maybe<String>;
+  fs_contains?: Maybe<String>;
+  fs_not_contains?: Maybe<String>;
+  fs_starts_with?: Maybe<String>;
+  fs_not_starts_with?: Maybe<String>;
+  fs_ends_with?: Maybe<String>;
+  fs_not_ends_with?: Maybe<String>;
+  coefficient?: Maybe<Int>;
+  coefficient_not?: Maybe<Int>;
+  coefficient_in?: Maybe<Int[] | Int>;
+  coefficient_not_in?: Maybe<Int[] | Int>;
+  coefficient_lt?: Maybe<Int>;
+  coefficient_lte?: Maybe<Int>;
+  coefficient_gt?: Maybe<Int>;
+  coefficient_gte?: Maybe<Int>;
+  direction?: Maybe<String>;
+  direction_not?: Maybe<String>;
+  direction_in?: Maybe<String[] | String>;
+  direction_not_in?: Maybe<String[] | String>;
+  direction_lt?: Maybe<String>;
+  direction_lte?: Maybe<String>;
+  direction_gt?: Maybe<String>;
+  direction_gte?: Maybe<String>;
+  direction_contains?: Maybe<String>;
+  direction_not_contains?: Maybe<String>;
+  direction_starts_with?: Maybe<String>;
+  direction_not_starts_with?: Maybe<String>;
+  direction_ends_with?: Maybe<String>;
+  direction_not_ends_with?: Maybe<String>;
+  firstClass?: Maybe<String>;
+  firstClass_not?: Maybe<String>;
+  firstClass_in?: Maybe<String[] | String>;
+  firstClass_not_in?: Maybe<String[] | String>;
+  firstClass_lt?: Maybe<String>;
+  firstClass_lte?: Maybe<String>;
+  firstClass_gt?: Maybe<String>;
+  firstClass_gte?: Maybe<String>;
+  firstClass_contains?: Maybe<String>;
+  firstClass_not_contains?: Maybe<String>;
+  firstClass_starts_with?: Maybe<String>;
+  firstClass_not_starts_with?: Maybe<String>;
+  firstClass_ends_with?: Maybe<String>;
+  firstClass_not_ends_with?: Maybe<String>;
+  secondClass?: Maybe<String>;
+  secondClass_not?: Maybe<String>;
+  secondClass_in?: Maybe<String[] | String>;
+  secondClass_not_in?: Maybe<String[] | String>;
+  secondClass_lt?: Maybe<String>;
+  secondClass_lte?: Maybe<String>;
+  secondClass_gt?: Maybe<String>;
+  secondClass_gte?: Maybe<String>;
+  secondClass_contains?: Maybe<String>;
+  secondClass_not_contains?: Maybe<String>;
+  secondClass_starts_with?: Maybe<String>;
+  secondClass_not_starts_with?: Maybe<String>;
+  secondClass_ends_with?: Maybe<String>;
+  secondClass_not_ends_with?: Maybe<String>;
+  AND?: Maybe<SubjectContrastWhereInput[] | SubjectContrastWhereInput>;
+  OR?: Maybe<SubjectContrastWhereInput[] | SubjectContrastWhereInput>;
+  NOT?: Maybe<SubjectContrastWhereInput[] | SubjectContrastWhereInput>;
+}
+
+export interface DataRecordUpdateManyMutationInput {
   startTime?: Maybe<DateTimeInput>;
   endTime?: Maybe<DateTimeInput>;
-  files?: Maybe<FileUpdateManyInput>;
-  users?: Maybe<UserUpdateManyWithoutDataRecordsInput>;
 }
 
-export interface UserCreateWithoutDataRecordsInput {
-  id?: Maybe<ID_Input>;
-  email: String;
+export interface UserUpsertWithWhereUniqueWithoutDataRecordsInput {
+  where: UserWhereUniqueInput;
+  update: UserUpdateWithoutDataRecordsDataInput;
+  create: UserCreateWithoutDataRecordsInput;
+}
+
+export interface UserUpdateWithoutDataRecordsDataInput {
+  email?: Maybe<String>;
   emailvalidated?: Maybe<Boolean>;
-  validateEmailToken: String;
-  password: String;
-  resetPasswordToken: String;
+  validateEmailToken?: Maybe<String>;
+  password?: Maybe<String>;
+  resetPasswordToken?: Maybe<String>;
   resetPasswordExpires?: Maybe<Float>;
-  name: String;
+  name?: Maybe<String>;
   role?: Maybe<Role>;
-  accountingFirm?: Maybe<AccountingFirmCreateOneWithoutEmployeesInput>;
-  projects?: Maybe<ProjectCreateManyInput>;
+  accountingFirm?: Maybe<AccountingFirmUpdateOneWithoutEmployeesInput>;
+  projects?: Maybe<ProjectUpdateManyInput>;
 }
 
-export interface MemberUpdateInput {
-  project?: Maybe<ProjectUpdateOneRequiredWithoutMembersInput>;
-  user?: Maybe<UserUpdateOneRequiredInput>;
-  role?: Maybe<ProjectRole>;
+export interface UserUpdateWithWhereUniqueWithoutDataRecordsInput {
+  where: UserWhereUniqueInput;
+  data: UserUpdateWithoutDataRecordsDataInput;
 }
 
-export interface TbSubjectCreateInput {
+export interface MemberCreateInput {
   id?: Maybe<ID_Input>;
-  show: String;
-  subject: String;
-  direction: String;
-  order: Int;
+  project: ProjectCreateOneWithoutMembersInput;
+  user: UserCreateOneInput;
+  role: ProjectRole;
 }
 
-export interface UserSubscriptionWhereInput {
+export interface StdSubjectUpdateManyMutationInput {
+  code?: Maybe<String>;
+  name?: Maybe<String>;
+}
+
+export interface RelatedPartySubscriptionWhereInput {
   mutation_in?: Maybe<MutationType[] | MutationType>;
   updatedFields_contains?: Maybe<String>;
   updatedFields_contains_every?: Maybe<String[] | String>;
   updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<UserWhereInput>;
-  AND?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
-  OR?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
-  NOT?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
+  node?: Maybe<RelatedPartyWhereInput>;
+  AND?: Maybe<
+    RelatedPartySubscriptionWhereInput[] | RelatedPartySubscriptionWhereInput
+  >;
+  OR?: Maybe<
+    RelatedPartySubscriptionWhereInput[] | RelatedPartySubscriptionWhereInput
+  >;
+  NOT?: Maybe<
+    RelatedPartySubscriptionWhereInput[] | RelatedPartySubscriptionWhereInput
+  >;
 }
-
-export interface FSSubjectUpdateManyMutationInput {
-  name?: Maybe<String>;
-  show?: Maybe<String>;
-  subject?: Maybe<String>;
-  direction?: Maybe<String>;
-}
-
-export type SubjectContrastWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-  origin?: Maybe<String>;
-}>;
 
 export interface NodeNode {
   id: ID_Output;
@@ -4697,23 +5180,25 @@ export interface UserPreviousValuesSubscription
   role: () => Promise<AsyncIterator<Role>>;
 }
 
-export interface CompanyStdNameEdge {
-  node: CompanyStdName;
-  cursor: String;
+export interface DataRecordConnection {
+  pageInfo: PageInfo;
+  edges: DataRecordEdge[];
 }
 
-export interface CompanyStdNameEdgePromise
-  extends Promise<CompanyStdNameEdge>,
+export interface DataRecordConnectionPromise
+  extends Promise<DataRecordConnection>,
     Fragmentable {
-  node: <T = CompanyStdNamePromise>() => T;
-  cursor: () => Promise<String>;
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<DataRecordEdge>>() => T;
+  aggregate: <T = AggregateDataRecordPromise>() => T;
 }
 
-export interface CompanyStdNameEdgeSubscription
-  extends Promise<AsyncIterator<CompanyStdNameEdge>>,
+export interface DataRecordConnectionSubscription
+  extends Promise<AsyncIterator<DataRecordConnection>>,
     Fragmentable {
-  node: <T = CompanyStdNameSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<DataRecordEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateDataRecordSubscription>() => T;
 }
 
 export interface User {
@@ -4833,25 +5318,183 @@ export interface UserNullablePromise
   }) => T;
 }
 
-export interface DataRecordConnection {
-  pageInfo: PageInfo;
-  edges: DataRecordEdge[];
+export interface AggregateCompanyStdName {
+  count: Int;
 }
 
-export interface DataRecordConnectionPromise
-  extends Promise<DataRecordConnection>,
+export interface AggregateCompanyStdNamePromise
+  extends Promise<AggregateCompanyStdName>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateCompanyStdNameSubscription
+  extends Promise<AsyncIterator<AggregateCompanyStdName>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface Project {
+  id: ID_Output;
+  startTime: DateTimeOutput;
+  endTime: DateTimeOutput;
+}
+
+export interface ProjectPromise extends Promise<Project>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  accountingFirm: <T = AccountingFirmPromise>() => T;
+  company: <T = CompanyPromise>() => T;
+  startTime: () => Promise<DateTimeOutput>;
+  endTime: () => Promise<DateTimeOutput>;
+  members: <T = FragmentableArray<Member>>(args?: {
+    where?: MemberWhereInput;
+    orderBy?: MemberOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface ProjectSubscription
+  extends Promise<AsyncIterator<Project>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  accountingFirm: <T = AccountingFirmSubscription>() => T;
+  company: <T = CompanySubscription>() => T;
+  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  members: <T = Promise<AsyncIterator<MemberSubscription>>>(args?: {
+    where?: MemberWhereInput;
+    orderBy?: MemberOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface ProjectNullablePromise
+  extends Promise<Project | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  accountingFirm: <T = AccountingFirmPromise>() => T;
+  company: <T = CompanyPromise>() => T;
+  startTime: () => Promise<DateTimeOutput>;
+  endTime: () => Promise<DateTimeOutput>;
+  members: <T = FragmentableArray<Member>>(args?: {
+    where?: MemberWhereInput;
+    orderBy?: MemberOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface CompanyStdNameEdge {
+  node: CompanyStdName;
+  cursor: String;
+}
+
+export interface CompanyStdNameEdgePromise
+  extends Promise<CompanyStdNameEdge>,
+    Fragmentable {
+  node: <T = CompanyStdNamePromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface CompanyStdNameEdgeSubscription
+  extends Promise<AsyncIterator<CompanyStdNameEdge>>,
+    Fragmentable {
+  node: <T = CompanyStdNameSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateUser {
+  count: Int;
+}
+
+export interface AggregateUserPromise
+  extends Promise<AggregateUser>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateUserSubscription
+  extends Promise<AsyncIterator<AggregateUser>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface CompanyStdNameConnection {
+  pageInfo: PageInfo;
+  edges: CompanyStdNameEdge[];
+}
+
+export interface CompanyStdNameConnectionPromise
+  extends Promise<CompanyStdNameConnection>,
     Fragmentable {
   pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<DataRecordEdge>>() => T;
-  aggregate: <T = AggregateDataRecordPromise>() => T;
+  edges: <T = FragmentableArray<CompanyStdNameEdge>>() => T;
+  aggregate: <T = AggregateCompanyStdNamePromise>() => T;
 }
 
-export interface DataRecordConnectionSubscription
-  extends Promise<AsyncIterator<DataRecordConnection>>,
+export interface CompanyStdNameConnectionSubscription
+  extends Promise<AsyncIterator<CompanyStdNameConnection>>,
     Fragmentable {
   pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<DataRecordEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateDataRecordSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<CompanyStdNameEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateCompanyStdNameSubscription>() => T;
+}
+
+export interface UserConnection {
+  pageInfo: PageInfo;
+  edges: UserEdge[];
+}
+
+export interface UserConnectionPromise
+  extends Promise<UserConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<UserEdge>>() => T;
+  aggregate: <T = AggregateUserPromise>() => T;
+}
+
+export interface UserConnectionSubscription
+  extends Promise<AsyncIterator<UserConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateUserSubscription>() => T;
+}
+
+export interface TbSubjectSubscriptionPayload {
+  mutation: MutationType;
+  node: TbSubject;
+  updatedFields: String[];
+  previousValues: TbSubjectPreviousValues;
+}
+
+export interface TbSubjectSubscriptionPayloadPromise
+  extends Promise<TbSubjectSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = TbSubjectPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = TbSubjectPreviousValuesPromise>() => T;
+}
+
+export interface TbSubjectSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<TbSubjectSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = TbSubjectSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = TbSubjectPreviousValuesSubscription>() => T;
 }
 
 export interface SubjectContrastPreviousValues {
@@ -4891,94 +5534,21 @@ export interface SubjectContrastPreviousValuesSubscription
   secondClass: () => Promise<AsyncIterator<String>>;
 }
 
-export interface AggregateCompanyStdName {
-  count: Int;
+export interface UserEdge {
+  node: User;
+  cursor: String;
 }
 
-export interface AggregateCompanyStdNamePromise
-  extends Promise<AggregateCompanyStdName>,
+export interface UserEdgePromise extends Promise<UserEdge>, Fragmentable {
+  node: <T = UserPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface UserEdgeSubscription
+  extends Promise<AsyncIterator<UserEdge>>,
     Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateCompanyStdNameSubscription
-  extends Promise<AsyncIterator<AggregateCompanyStdName>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface CompanyStdNameConnection {
-  pageInfo: PageInfo;
-  edges: CompanyStdNameEdge[];
-}
-
-export interface CompanyStdNameConnectionPromise
-  extends Promise<CompanyStdNameConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<CompanyStdNameEdge>>() => T;
-  aggregate: <T = AggregateCompanyStdNamePromise>() => T;
-}
-
-export interface CompanyStdNameConnectionSubscription
-  extends Promise<AsyncIterator<CompanyStdNameConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<CompanyStdNameEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateCompanyStdNameSubscription>() => T;
-}
-
-export interface BatchPayload {
-  count: Long;
-}
-
-export interface BatchPayloadPromise
-  extends Promise<BatchPayload>,
-    Fragmentable {
-  count: () => Promise<Long>;
-}
-
-export interface BatchPayloadSubscription
-  extends Promise<AsyncIterator<BatchPayload>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Long>>;
-}
-
-export interface UserConnection {
-  pageInfo: PageInfo;
-  edges: UserEdge[];
-}
-
-export interface UserConnectionPromise
-  extends Promise<UserConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<UserEdge>>() => T;
-  aggregate: <T = AggregateUserPromise>() => T;
-}
-
-export interface UserConnectionSubscription
-  extends Promise<AsyncIterator<UserConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateUserSubscription>() => T;
-}
-
-export interface AggregateUser {
-  count: Int;
-}
-
-export interface AggregateUserPromise
-  extends Promise<AggregateUser>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateUserSubscription
-  extends Promise<AsyncIterator<AggregateUser>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
+  node: <T = UserSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
 }
 
 export interface TbSubjectEdge {
@@ -4997,6 +5567,226 @@ export interface TbSubjectEdgeSubscription
   extends Promise<AsyncIterator<TbSubjectEdge>>,
     Fragmentable {
   node: <T = TbSubjectSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateTbSubject {
+  count: Int;
+}
+
+export interface AggregateTbSubjectPromise
+  extends Promise<AggregateTbSubject>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateTbSubjectSubscription
+  extends Promise<AsyncIterator<AggregateTbSubject>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface TbSubject {
+  id: ID_Output;
+  show: String;
+  subject: String;
+  direction: String;
+  order: Int;
+}
+
+export interface TbSubjectPromise extends Promise<TbSubject>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  show: () => Promise<String>;
+  subject: () => Promise<String>;
+  direction: () => Promise<String>;
+  order: () => Promise<Int>;
+}
+
+export interface TbSubjectSubscription
+  extends Promise<AsyncIterator<TbSubject>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  show: () => Promise<AsyncIterator<String>>;
+  subject: () => Promise<AsyncIterator<String>>;
+  direction: () => Promise<AsyncIterator<String>>;
+  order: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface TbSubjectNullablePromise
+  extends Promise<TbSubject | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  show: () => Promise<String>;
+  subject: () => Promise<String>;
+  direction: () => Promise<String>;
+  order: () => Promise<Int>;
+}
+
+export interface TbSubjectConnection {
+  pageInfo: PageInfo;
+  edges: TbSubjectEdge[];
+}
+
+export interface TbSubjectConnectionPromise
+  extends Promise<TbSubjectConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<TbSubjectEdge>>() => T;
+  aggregate: <T = AggregateTbSubjectPromise>() => T;
+}
+
+export interface TbSubjectConnectionSubscription
+  extends Promise<AsyncIterator<TbSubjectConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<TbSubjectEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateTbSubjectSubscription>() => T;
+}
+
+export interface SubjectContrastEdge {
+  node: SubjectContrast;
+  cursor: String;
+}
+
+export interface SubjectContrastEdgePromise
+  extends Promise<SubjectContrastEdge>,
+    Fragmentable {
+  node: <T = SubjectContrastPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface SubjectContrastEdgeSubscription
+  extends Promise<AsyncIterator<SubjectContrastEdge>>,
+    Fragmentable {
+  node: <T = SubjectContrastSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AccountingFirmSubscriptionPayload {
+  mutation: MutationType;
+  node: AccountingFirm;
+  updatedFields: String[];
+  previousValues: AccountingFirmPreviousValues;
+}
+
+export interface AccountingFirmSubscriptionPayloadPromise
+  extends Promise<AccountingFirmSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = AccountingFirmPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = AccountingFirmPreviousValuesPromise>() => T;
+}
+
+export interface AccountingFirmSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<AccountingFirmSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = AccountingFirmSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = AccountingFirmPreviousValuesSubscription>() => T;
+}
+
+export interface SubjectContrast {
+  id: ID_Output;
+  origin: String;
+  tb: String;
+  fs: String;
+  coefficient: Int;
+  direction: String;
+  firstClass: String;
+  secondClass: String;
+}
+
+export interface SubjectContrastPromise
+  extends Promise<SubjectContrast>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  origin: () => Promise<String>;
+  tb: () => Promise<String>;
+  fs: () => Promise<String>;
+  coefficient: () => Promise<Int>;
+  direction: () => Promise<String>;
+  firstClass: () => Promise<String>;
+  secondClass: () => Promise<String>;
+}
+
+export interface SubjectContrastSubscription
+  extends Promise<AsyncIterator<SubjectContrast>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  origin: () => Promise<AsyncIterator<String>>;
+  tb: () => Promise<AsyncIterator<String>>;
+  fs: () => Promise<AsyncIterator<String>>;
+  coefficient: () => Promise<AsyncIterator<Int>>;
+  direction: () => Promise<AsyncIterator<String>>;
+  firstClass: () => Promise<AsyncIterator<String>>;
+  secondClass: () => Promise<AsyncIterator<String>>;
+}
+
+export interface SubjectContrastNullablePromise
+  extends Promise<SubjectContrast | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  origin: () => Promise<String>;
+  tb: () => Promise<String>;
+  fs: () => Promise<String>;
+  coefficient: () => Promise<Int>;
+  direction: () => Promise<String>;
+  firstClass: () => Promise<String>;
+  secondClass: () => Promise<String>;
+}
+
+export interface AccountingFirmPreviousValues {
+  id: ID_Output;
+  name: String;
+  code: String;
+  address: String;
+  phone: String;
+  email: String;
+  contact: String;
+}
+
+export interface AccountingFirmPreviousValuesPromise
+  extends Promise<AccountingFirmPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  code: () => Promise<String>;
+  address: () => Promise<String>;
+  phone: () => Promise<String>;
+  email: () => Promise<String>;
+  contact: () => Promise<String>;
+}
+
+export interface AccountingFirmPreviousValuesSubscription
+  extends Promise<AsyncIterator<AccountingFirmPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  code: () => Promise<AsyncIterator<String>>;
+  address: () => Promise<AsyncIterator<String>>;
+  phone: () => Promise<AsyncIterator<String>>;
+  email: () => Promise<AsyncIterator<String>>;
+  contact: () => Promise<AsyncIterator<String>>;
+}
+
+export interface StdSubjectEdge {
+  node: StdSubject;
+  cursor: String;
+}
+
+export interface StdSubjectEdgePromise
+  extends Promise<StdSubjectEdge>,
+    Fragmentable {
+  node: <T = StdSubjectPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface StdSubjectEdgeSubscription
+  extends Promise<AsyncIterator<StdSubjectEdge>>,
+    Fragmentable {
+  node: <T = StdSubjectSubscription>() => T;
   cursor: () => Promise<AsyncIterator<String>>;
 }
 
@@ -5032,6 +5822,1455 @@ export interface CompanyStdNameNullablePromise
   dbName: () => Promise<String>;
   originName: () => Promise<String>;
   stdName: () => Promise<String>;
+}
+
+export interface UserSubscriptionPayload {
+  mutation: MutationType;
+  node: User;
+  updatedFields: String[];
+  previousValues: UserPreviousValues;
+}
+
+export interface UserSubscriptionPayloadPromise
+  extends Promise<UserSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = UserPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = UserPreviousValuesPromise>() => T;
+}
+
+export interface UserSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<UserSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = UserSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = UserPreviousValuesSubscription>() => T;
+}
+
+export interface CompanySubscriptionPayload {
+  mutation: MutationType;
+  node: Company;
+  updatedFields: String[];
+  previousValues: CompanyPreviousValues;
+}
+
+export interface CompanySubscriptionPayloadPromise
+  extends Promise<CompanySubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = CompanyPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = CompanyPreviousValuesPromise>() => T;
+}
+
+export interface CompanySubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<CompanySubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = CompanySubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = CompanyPreviousValuesSubscription>() => T;
+}
+
+export interface AggregateRelatedParty {
+  count: Int;
+}
+
+export interface AggregateRelatedPartyPromise
+  extends Promise<AggregateRelatedParty>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateRelatedPartySubscription
+  extends Promise<AsyncIterator<AggregateRelatedParty>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface CompanyPreviousValues {
+  id: ID_Output;
+  type: CompanyType;
+  nature: CompanyNature;
+  name: String;
+  code?: String;
+  address?: String;
+  legalRepresentative?: String;
+  establishDate?: DateTimeOutput;
+  registeredCapital?: String;
+  paidinCapital?: String;
+  businessScope?: String;
+  lastControllCompany?: String;
+  lastControllPerson?: String;
+}
+
+export interface CompanyPreviousValuesPromise
+  extends Promise<CompanyPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  type: () => Promise<CompanyType>;
+  nature: () => Promise<CompanyNature>;
+  name: () => Promise<String>;
+  code: () => Promise<String>;
+  address: () => Promise<String>;
+  legalRepresentative: () => Promise<String>;
+  establishDate: () => Promise<DateTimeOutput>;
+  registeredCapital: () => Promise<String>;
+  paidinCapital: () => Promise<String>;
+  businessScope: () => Promise<String>;
+  lastControllCompany: () => Promise<String>;
+  lastControllPerson: () => Promise<String>;
+}
+
+export interface CompanyPreviousValuesSubscription
+  extends Promise<AsyncIterator<CompanyPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  type: () => Promise<AsyncIterator<CompanyType>>;
+  nature: () => Promise<AsyncIterator<CompanyNature>>;
+  name: () => Promise<AsyncIterator<String>>;
+  code: () => Promise<AsyncIterator<String>>;
+  address: () => Promise<AsyncIterator<String>>;
+  legalRepresentative: () => Promise<AsyncIterator<String>>;
+  establishDate: () => Promise<AsyncIterator<DateTimeOutput>>;
+  registeredCapital: () => Promise<AsyncIterator<String>>;
+  paidinCapital: () => Promise<AsyncIterator<String>>;
+  businessScope: () => Promise<AsyncIterator<String>>;
+  lastControllCompany: () => Promise<AsyncIterator<String>>;
+  lastControllPerson: () => Promise<AsyncIterator<String>>;
+}
+
+export interface RelatedPartyConnection {
+  pageInfo: PageInfo;
+  edges: RelatedPartyEdge[];
+}
+
+export interface RelatedPartyConnectionPromise
+  extends Promise<RelatedPartyConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<RelatedPartyEdge>>() => T;
+  aggregate: <T = AggregateRelatedPartyPromise>() => T;
+}
+
+export interface RelatedPartyConnectionSubscription
+  extends Promise<AsyncIterator<RelatedPartyConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<RelatedPartyEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateRelatedPartySubscription>() => T;
+}
+
+export interface AggregateCompany {
+  count: Int;
+}
+
+export interface AggregateCompanyPromise
+  extends Promise<AggregateCompany>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateCompanySubscription
+  extends Promise<AsyncIterator<AggregateCompany>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface ProjectEdge {
+  node: Project;
+  cursor: String;
+}
+
+export interface ProjectEdgePromise extends Promise<ProjectEdge>, Fragmentable {
+  node: <T = ProjectPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface ProjectEdgeSubscription
+  extends Promise<AsyncIterator<ProjectEdge>>,
+    Fragmentable {
+  node: <T = ProjectSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface CompanyStdNameSubscriptionPayload {
+  mutation: MutationType;
+  node: CompanyStdName;
+  updatedFields: String[];
+  previousValues: CompanyStdNamePreviousValues;
+}
+
+export interface CompanyStdNameSubscriptionPayloadPromise
+  extends Promise<CompanyStdNameSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = CompanyStdNamePromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = CompanyStdNamePreviousValuesPromise>() => T;
+}
+
+export interface CompanyStdNameSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<CompanyStdNameSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = CompanyStdNameSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = CompanyStdNamePreviousValuesSubscription>() => T;
+}
+
+export interface AggregateNoneCompany {
+  count: Int;
+}
+
+export interface AggregateNoneCompanyPromise
+  extends Promise<AggregateNoneCompany>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateNoneCompanySubscription
+  extends Promise<AsyncIterator<AggregateNoneCompany>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface CompanyStdNamePreviousValues {
+  id: ID_Output;
+  dbName: String;
+  originName: String;
+  stdName: String;
+}
+
+export interface CompanyStdNamePreviousValuesPromise
+  extends Promise<CompanyStdNamePreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  dbName: () => Promise<String>;
+  originName: () => Promise<String>;
+  stdName: () => Promise<String>;
+}
+
+export interface CompanyStdNamePreviousValuesSubscription
+  extends Promise<AsyncIterator<CompanyStdNamePreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  dbName: () => Promise<AsyncIterator<String>>;
+  originName: () => Promise<AsyncIterator<String>>;
+  stdName: () => Promise<AsyncIterator<String>>;
+}
+
+export interface NoneCompanyConnection {
+  pageInfo: PageInfo;
+  edges: NoneCompanyEdge[];
+}
+
+export interface NoneCompanyConnectionPromise
+  extends Promise<NoneCompanyConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<NoneCompanyEdge>>() => T;
+  aggregate: <T = AggregateNoneCompanyPromise>() => T;
+}
+
+export interface NoneCompanyConnectionSubscription
+  extends Promise<AsyncIterator<NoneCompanyConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<NoneCompanyEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateNoneCompanySubscription>() => T;
+}
+
+export interface CompanyEdge {
+  node: Company;
+  cursor: String;
+}
+
+export interface CompanyEdgePromise extends Promise<CompanyEdge>, Fragmentable {
+  node: <T = CompanyPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface CompanyEdgeSubscription
+  extends Promise<AsyncIterator<CompanyEdge>>,
+    Fragmentable {
+  node: <T = CompanySubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface NoneCompany {
+  id: ID_Output;
+  name: String;
+}
+
+export interface NoneCompanyPromise extends Promise<NoneCompany>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface NoneCompanySubscription
+  extends Promise<AsyncIterator<NoneCompany>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface NoneCompanyNullablePromise
+  extends Promise<NoneCompany | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface DataRecordSubscriptionPayload {
+  mutation: MutationType;
+  node: DataRecord;
+  updatedFields: String[];
+  previousValues: DataRecordPreviousValues;
+}
+
+export interface DataRecordSubscriptionPayloadPromise
+  extends Promise<DataRecordSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = DataRecordPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = DataRecordPreviousValuesPromise>() => T;
+}
+
+export interface DataRecordSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<DataRecordSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = DataRecordSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = DataRecordPreviousValuesSubscription>() => T;
+}
+
+export interface MemberEdge {
+  node: Member;
+  cursor: String;
+}
+
+export interface MemberEdgePromise extends Promise<MemberEdge>, Fragmentable {
+  node: <T = MemberPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface MemberEdgeSubscription
+  extends Promise<AsyncIterator<MemberEdge>>,
+    Fragmentable {
+  node: <T = MemberSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface DataRecordPreviousValues {
+  id: ID_Output;
+  startTime: DateTimeOutput;
+  endTime: DateTimeOutput;
+  uploadTime: DateTimeOutput;
+}
+
+export interface DataRecordPreviousValuesPromise
+  extends Promise<DataRecordPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  startTime: () => Promise<DateTimeOutput>;
+  endTime: () => Promise<DateTimeOutput>;
+  uploadTime: () => Promise<DateTimeOutput>;
+}
+
+export interface DataRecordPreviousValuesSubscription
+  extends Promise<AsyncIterator<DataRecordPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  uploadTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+}
+
+export interface AggregateMainMember {
+  count: Int;
+}
+
+export interface AggregateMainMemberPromise
+  extends Promise<AggregateMainMember>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateMainMemberSubscription
+  extends Promise<AsyncIterator<AggregateMainMember>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface CompanyConnection {
+  pageInfo: PageInfo;
+  edges: CompanyEdge[];
+}
+
+export interface CompanyConnectionPromise
+  extends Promise<CompanyConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<CompanyEdge>>() => T;
+  aggregate: <T = AggregateCompanyPromise>() => T;
+}
+
+export interface CompanyConnectionSubscription
+  extends Promise<AsyncIterator<CompanyConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<CompanyEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateCompanySubscription>() => T;
+}
+
+export interface MainMemberConnection {
+  pageInfo: PageInfo;
+  edges: MainMemberEdge[];
+}
+
+export interface MainMemberConnectionPromise
+  extends Promise<MainMemberConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<MainMemberEdge>>() => T;
+  aggregate: <T = AggregateMainMemberPromise>() => T;
+}
+
+export interface MainMemberConnectionSubscription
+  extends Promise<AsyncIterator<MainMemberConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<MainMemberEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateMainMemberSubscription>() => T;
+}
+
+export interface FSSubjectSubscriptionPayload {
+  mutation: MutationType;
+  node: FSSubject;
+  updatedFields: String[];
+  previousValues: FSSubjectPreviousValues;
+}
+
+export interface FSSubjectSubscriptionPayloadPromise
+  extends Promise<FSSubjectSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = FSSubjectPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = FSSubjectPreviousValuesPromise>() => T;
+}
+
+export interface FSSubjectSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<FSSubjectSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = FSSubjectSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = FSSubjectPreviousValuesSubscription>() => T;
+}
+
+export interface LetterOfProofEdge {
+  node: LetterOfProof;
+  cursor: String;
+}
+
+export interface LetterOfProofEdgePromise
+  extends Promise<LetterOfProofEdge>,
+    Fragmentable {
+  node: <T = LetterOfProofPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface LetterOfProofEdgeSubscription
+  extends Promise<AsyncIterator<LetterOfProofEdge>>,
+    Fragmentable {
+  node: <T = LetterOfProofSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface FSSubjectPreviousValues {
+  id: ID_Output;
+  name: String;
+  show: String;
+  subject: String;
+  direction: String;
+}
+
+export interface FSSubjectPreviousValuesPromise
+  extends Promise<FSSubjectPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  show: () => Promise<String>;
+  subject: () => Promise<String>;
+  direction: () => Promise<String>;
+}
+
+export interface FSSubjectPreviousValuesSubscription
+  extends Promise<AsyncIterator<FSSubjectPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  show: () => Promise<AsyncIterator<String>>;
+  subject: () => Promise<AsyncIterator<String>>;
+  direction: () => Promise<AsyncIterator<String>>;
+}
+
+export interface TbSubjectPreviousValues {
+  id: ID_Output;
+  show: String;
+  subject: String;
+  direction: String;
+  order: Int;
+}
+
+export interface TbSubjectPreviousValuesPromise
+  extends Promise<TbSubjectPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  show: () => Promise<String>;
+  subject: () => Promise<String>;
+  direction: () => Promise<String>;
+  order: () => Promise<Int>;
+}
+
+export interface TbSubjectPreviousValuesSubscription
+  extends Promise<AsyncIterator<TbSubjectPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  show: () => Promise<AsyncIterator<String>>;
+  subject: () => Promise<AsyncIterator<String>>;
+  direction: () => Promise<AsyncIterator<String>>;
+  order: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AggregateAccountingFirm {
+  count: Int;
+}
+
+export interface AggregateAccountingFirmPromise
+  extends Promise<AggregateAccountingFirm>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateAccountingFirmSubscription
+  extends Promise<AsyncIterator<AggregateAccountingFirm>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AggregateHolder {
+  count: Int;
+}
+
+export interface AggregateHolderPromise
+  extends Promise<AggregateHolder>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateHolderSubscription
+  extends Promise<AsyncIterator<AggregateHolder>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface FileSubscriptionPayload {
+  mutation: MutationType;
+  node: File;
+  updatedFields: String[];
+  previousValues: FilePreviousValues;
+}
+
+export interface FileSubscriptionPayloadPromise
+  extends Promise<FileSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = FilePromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = FilePreviousValuesPromise>() => T;
+}
+
+export interface FileSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<FileSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = FileSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = FilePreviousValuesSubscription>() => T;
+}
+
+export interface HolderConnection {
+  pageInfo: PageInfo;
+  edges: HolderEdge[];
+}
+
+export interface HolderConnectionPromise
+  extends Promise<HolderConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<HolderEdge>>() => T;
+  aggregate: <T = AggregateHolderPromise>() => T;
+}
+
+export interface HolderConnectionSubscription
+  extends Promise<AsyncIterator<HolderConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<HolderEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateHolderSubscription>() => T;
+}
+
+export interface FilePreviousValues {
+  id: ID_Output;
+  path: String;
+  filename: String;
+  mimetype: String;
+  type: FileType;
+}
+
+export interface FilePreviousValuesPromise
+  extends Promise<FilePreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  path: () => Promise<String>;
+  filename: () => Promise<String>;
+  mimetype: () => Promise<String>;
+  type: () => Promise<FileType>;
+}
+
+export interface FilePreviousValuesSubscription
+  extends Promise<AsyncIterator<FilePreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  path: () => Promise<AsyncIterator<String>>;
+  filename: () => Promise<AsyncIterator<String>>;
+  mimetype: () => Promise<AsyncIterator<String>>;
+  type: () => Promise<AsyncIterator<FileType>>;
+}
+
+export interface FileEdge {
+  node: File;
+  cursor: String;
+}
+
+export interface FileEdgePromise extends Promise<FileEdge>, Fragmentable {
+  node: <T = FilePromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface FileEdgeSubscription
+  extends Promise<AsyncIterator<FileEdge>>,
+    Fragmentable {
+  node: <T = FileSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AccountingFirmEdge {
+  node: AccountingFirm;
+  cursor: String;
+}
+
+export interface AccountingFirmEdgePromise
+  extends Promise<AccountingFirmEdge>,
+    Fragmentable {
+  node: <T = AccountingFirmPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface AccountingFirmEdgeSubscription
+  extends Promise<AsyncIterator<AccountingFirmEdge>>,
+    Fragmentable {
+  node: <T = AccountingFirmSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateFSSubject {
+  count: Int;
+}
+
+export interface AggregateFSSubjectPromise
+  extends Promise<AggregateFSSubject>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateFSSubjectSubscription
+  extends Promise<AsyncIterator<AggregateFSSubject>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface HolderSubscriptionPayload {
+  mutation: MutationType;
+  node: Holder;
+  updatedFields: String[];
+  previousValues: HolderPreviousValues;
+}
+
+export interface HolderSubscriptionPayloadPromise
+  extends Promise<HolderSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = HolderPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = HolderPreviousValuesPromise>() => T;
+}
+
+export interface HolderSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<HolderSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = HolderSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = HolderPreviousValuesSubscription>() => T;
+}
+
+export interface FSSubjectConnection {
+  pageInfo: PageInfo;
+  edges: FSSubjectEdge[];
+}
+
+export interface FSSubjectConnectionPromise
+  extends Promise<FSSubjectConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<FSSubjectEdge>>() => T;
+  aggregate: <T = AggregateFSSubjectPromise>() => T;
+}
+
+export interface FSSubjectConnectionSubscription
+  extends Promise<AsyncIterator<FSSubjectConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<FSSubjectEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateFSSubjectSubscription>() => T;
+}
+
+export interface HolderPreviousValues {
+  id: ID_Output;
+  name: String;
+  ratio: Float;
+}
+
+export interface HolderPreviousValuesPromise
+  extends Promise<HolderPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  ratio: () => Promise<Float>;
+}
+
+export interface HolderPreviousValuesSubscription
+  extends Promise<AsyncIterator<HolderPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  ratio: () => Promise<AsyncIterator<Float>>;
+}
+
+export interface AggregateDataRecord {
+  count: Int;
+}
+
+export interface AggregateDataRecordPromise
+  extends Promise<AggregateDataRecord>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateDataRecordSubscription
+  extends Promise<AsyncIterator<AggregateDataRecord>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface PageInfo {
+  hasNextPage: Boolean;
+  hasPreviousPage: Boolean;
+  startCursor?: String;
+  endCursor?: String;
+}
+
+export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
+  hasNextPage: () => Promise<Boolean>;
+  hasPreviousPage: () => Promise<Boolean>;
+  startCursor: () => Promise<String>;
+  endCursor: () => Promise<String>;
+}
+
+export interface PageInfoSubscription
+  extends Promise<AsyncIterator<PageInfo>>,
+    Fragmentable {
+  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
+  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
+  startCursor: () => Promise<AsyncIterator<String>>;
+  endCursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface BatchPayload {
+  count: Long;
+}
+
+export interface BatchPayloadPromise
+  extends Promise<BatchPayload>,
+    Fragmentable {
+  count: () => Promise<Long>;
+}
+
+export interface BatchPayloadSubscription
+  extends Promise<AsyncIterator<BatchPayload>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Long>>;
+}
+
+export interface LetterOfProofSubscriptionPayload {
+  mutation: MutationType;
+  node: LetterOfProof;
+  updatedFields: String[];
+  previousValues: LetterOfProofPreviousValues;
+}
+
+export interface LetterOfProofSubscriptionPayloadPromise
+  extends Promise<LetterOfProofSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = LetterOfProofPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = LetterOfProofPreviousValuesPromise>() => T;
+}
+
+export interface LetterOfProofSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<LetterOfProofSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = LetterOfProofSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = LetterOfProofPreviousValuesSubscription>() => T;
+}
+
+export interface AggregateSubjectContrast {
+  count: Int;
+}
+
+export interface AggregateSubjectContrastPromise
+  extends Promise<AggregateSubjectContrast>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateSubjectContrastSubscription
+  extends Promise<AsyncIterator<AggregateSubjectContrast>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface LetterOfProofPreviousValues {
+  id: ID_Output;
+  subjectName: String;
+  name: String;
+  adrress?: String;
+  contact?: String;
+  telephone?: String;
+  zipCode?: String;
+  sampleReason?: String;
+  currencyType?: String;
+  sendDate?: String;
+  sendNo?: String;
+  receiveDate?: String;
+  receiveNo?: String;
+  balance?: Float;
+  amount?: Float;
+  sendBalance?: Float;
+  sendAmount?: Float;
+  receiveBalance?: Float;
+  receiveAmount?: Float;
+  sendPhoto?: String;
+  receivePhoto?: String;
+  proofPhoto?: String;
+}
+
+export interface LetterOfProofPreviousValuesPromise
+  extends Promise<LetterOfProofPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  subjectName: () => Promise<String>;
+  name: () => Promise<String>;
+  adrress: () => Promise<String>;
+  contact: () => Promise<String>;
+  telephone: () => Promise<String>;
+  zipCode: () => Promise<String>;
+  sampleReason: () => Promise<String>;
+  currencyType: () => Promise<String>;
+  sendDate: () => Promise<String>;
+  sendNo: () => Promise<String>;
+  receiveDate: () => Promise<String>;
+  receiveNo: () => Promise<String>;
+  balance: () => Promise<Float>;
+  amount: () => Promise<Float>;
+  sendBalance: () => Promise<Float>;
+  sendAmount: () => Promise<Float>;
+  receiveBalance: () => Promise<Float>;
+  receiveAmount: () => Promise<Float>;
+  sendPhoto: () => Promise<String>;
+  receivePhoto: () => Promise<String>;
+  proofPhoto: () => Promise<String>;
+}
+
+export interface LetterOfProofPreviousValuesSubscription
+  extends Promise<AsyncIterator<LetterOfProofPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  subjectName: () => Promise<AsyncIterator<String>>;
+  name: () => Promise<AsyncIterator<String>>;
+  adrress: () => Promise<AsyncIterator<String>>;
+  contact: () => Promise<AsyncIterator<String>>;
+  telephone: () => Promise<AsyncIterator<String>>;
+  zipCode: () => Promise<AsyncIterator<String>>;
+  sampleReason: () => Promise<AsyncIterator<String>>;
+  currencyType: () => Promise<AsyncIterator<String>>;
+  sendDate: () => Promise<AsyncIterator<String>>;
+  sendNo: () => Promise<AsyncIterator<String>>;
+  receiveDate: () => Promise<AsyncIterator<String>>;
+  receiveNo: () => Promise<AsyncIterator<String>>;
+  balance: () => Promise<AsyncIterator<Float>>;
+  amount: () => Promise<AsyncIterator<Float>>;
+  sendBalance: () => Promise<AsyncIterator<Float>>;
+  sendAmount: () => Promise<AsyncIterator<Float>>;
+  receiveBalance: () => Promise<AsyncIterator<Float>>;
+  receiveAmount: () => Promise<AsyncIterator<Float>>;
+  sendPhoto: () => Promise<AsyncIterator<String>>;
+  receivePhoto: () => Promise<AsyncIterator<String>>;
+  proofPhoto: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateStdSubject {
+  count: Int;
+}
+
+export interface AggregateStdSubjectPromise
+  extends Promise<AggregateStdSubject>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateStdSubjectSubscription
+  extends Promise<AsyncIterator<AggregateStdSubject>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AccountingFirmConnection {
+  pageInfo: PageInfo;
+  edges: AccountingFirmEdge[];
+}
+
+export interface AccountingFirmConnectionPromise
+  extends Promise<AccountingFirmConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<AccountingFirmEdge>>() => T;
+  aggregate: <T = AggregateAccountingFirmPromise>() => T;
+}
+
+export interface AccountingFirmConnectionSubscription
+  extends Promise<AsyncIterator<AccountingFirmConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<AccountingFirmEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateAccountingFirmSubscription>() => T;
+}
+
+export interface StdSubject {
+  id: ID_Output;
+  code: String;
+  name: String;
+}
+
+export interface StdSubjectPromise extends Promise<StdSubject>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  code: () => Promise<String>;
+  name: () => Promise<String>;
+}
+
+export interface StdSubjectSubscription
+  extends Promise<AsyncIterator<StdSubject>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  code: () => Promise<AsyncIterator<String>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface StdSubjectNullablePromise
+  extends Promise<StdSubject | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  code: () => Promise<String>;
+  name: () => Promise<String>;
+}
+
+export interface MainMemberSubscriptionPayload {
+  mutation: MutationType;
+  node: MainMember;
+  updatedFields: String[];
+  previousValues: MainMemberPreviousValues;
+}
+
+export interface MainMemberSubscriptionPayloadPromise
+  extends Promise<MainMemberSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = MainMemberPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = MainMemberPreviousValuesPromise>() => T;
+}
+
+export interface MainMemberSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<MainMemberSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = MainMemberSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = MainMemberPreviousValuesSubscription>() => T;
+}
+
+export interface AggregateProject {
+  count: Int;
+}
+
+export interface AggregateProjectPromise
+  extends Promise<AggregateProject>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateProjectSubscription
+  extends Promise<AsyncIterator<AggregateProject>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface MainMemberPreviousValues {
+  id: ID_Output;
+  name: String;
+  post: String;
+}
+
+export interface MainMemberPreviousValuesPromise
+  extends Promise<MainMemberPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  post: () => Promise<String>;
+}
+
+export interface MainMemberPreviousValuesSubscription
+  extends Promise<AsyncIterator<MainMemberPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  post: () => Promise<AsyncIterator<String>>;
+}
+
+export interface NoneCompanyEdge {
+  node: NoneCompany;
+  cursor: String;
+}
+
+export interface NoneCompanyEdgePromise
+  extends Promise<NoneCompanyEdge>,
+    Fragmentable {
+  node: <T = NoneCompanyPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface NoneCompanyEdgeSubscription
+  extends Promise<AsyncIterator<NoneCompanyEdge>>,
+    Fragmentable {
+  node: <T = NoneCompanySubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface File {
+  id: ID_Output;
+  path: String;
+  filename: String;
+  mimetype: String;
+  type: FileType;
+}
+
+export interface FilePromise extends Promise<File>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  path: () => Promise<String>;
+  filename: () => Promise<String>;
+  mimetype: () => Promise<String>;
+  type: () => Promise<FileType>;
+}
+
+export interface FileSubscription
+  extends Promise<AsyncIterator<File>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  path: () => Promise<AsyncIterator<String>>;
+  filename: () => Promise<AsyncIterator<String>>;
+  mimetype: () => Promise<AsyncIterator<String>>;
+  type: () => Promise<AsyncIterator<FileType>>;
+}
+
+export interface FileNullablePromise
+  extends Promise<File | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  path: () => Promise<String>;
+  filename: () => Promise<String>;
+  mimetype: () => Promise<String>;
+  type: () => Promise<FileType>;
+}
+
+export interface AggregateMember {
+  count: Int;
+}
+
+export interface AggregateMemberPromise
+  extends Promise<AggregateMember>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateMemberSubscription
+  extends Promise<AsyncIterator<AggregateMember>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface MemberSubscriptionPayload {
+  mutation: MutationType;
+  node: Member;
+  updatedFields: String[];
+  previousValues: MemberPreviousValues;
+}
+
+export interface MemberSubscriptionPayloadPromise
+  extends Promise<MemberSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = MemberPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = MemberPreviousValuesPromise>() => T;
+}
+
+export interface MemberSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<MemberSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = MemberSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = MemberPreviousValuesSubscription>() => T;
+}
+
+export interface MainMemberEdge {
+  node: MainMember;
+  cursor: String;
+}
+
+export interface MainMemberEdgePromise
+  extends Promise<MainMemberEdge>,
+    Fragmentable {
+  node: <T = MainMemberPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface MainMemberEdgeSubscription
+  extends Promise<AsyncIterator<MainMemberEdge>>,
+    Fragmentable {
+  node: <T = MainMemberSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface MemberPreviousValues {
+  id: ID_Output;
+  role: ProjectRole;
+}
+
+export interface MemberPreviousValuesPromise
+  extends Promise<MemberPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  role: () => Promise<ProjectRole>;
+}
+
+export interface MemberPreviousValuesSubscription
+  extends Promise<AsyncIterator<MemberPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  role: () => Promise<AsyncIterator<ProjectRole>>;
+}
+
+export interface LetterOfProofConnection {
+  pageInfo: PageInfo;
+  edges: LetterOfProofEdge[];
+}
+
+export interface LetterOfProofConnectionPromise
+  extends Promise<LetterOfProofConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<LetterOfProofEdge>>() => T;
+  aggregate: <T = AggregateLetterOfProofPromise>() => T;
+}
+
+export interface LetterOfProofConnectionSubscription
+  extends Promise<AsyncIterator<LetterOfProofConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<LetterOfProofEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateLetterOfProofSubscription>() => T;
+}
+
+export interface DataRecord {
+  id: ID_Output;
+  startTime: DateTimeOutput;
+  endTime: DateTimeOutput;
+  uploadTime: DateTimeOutput;
+}
+
+export interface DataRecordPromise extends Promise<DataRecord>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  accountingFirm: <T = AccountingFirmPromise>() => T;
+  company: <T = CompanyPromise>() => T;
+  startTime: () => Promise<DateTimeOutput>;
+  endTime: () => Promise<DateTimeOutput>;
+  uploadTime: () => Promise<DateTimeOutput>;
+  files: <T = FragmentableArray<File>>(args?: {
+    where?: FileWhereInput;
+    orderBy?: FileOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  users: <T = FragmentableArray<User>>(args?: {
+    where?: UserWhereInput;
+    orderBy?: UserOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface DataRecordSubscription
+  extends Promise<AsyncIterator<DataRecord>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  accountingFirm: <T = AccountingFirmSubscription>() => T;
+  company: <T = CompanySubscription>() => T;
+  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  uploadTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  files: <T = Promise<AsyncIterator<FileSubscription>>>(args?: {
+    where?: FileWhereInput;
+    orderBy?: FileOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  users: <T = Promise<AsyncIterator<UserSubscription>>>(args?: {
+    where?: UserWhereInput;
+    orderBy?: UserOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface DataRecordNullablePromise
+  extends Promise<DataRecord | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  accountingFirm: <T = AccountingFirmPromise>() => T;
+  company: <T = CompanyPromise>() => T;
+  startTime: () => Promise<DateTimeOutput>;
+  endTime: () => Promise<DateTimeOutput>;
+  uploadTime: () => Promise<DateTimeOutput>;
+  files: <T = FragmentableArray<File>>(args?: {
+    where?: FileWhereInput;
+    orderBy?: FileOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  users: <T = FragmentableArray<User>>(args?: {
+    where?: UserWhereInput;
+    orderBy?: UserOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface HolderEdge {
+  node: Holder;
+  cursor: String;
+}
+
+export interface HolderEdgePromise extends Promise<HolderEdge>, Fragmentable {
+  node: <T = HolderPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface HolderEdgeSubscription
+  extends Promise<AsyncIterator<HolderEdge>>,
+    Fragmentable {
+  node: <T = HolderSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface NoneCompanySubscriptionPayload {
+  mutation: MutationType;
+  node: NoneCompany;
+  updatedFields: String[];
+  previousValues: NoneCompanyPreviousValues;
+}
+
+export interface NoneCompanySubscriptionPayloadPromise
+  extends Promise<NoneCompanySubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = NoneCompanyPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = NoneCompanyPreviousValuesPromise>() => T;
+}
+
+export interface NoneCompanySubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<NoneCompanySubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = NoneCompanySubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = NoneCompanyPreviousValuesSubscription>() => T;
+}
+
+export interface FileConnection {
+  pageInfo: PageInfo;
+  edges: FileEdge[];
+}
+
+export interface FileConnectionPromise
+  extends Promise<FileConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<FileEdge>>() => T;
+  aggregate: <T = AggregateFilePromise>() => T;
+}
+
+export interface FileConnectionSubscription
+  extends Promise<AsyncIterator<FileConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<FileEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateFileSubscription>() => T;
+}
+
+export interface NoneCompanyPreviousValues {
+  id: ID_Output;
+  name: String;
+}
+
+export interface NoneCompanyPreviousValuesPromise
+  extends Promise<NoneCompanyPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface NoneCompanyPreviousValuesSubscription
+  extends Promise<AsyncIterator<NoneCompanyPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface FSSubject {
+  id: ID_Output;
+  name: String;
+  show: String;
+  subject: String;
+  direction: String;
+}
+
+export interface FSSubjectPromise extends Promise<FSSubject>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  show: () => Promise<String>;
+  subject: () => Promise<String>;
+  direction: () => Promise<String>;
+}
+
+export interface FSSubjectSubscription
+  extends Promise<AsyncIterator<FSSubject>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  show: () => Promise<AsyncIterator<String>>;
+  subject: () => Promise<AsyncIterator<String>>;
+  direction: () => Promise<AsyncIterator<String>>;
+}
+
+export interface FSSubjectNullablePromise
+  extends Promise<FSSubject | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  show: () => Promise<String>;
+  subject: () => Promise<String>;
+  direction: () => Promise<String>;
+}
+
+export interface Member {
+  id: ID_Output;
+  role: ProjectRole;
+}
+
+export interface MemberPromise extends Promise<Member>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  project: <T = ProjectPromise>() => T;
+  user: <T = UserPromise>() => T;
+  role: () => Promise<ProjectRole>;
+}
+
+export interface MemberSubscription
+  extends Promise<AsyncIterator<Member>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  project: <T = ProjectSubscription>() => T;
+  user: <T = UserSubscription>() => T;
+  role: () => Promise<AsyncIterator<ProjectRole>>;
+}
+
+export interface MemberNullablePromise
+  extends Promise<Member | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  project: <T = ProjectPromise>() => T;
+  user: <T = UserPromise>() => T;
+  role: () => Promise<ProjectRole>;
 }
 
 export interface AccountingFirm {
@@ -5134,157 +7373,29 @@ export interface AccountingFirmNullablePromise
   }) => T;
 }
 
-export interface AggregateCompany {
-  count: Int;
-}
-
-export interface AggregateCompanyPromise
-  extends Promise<AggregateCompany>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateCompanySubscription
-  extends Promise<AsyncIterator<AggregateCompany>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface AggregateSubjectContrast {
-  count: Int;
-}
-
-export interface AggregateSubjectContrastPromise
-  extends Promise<AggregateSubjectContrast>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateSubjectContrastSubscription
-  extends Promise<AsyncIterator<AggregateSubjectContrast>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface TbSubjectSubscriptionPayload {
+export interface ProjectSubscriptionPayload {
   mutation: MutationType;
-  node: TbSubject;
+  node: Project;
   updatedFields: String[];
-  previousValues: TbSubjectPreviousValues;
+  previousValues: ProjectPreviousValues;
 }
 
-export interface TbSubjectSubscriptionPayloadPromise
-  extends Promise<TbSubjectSubscriptionPayload>,
+export interface ProjectSubscriptionPayloadPromise
+  extends Promise<ProjectSubscriptionPayload>,
     Fragmentable {
   mutation: () => Promise<MutationType>;
-  node: <T = TbSubjectPromise>() => T;
+  node: <T = ProjectPromise>() => T;
   updatedFields: () => Promise<String[]>;
-  previousValues: <T = TbSubjectPreviousValuesPromise>() => T;
+  previousValues: <T = ProjectPreviousValuesPromise>() => T;
 }
 
-export interface TbSubjectSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<TbSubjectSubscriptionPayload>>,
+export interface ProjectSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<ProjectSubscriptionPayload>>,
     Fragmentable {
   mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = TbSubjectSubscription>() => T;
+  node: <T = ProjectSubscription>() => T;
   updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = TbSubjectPreviousValuesSubscription>() => T;
-}
-
-export interface SubjectContrastConnection {
-  pageInfo: PageInfo;
-  edges: SubjectContrastEdge[];
-}
-
-export interface SubjectContrastConnectionPromise
-  extends Promise<SubjectContrastConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<SubjectContrastEdge>>() => T;
-  aggregate: <T = AggregateSubjectContrastPromise>() => T;
-}
-
-export interface SubjectContrastConnectionSubscription
-  extends Promise<AsyncIterator<SubjectContrastConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<SubjectContrastEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateSubjectContrastSubscription>() => T;
-}
-
-export interface AccountingFirmSubscriptionPayload {
-  mutation: MutationType;
-  node: AccountingFirm;
-  updatedFields: String[];
-  previousValues: AccountingFirmPreviousValues;
-}
-
-export interface AccountingFirmSubscriptionPayloadPromise
-  extends Promise<AccountingFirmSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = AccountingFirmPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = AccountingFirmPreviousValuesPromise>() => T;
-}
-
-export interface AccountingFirmSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<AccountingFirmSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = AccountingFirmSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = AccountingFirmPreviousValuesSubscription>() => T;
-}
-
-export interface AggregateStdSubject {
-  count: Int;
-}
-
-export interface AggregateStdSubjectPromise
-  extends Promise<AggregateStdSubject>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateStdSubjectSubscription
-  extends Promise<AsyncIterator<AggregateStdSubject>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface AccountingFirmPreviousValues {
-  id: ID_Output;
-  name: String;
-  code: String;
-  address: String;
-  phone: String;
-  email: String;
-  contact: String;
-}
-
-export interface AccountingFirmPreviousValuesPromise
-  extends Promise<AccountingFirmPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  code: () => Promise<String>;
-  address: () => Promise<String>;
-  phone: () => Promise<String>;
-  email: () => Promise<String>;
-  contact: () => Promise<String>;
-}
-
-export interface AccountingFirmPreviousValuesSubscription
-  extends Promise<AsyncIterator<AccountingFirmPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  code: () => Promise<AsyncIterator<String>>;
-  address: () => Promise<AsyncIterator<String>>;
-  phone: () => Promise<AsyncIterator<String>>;
-  email: () => Promise<AsyncIterator<String>>;
-  contact: () => Promise<AsyncIterator<String>>;
+  previousValues: <T = ProjectPreviousValuesSubscription>() => T;
 }
 
 export interface StdSubjectConnection {
@@ -5308,182 +7419,26 @@ export interface StdSubjectConnectionSubscription
   aggregate: <T = AggregateStdSubjectSubscription>() => T;
 }
 
-export interface CompanyEdge {
-  node: Company;
-  cursor: String;
-}
-
-export interface CompanyEdgePromise extends Promise<CompanyEdge>, Fragmentable {
-  node: <T = CompanyPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface CompanyEdgeSubscription
-  extends Promise<AsyncIterator<CompanyEdge>>,
-    Fragmentable {
-  node: <T = CompanySubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface StdSubject {
+export interface ProjectPreviousValues {
   id: ID_Output;
-  code: String;
-  name: String;
+  startTime: DateTimeOutput;
+  endTime: DateTimeOutput;
 }
 
-export interface StdSubjectPromise extends Promise<StdSubject>, Fragmentable {
+export interface ProjectPreviousValuesPromise
+  extends Promise<ProjectPreviousValues>,
+    Fragmentable {
   id: () => Promise<ID_Output>;
-  code: () => Promise<String>;
-  name: () => Promise<String>;
+  startTime: () => Promise<DateTimeOutput>;
+  endTime: () => Promise<DateTimeOutput>;
 }
 
-export interface StdSubjectSubscription
-  extends Promise<AsyncIterator<StdSubject>>,
+export interface ProjectPreviousValuesSubscription
+  extends Promise<AsyncIterator<ProjectPreviousValues>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
-  code: () => Promise<AsyncIterator<String>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface StdSubjectNullablePromise
-  extends Promise<StdSubject | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  code: () => Promise<String>;
-  name: () => Promise<String>;
-}
-
-export interface CompanySubscriptionPayload {
-  mutation: MutationType;
-  node: Company;
-  updatedFields: String[];
-  previousValues: CompanyPreviousValues;
-}
-
-export interface CompanySubscriptionPayloadPromise
-  extends Promise<CompanySubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = CompanyPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = CompanyPreviousValuesPromise>() => T;
-}
-
-export interface CompanySubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<CompanySubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = CompanySubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = CompanyPreviousValuesSubscription>() => T;
-}
-
-export interface RelatedPartyEdge {
-  node: RelatedParty;
-  cursor: String;
-}
-
-export interface RelatedPartyEdgePromise
-  extends Promise<RelatedPartyEdge>,
-    Fragmentable {
-  node: <T = RelatedPartyPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface RelatedPartyEdgeSubscription
-  extends Promise<AsyncIterator<RelatedPartyEdge>>,
-    Fragmentable {
-  node: <T = RelatedPartySubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface CompanyPreviousValues {
-  id: ID_Output;
-  type: CompanyType;
-  nature: CompanyNature;
-  name: String;
-  code?: String;
-  address?: String;
-  legalRepresentative?: String;
-  establishDate?: DateTimeOutput;
-  registeredCapital?: String;
-  paidinCapital?: String;
-  businessScope?: String;
-  lastControllCompany?: String;
-  lastControllPerson?: String;
-}
-
-export interface CompanyPreviousValuesPromise
-  extends Promise<CompanyPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  type: () => Promise<CompanyType>;
-  nature: () => Promise<CompanyNature>;
-  name: () => Promise<String>;
-  code: () => Promise<String>;
-  address: () => Promise<String>;
-  legalRepresentative: () => Promise<String>;
-  establishDate: () => Promise<DateTimeOutput>;
-  registeredCapital: () => Promise<String>;
-  paidinCapital: () => Promise<String>;
-  businessScope: () => Promise<String>;
-  lastControllCompany: () => Promise<String>;
-  lastControllPerson: () => Promise<String>;
-}
-
-export interface CompanyPreviousValuesSubscription
-  extends Promise<AsyncIterator<CompanyPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  type: () => Promise<AsyncIterator<CompanyType>>;
-  nature: () => Promise<AsyncIterator<CompanyNature>>;
-  name: () => Promise<AsyncIterator<String>>;
-  code: () => Promise<AsyncIterator<String>>;
-  address: () => Promise<AsyncIterator<String>>;
-  legalRepresentative: () => Promise<AsyncIterator<String>>;
-  establishDate: () => Promise<AsyncIterator<DateTimeOutput>>;
-  registeredCapital: () => Promise<AsyncIterator<String>>;
-  paidinCapital: () => Promise<AsyncIterator<String>>;
-  businessScope: () => Promise<AsyncIterator<String>>;
-  lastControllCompany: () => Promise<AsyncIterator<String>>;
-  lastControllPerson: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateProject {
-  count: Int;
-}
-
-export interface AggregateProjectPromise
-  extends Promise<AggregateProject>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateProjectSubscription
-  extends Promise<AsyncIterator<AggregateProject>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface CompanyConnection {
-  pageInfo: PageInfo;
-  edges: CompanyEdge[];
-}
-
-export interface CompanyConnectionPromise
-  extends Promise<CompanyConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<CompanyEdge>>() => T;
-  aggregate: <T = AggregateCompanyPromise>() => T;
-}
-
-export interface CompanyConnectionSubscription
-  extends Promise<AsyncIterator<CompanyConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<CompanyEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateCompanySubscription>() => T;
+  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
+  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
 }
 
 export interface ProjectConnection {
@@ -5507,191 +7462,35 @@ export interface ProjectConnectionSubscription
   aggregate: <T = AggregateProjectSubscription>() => T;
 }
 
-export interface CompanyStdNameSubscriptionPayload {
-  mutation: MutationType;
-  node: CompanyStdName;
-  updatedFields: String[];
-  previousValues: CompanyStdNamePreviousValues;
-}
-
-export interface CompanyStdNameSubscriptionPayloadPromise
-  extends Promise<CompanyStdNameSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = CompanyStdNamePromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = CompanyStdNamePreviousValuesPromise>() => T;
-}
-
-export interface CompanyStdNameSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<CompanyStdNameSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = CompanyStdNameSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = CompanyStdNamePreviousValuesSubscription>() => T;
-}
-
-export interface NoneCompanyEdge {
-  node: NoneCompany;
-  cursor: String;
-}
-
-export interface NoneCompanyEdgePromise
-  extends Promise<NoneCompanyEdge>,
-    Fragmentable {
-  node: <T = NoneCompanyPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface NoneCompanyEdgeSubscription
-  extends Promise<AsyncIterator<NoneCompanyEdge>>,
-    Fragmentable {
-  node: <T = NoneCompanySubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface CompanyStdNamePreviousValues {
+export interface Holder {
   id: ID_Output;
-  dbName: String;
-  originName: String;
-  stdName: String;
+  name: String;
+  ratio: Float;
 }
 
-export interface CompanyStdNamePreviousValuesPromise
-  extends Promise<CompanyStdNamePreviousValues>,
-    Fragmentable {
+export interface HolderPromise extends Promise<Holder>, Fragmentable {
   id: () => Promise<ID_Output>;
-  dbName: () => Promise<String>;
-  originName: () => Promise<String>;
-  stdName: () => Promise<String>;
-}
-
-export interface CompanyStdNamePreviousValuesSubscription
-  extends Promise<AsyncIterator<CompanyStdNamePreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  dbName: () => Promise<AsyncIterator<String>>;
-  originName: () => Promise<AsyncIterator<String>>;
-  stdName: () => Promise<AsyncIterator<String>>;
-}
-
-export interface Project {
-  id: ID_Output;
-  startTime: DateTimeOutput;
-  endTime: DateTimeOutput;
-}
-
-export interface ProjectPromise extends Promise<Project>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  accountingFirm: <T = AccountingFirmPromise>() => T;
+  name: () => Promise<String>;
+  ratio: () => Promise<Float>;
   company: <T = CompanyPromise>() => T;
-  startTime: () => Promise<DateTimeOutput>;
-  endTime: () => Promise<DateTimeOutput>;
-  members: <T = FragmentableArray<Member>>(args?: {
-    where?: MemberWhereInput;
-    orderBy?: MemberOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
 }
 
-export interface ProjectSubscription
-  extends Promise<AsyncIterator<Project>>,
+export interface HolderSubscription
+  extends Promise<AsyncIterator<Holder>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
-  accountingFirm: <T = AccountingFirmSubscription>() => T;
+  name: () => Promise<AsyncIterator<String>>;
+  ratio: () => Promise<AsyncIterator<Float>>;
   company: <T = CompanySubscription>() => T;
-  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  members: <T = Promise<AsyncIterator<MemberSubscription>>>(args?: {
-    where?: MemberWhereInput;
-    orderBy?: MemberOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
 }
 
-export interface ProjectNullablePromise
-  extends Promise<Project | null>,
+export interface HolderNullablePromise
+  extends Promise<Holder | null>,
     Fragmentable {
   id: () => Promise<ID_Output>;
-  accountingFirm: <T = AccountingFirmPromise>() => T;
+  name: () => Promise<String>;
+  ratio: () => Promise<Float>;
   company: <T = CompanyPromise>() => T;
-  startTime: () => Promise<DateTimeOutput>;
-  endTime: () => Promise<DateTimeOutput>;
-  members: <T = FragmentableArray<Member>>(args?: {
-    where?: MemberWhereInput;
-    orderBy?: MemberOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface AggregateAccountingFirm {
-  count: Int;
-}
-
-export interface AggregateAccountingFirmPromise
-  extends Promise<AggregateAccountingFirm>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateAccountingFirmSubscription
-  extends Promise<AsyncIterator<AggregateAccountingFirm>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface AggregateMember {
-  count: Int;
-}
-
-export interface AggregateMemberPromise
-  extends Promise<AggregateMember>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateMemberSubscription
-  extends Promise<AsyncIterator<AggregateMember>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface DataRecordSubscriptionPayload {
-  mutation: MutationType;
-  node: DataRecord;
-  updatedFields: String[];
-  previousValues: DataRecordPreviousValues;
-}
-
-export interface DataRecordSubscriptionPayloadPromise
-  extends Promise<DataRecordSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = DataRecordPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = DataRecordPreviousValuesPromise>() => T;
-}
-
-export interface DataRecordSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<DataRecordSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = DataRecordSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = DataRecordPreviousValuesSubscription>() => T;
 }
 
 export interface MemberConnection {
@@ -5715,973 +7514,247 @@ export interface MemberConnectionSubscription
   aggregate: <T = AggregateMemberSubscription>() => T;
 }
 
-export interface DataRecordPreviousValues {
-  id: ID_Output;
-  startTime: DateTimeOutput;
-  endTime: DateTimeOutput;
-  uploadTime: DateTimeOutput;
-}
-
-export interface DataRecordPreviousValuesPromise
-  extends Promise<DataRecordPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  startTime: () => Promise<DateTimeOutput>;
-  endTime: () => Promise<DateTimeOutput>;
-  uploadTime: () => Promise<DateTimeOutput>;
-}
-
-export interface DataRecordPreviousValuesSubscription
-  extends Promise<AsyncIterator<DataRecordPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  uploadTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-}
-
-export interface MainMemberEdge {
-  node: MainMember;
-  cursor: String;
-}
-
-export interface MainMemberEdgePromise
-  extends Promise<MainMemberEdge>,
-    Fragmentable {
-  node: <T = MainMemberPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface MainMemberEdgeSubscription
-  extends Promise<AsyncIterator<MainMemberEdge>>,
-    Fragmentable {
-  node: <T = MainMemberSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AccountingFirmEdge {
-  node: AccountingFirm;
-  cursor: String;
-}
-
-export interface AccountingFirmEdgePromise
-  extends Promise<AccountingFirmEdge>,
-    Fragmentable {
-  node: <T = AccountingFirmPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface AccountingFirmEdgeSubscription
-  extends Promise<AsyncIterator<AccountingFirmEdge>>,
-    Fragmentable {
-  node: <T = AccountingFirmSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateHolder {
-  count: Int;
-}
-
-export interface AggregateHolderPromise
-  extends Promise<AggregateHolder>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateHolderSubscription
-  extends Promise<AsyncIterator<AggregateHolder>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface FSSubjectSubscriptionPayload {
+export interface RelatedPartySubscriptionPayload {
   mutation: MutationType;
-  node: FSSubject;
+  node: RelatedParty;
   updatedFields: String[];
-  previousValues: FSSubjectPreviousValues;
+  previousValues: RelatedPartyPreviousValues;
 }
 
-export interface FSSubjectSubscriptionPayloadPromise
-  extends Promise<FSSubjectSubscriptionPayload>,
+export interface RelatedPartySubscriptionPayloadPromise
+  extends Promise<RelatedPartySubscriptionPayload>,
     Fragmentable {
   mutation: () => Promise<MutationType>;
-  node: <T = FSSubjectPromise>() => T;
+  node: <T = RelatedPartyPromise>() => T;
   updatedFields: () => Promise<String[]>;
-  previousValues: <T = FSSubjectPreviousValuesPromise>() => T;
+  previousValues: <T = RelatedPartyPreviousValuesPromise>() => T;
 }
 
-export interface FSSubjectSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<FSSubjectSubscriptionPayload>>,
+export interface RelatedPartySubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<RelatedPartySubscriptionPayload>>,
     Fragmentable {
   mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = FSSubjectSubscription>() => T;
+  node: <T = RelatedPartySubscription>() => T;
   updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = FSSubjectPreviousValuesSubscription>() => T;
+  previousValues: <T = RelatedPartyPreviousValuesSubscription>() => T;
 }
 
-export interface HolderConnection {
-  pageInfo: PageInfo;
-  edges: HolderEdge[];
-}
-
-export interface HolderConnectionPromise
-  extends Promise<HolderConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<HolderEdge>>() => T;
-  aggregate: <T = AggregateHolderPromise>() => T;
-}
-
-export interface HolderConnectionSubscription
-  extends Promise<AsyncIterator<HolderConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<HolderEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateHolderSubscription>() => T;
-}
-
-export interface FSSubjectPreviousValues {
+export interface LetterOfProof {
   id: ID_Output;
+  subjectName: String;
   name: String;
-  show: String;
-  subject: String;
-  direction: String;
+  adrress?: String;
+  contact?: String;
+  telephone?: String;
+  zipCode?: String;
+  sampleReason?: String;
+  currencyType?: String;
+  sendDate?: String;
+  sendNo?: String;
+  receiveDate?: String;
+  receiveNo?: String;
+  balance?: Float;
+  amount?: Float;
+  sendBalance?: Float;
+  sendAmount?: Float;
+  receiveBalance?: Float;
+  receiveAmount?: Float;
+  sendPhoto?: String;
+  receivePhoto?: String;
+  proofPhoto?: String;
 }
 
-export interface FSSubjectPreviousValuesPromise
-  extends Promise<FSSubjectPreviousValues>,
+export interface LetterOfProofPromise
+  extends Promise<LetterOfProof>,
     Fragmentable {
   id: () => Promise<ID_Output>;
+  subjectName: () => Promise<String>;
   name: () => Promise<String>;
-  show: () => Promise<String>;
-  subject: () => Promise<String>;
-  direction: () => Promise<String>;
-}
-
-export interface FSSubjectPreviousValuesSubscription
-  extends Promise<AsyncIterator<FSSubjectPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  show: () => Promise<AsyncIterator<String>>;
-  subject: () => Promise<AsyncIterator<String>>;
-  direction: () => Promise<AsyncIterator<String>>;
-}
-
-export interface FileEdge {
-  node: File;
-  cursor: String;
-}
-
-export interface FileEdgePromise extends Promise<FileEdge>, Fragmentable {
-  node: <T = FilePromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface FileEdgeSubscription
-  extends Promise<AsyncIterator<FileEdge>>,
-    Fragmentable {
-  node: <T = FileSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface PageInfo {
-  hasNextPage: Boolean;
-  hasPreviousPage: Boolean;
-  startCursor?: String;
-  endCursor?: String;
-}
-
-export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
-  hasNextPage: () => Promise<Boolean>;
-  hasPreviousPage: () => Promise<Boolean>;
-  startCursor: () => Promise<String>;
-  endCursor: () => Promise<String>;
-}
-
-export interface PageInfoSubscription
-  extends Promise<AsyncIterator<PageInfo>>,
-    Fragmentable {
-  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
-  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
-  startCursor: () => Promise<AsyncIterator<String>>;
-  endCursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateFSSubject {
-  count: Int;
-}
-
-export interface AggregateFSSubjectPromise
-  extends Promise<AggregateFSSubject>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateFSSubjectSubscription
-  extends Promise<AsyncIterator<AggregateFSSubject>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface FileSubscriptionPayload {
-  mutation: MutationType;
-  node: File;
-  updatedFields: String[];
-  previousValues: FilePreviousValues;
-}
-
-export interface FileSubscriptionPayloadPromise
-  extends Promise<FileSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = FilePromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = FilePreviousValuesPromise>() => T;
-}
-
-export interface FileSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<FileSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = FileSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = FilePreviousValuesSubscription>() => T;
-}
-
-export interface FSSubjectConnection {
-  pageInfo: PageInfo;
-  edges: FSSubjectEdge[];
-}
-
-export interface FSSubjectConnectionPromise
-  extends Promise<FSSubjectConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<FSSubjectEdge>>() => T;
-  aggregate: <T = AggregateFSSubjectPromise>() => T;
-}
-
-export interface FSSubjectConnectionSubscription
-  extends Promise<AsyncIterator<FSSubjectConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<FSSubjectEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateFSSubjectSubscription>() => T;
-}
-
-export interface FilePreviousValues {
-  id: ID_Output;
-  path: String;
-  filename: String;
-  mimetype: String;
-  type: FileType;
-}
-
-export interface FilePreviousValuesPromise
-  extends Promise<FilePreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  path: () => Promise<String>;
-  filename: () => Promise<String>;
-  mimetype: () => Promise<String>;
-  type: () => Promise<FileType>;
-}
-
-export interface FilePreviousValuesSubscription
-  extends Promise<AsyncIterator<FilePreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  path: () => Promise<AsyncIterator<String>>;
-  filename: () => Promise<AsyncIterator<String>>;
-  mimetype: () => Promise<AsyncIterator<String>>;
-  type: () => Promise<AsyncIterator<FileType>>;
-}
-
-export interface FSSubject {
-  id: ID_Output;
-  name: String;
-  show: String;
-  subject: String;
-  direction: String;
-}
-
-export interface FSSubjectPromise extends Promise<FSSubject>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  show: () => Promise<String>;
-  subject: () => Promise<String>;
-  direction: () => Promise<String>;
-}
-
-export interface FSSubjectSubscription
-  extends Promise<AsyncIterator<FSSubject>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  show: () => Promise<AsyncIterator<String>>;
-  subject: () => Promise<AsyncIterator<String>>;
-  direction: () => Promise<AsyncIterator<String>>;
-}
-
-export interface FSSubjectNullablePromise
-  extends Promise<FSSubject | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  show: () => Promise<String>;
-  subject: () => Promise<String>;
-  direction: () => Promise<String>;
-}
-
-export interface AccountingFirmConnection {
-  pageInfo: PageInfo;
-  edges: AccountingFirmEdge[];
-}
-
-export interface AccountingFirmConnectionPromise
-  extends Promise<AccountingFirmConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<AccountingFirmEdge>>() => T;
-  aggregate: <T = AggregateAccountingFirmPromise>() => T;
-}
-
-export interface AccountingFirmConnectionSubscription
-  extends Promise<AsyncIterator<AccountingFirmConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<AccountingFirmEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateAccountingFirmSubscription>() => T;
-}
-
-export interface DataRecordEdge {
-  node: DataRecord;
-  cursor: String;
-}
-
-export interface DataRecordEdgePromise
-  extends Promise<DataRecordEdge>,
-    Fragmentable {
-  node: <T = DataRecordPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface DataRecordEdgeSubscription
-  extends Promise<AsyncIterator<DataRecordEdge>>,
-    Fragmentable {
-  node: <T = DataRecordSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface HolderSubscriptionPayload {
-  mutation: MutationType;
-  node: Holder;
-  updatedFields: String[];
-  previousValues: HolderPreviousValues;
-}
-
-export interface HolderSubscriptionPayloadPromise
-  extends Promise<HolderSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = HolderPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = HolderPreviousValuesPromise>() => T;
-}
-
-export interface HolderSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<HolderSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = HolderSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = HolderPreviousValuesSubscription>() => T;
-}
-
-export interface AggregateTbSubject {
-  count: Int;
-}
-
-export interface AggregateTbSubjectPromise
-  extends Promise<AggregateTbSubject>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateTbSubjectSubscription
-  extends Promise<AsyncIterator<AggregateTbSubject>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface HolderPreviousValues {
-  id: ID_Output;
-  name: String;
-  ratio: Float;
-}
-
-export interface HolderPreviousValuesPromise
-  extends Promise<HolderPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  ratio: () => Promise<Float>;
-}
-
-export interface HolderPreviousValuesSubscription
-  extends Promise<AsyncIterator<HolderPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  ratio: () => Promise<AsyncIterator<Float>>;
-}
-
-export interface TbSubject {
-  id: ID_Output;
-  show: String;
-  subject: String;
-  direction: String;
-  order: Int;
-}
-
-export interface TbSubjectPromise extends Promise<TbSubject>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  show: () => Promise<String>;
-  subject: () => Promise<String>;
-  direction: () => Promise<String>;
-  order: () => Promise<Int>;
-}
-
-export interface TbSubjectSubscription
-  extends Promise<AsyncIterator<TbSubject>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  show: () => Promise<AsyncIterator<String>>;
-  subject: () => Promise<AsyncIterator<String>>;
-  direction: () => Promise<AsyncIterator<String>>;
-  order: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface TbSubjectNullablePromise
-  extends Promise<TbSubject | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  show: () => Promise<String>;
-  subject: () => Promise<String>;
-  direction: () => Promise<String>;
-  order: () => Promise<Int>;
-}
-
-export interface File {
-  id: ID_Output;
-  path: String;
-  filename: String;
-  mimetype: String;
-  type: FileType;
-}
-
-export interface FilePromise extends Promise<File>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  path: () => Promise<String>;
-  filename: () => Promise<String>;
-  mimetype: () => Promise<String>;
-  type: () => Promise<FileType>;
-}
-
-export interface FileSubscription
-  extends Promise<AsyncIterator<File>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  path: () => Promise<AsyncIterator<String>>;
-  filename: () => Promise<AsyncIterator<String>>;
-  mimetype: () => Promise<AsyncIterator<String>>;
-  type: () => Promise<AsyncIterator<FileType>>;
-}
-
-export interface FileNullablePromise
-  extends Promise<File | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  path: () => Promise<String>;
-  filename: () => Promise<String>;
-  mimetype: () => Promise<String>;
-  type: () => Promise<FileType>;
-}
-
-export interface SubjectContrast {
-  id: ID_Output;
-  origin: String;
-  tb: String;
-  fs: String;
-  coefficient: Int;
-  direction: String;
-  firstClass: String;
-  secondClass: String;
-}
-
-export interface SubjectContrastPromise
-  extends Promise<SubjectContrast>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  origin: () => Promise<String>;
-  tb: () => Promise<String>;
-  fs: () => Promise<String>;
-  coefficient: () => Promise<Int>;
-  direction: () => Promise<String>;
-  firstClass: () => Promise<String>;
-  secondClass: () => Promise<String>;
-}
-
-export interface SubjectContrastSubscription
-  extends Promise<AsyncIterator<SubjectContrast>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  origin: () => Promise<AsyncIterator<String>>;
-  tb: () => Promise<AsyncIterator<String>>;
-  fs: () => Promise<AsyncIterator<String>>;
-  coefficient: () => Promise<AsyncIterator<Int>>;
-  direction: () => Promise<AsyncIterator<String>>;
-  firstClass: () => Promise<AsyncIterator<String>>;
-  secondClass: () => Promise<AsyncIterator<String>>;
-}
-
-export interface SubjectContrastNullablePromise
-  extends Promise<SubjectContrast | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  origin: () => Promise<String>;
-  tb: () => Promise<String>;
-  fs: () => Promise<String>;
-  coefficient: () => Promise<Int>;
-  direction: () => Promise<String>;
-  firstClass: () => Promise<String>;
-  secondClass: () => Promise<String>;
-}
-
-export interface MainMemberSubscriptionPayload {
-  mutation: MutationType;
-  node: MainMember;
-  updatedFields: String[];
-  previousValues: MainMemberPreviousValues;
-}
-
-export interface MainMemberSubscriptionPayloadPromise
-  extends Promise<MainMemberSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = MainMemberPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = MainMemberPreviousValuesPromise>() => T;
-}
-
-export interface MainMemberSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<MainMemberSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = MainMemberSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = MainMemberPreviousValuesSubscription>() => T;
-}
-
-export interface UserSubscriptionPayload {
-  mutation: MutationType;
-  node: User;
-  updatedFields: String[];
-  previousValues: UserPreviousValues;
-}
-
-export interface UserSubscriptionPayloadPromise
-  extends Promise<UserSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = UserPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = UserPreviousValuesPromise>() => T;
-}
-
-export interface UserSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<UserSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = UserSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = UserPreviousValuesSubscription>() => T;
-}
-
-export interface MainMemberPreviousValues {
-  id: ID_Output;
-  name: String;
-  post: String;
-}
-
-export interface MainMemberPreviousValuesPromise
-  extends Promise<MainMemberPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  post: () => Promise<String>;
-}
-
-export interface MainMemberPreviousValuesSubscription
-  extends Promise<AsyncIterator<MainMemberPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  post: () => Promise<AsyncIterator<String>>;
-}
-
-export interface RelatedPartyConnection {
-  pageInfo: PageInfo;
-  edges: RelatedPartyEdge[];
-}
-
-export interface RelatedPartyConnectionPromise
-  extends Promise<RelatedPartyConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<RelatedPartyEdge>>() => T;
-  aggregate: <T = AggregateRelatedPartyPromise>() => T;
-}
-
-export interface RelatedPartyConnectionSubscription
-  extends Promise<AsyncIterator<RelatedPartyConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<RelatedPartyEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateRelatedPartySubscription>() => T;
-}
-
-export interface DataRecord {
-  id: ID_Output;
-  startTime: DateTimeOutput;
-  endTime: DateTimeOutput;
-  uploadTime: DateTimeOutput;
-}
-
-export interface DataRecordPromise extends Promise<DataRecord>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  accountingFirm: <T = AccountingFirmPromise>() => T;
-  company: <T = CompanyPromise>() => T;
-  startTime: () => Promise<DateTimeOutput>;
-  endTime: () => Promise<DateTimeOutput>;
-  uploadTime: () => Promise<DateTimeOutput>;
-  files: <T = FragmentableArray<File>>(args?: {
-    where?: FileWhereInput;
-    orderBy?: FileOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  users: <T = FragmentableArray<User>>(args?: {
-    where?: UserWhereInput;
-    orderBy?: UserOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface DataRecordSubscription
-  extends Promise<AsyncIterator<DataRecord>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  accountingFirm: <T = AccountingFirmSubscription>() => T;
-  company: <T = CompanySubscription>() => T;
-  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  uploadTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  files: <T = Promise<AsyncIterator<FileSubscription>>>(args?: {
-    where?: FileWhereInput;
-    orderBy?: FileOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  users: <T = Promise<AsyncIterator<UserSubscription>>>(args?: {
-    where?: UserWhereInput;
-    orderBy?: UserOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface DataRecordNullablePromise
-  extends Promise<DataRecord | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  accountingFirm: <T = AccountingFirmPromise>() => T;
-  company: <T = CompanyPromise>() => T;
-  startTime: () => Promise<DateTimeOutput>;
-  endTime: () => Promise<DateTimeOutput>;
-  uploadTime: () => Promise<DateTimeOutput>;
-  files: <T = FragmentableArray<File>>(args?: {
-    where?: FileWhereInput;
-    orderBy?: FileOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  users: <T = FragmentableArray<User>>(args?: {
-    where?: UserWhereInput;
-    orderBy?: UserOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface AggregateNoneCompany {
-  count: Int;
-}
-
-export interface AggregateNoneCompanyPromise
-  extends Promise<AggregateNoneCompany>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateNoneCompanySubscription
-  extends Promise<AsyncIterator<AggregateNoneCompany>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface MemberSubscriptionPayload {
-  mutation: MutationType;
-  node: Member;
-  updatedFields: String[];
-  previousValues: MemberPreviousValues;
-}
-
-export interface MemberSubscriptionPayloadPromise
-  extends Promise<MemberSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = MemberPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = MemberPreviousValuesPromise>() => T;
-}
-
-export interface MemberSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<MemberSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = MemberSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = MemberPreviousValuesSubscription>() => T;
-}
-
-export interface NoneCompany {
-  id: ID_Output;
-  name: String;
-}
-
-export interface NoneCompanyPromise extends Promise<NoneCompany>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-}
-
-export interface NoneCompanySubscription
-  extends Promise<AsyncIterator<NoneCompany>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface NoneCompanyNullablePromise
-  extends Promise<NoneCompany | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-}
-
-export interface MemberPreviousValues {
-  id: ID_Output;
-  role: ProjectRole;
-}
-
-export interface MemberPreviousValuesPromise
-  extends Promise<MemberPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  role: () => Promise<ProjectRole>;
-}
-
-export interface MemberPreviousValuesSubscription
-  extends Promise<AsyncIterator<MemberPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  role: () => Promise<AsyncIterator<ProjectRole>>;
-}
-
-export interface AggregateMainMember {
-  count: Int;
-}
-
-export interface AggregateMainMemberPromise
-  extends Promise<AggregateMainMember>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateMainMemberSubscription
-  extends Promise<AsyncIterator<AggregateMainMember>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface Member {
-  id: ID_Output;
-  role: ProjectRole;
-}
-
-export interface MemberPromise extends Promise<Member>, Fragmentable {
-  id: () => Promise<ID_Output>;
+  adrress: () => Promise<String>;
+  contact: () => Promise<String>;
+  telephone: () => Promise<String>;
+  zipCode: () => Promise<String>;
+  sampleReason: () => Promise<String>;
+  currencyType: () => Promise<String>;
+  sendDate: () => Promise<String>;
+  sendNo: () => Promise<String>;
+  receiveDate: () => Promise<String>;
+  receiveNo: () => Promise<String>;
+  balance: () => Promise<Float>;
+  amount: () => Promise<Float>;
+  sendBalance: () => Promise<Float>;
+  sendAmount: () => Promise<Float>;
+  receiveBalance: () => Promise<Float>;
+  receiveAmount: () => Promise<Float>;
+  sendPhoto: () => Promise<String>;
+  receivePhoto: () => Promise<String>;
+  proofPhoto: () => Promise<String>;
   project: <T = ProjectPromise>() => T;
-  user: <T = UserPromise>() => T;
-  role: () => Promise<ProjectRole>;
 }
 
-export interface MemberSubscription
-  extends Promise<AsyncIterator<Member>>,
+export interface LetterOfProofSubscription
+  extends Promise<AsyncIterator<LetterOfProof>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
+  subjectName: () => Promise<AsyncIterator<String>>;
+  name: () => Promise<AsyncIterator<String>>;
+  adrress: () => Promise<AsyncIterator<String>>;
+  contact: () => Promise<AsyncIterator<String>>;
+  telephone: () => Promise<AsyncIterator<String>>;
+  zipCode: () => Promise<AsyncIterator<String>>;
+  sampleReason: () => Promise<AsyncIterator<String>>;
+  currencyType: () => Promise<AsyncIterator<String>>;
+  sendDate: () => Promise<AsyncIterator<String>>;
+  sendNo: () => Promise<AsyncIterator<String>>;
+  receiveDate: () => Promise<AsyncIterator<String>>;
+  receiveNo: () => Promise<AsyncIterator<String>>;
+  balance: () => Promise<AsyncIterator<Float>>;
+  amount: () => Promise<AsyncIterator<Float>>;
+  sendBalance: () => Promise<AsyncIterator<Float>>;
+  sendAmount: () => Promise<AsyncIterator<Float>>;
+  receiveBalance: () => Promise<AsyncIterator<Float>>;
+  receiveAmount: () => Promise<AsyncIterator<Float>>;
+  sendPhoto: () => Promise<AsyncIterator<String>>;
+  receivePhoto: () => Promise<AsyncIterator<String>>;
+  proofPhoto: () => Promise<AsyncIterator<String>>;
   project: <T = ProjectSubscription>() => T;
-  user: <T = UserSubscription>() => T;
-  role: () => Promise<AsyncIterator<ProjectRole>>;
 }
 
-export interface MemberNullablePromise
-  extends Promise<Member | null>,
+export interface LetterOfProofNullablePromise
+  extends Promise<LetterOfProof | null>,
     Fragmentable {
   id: () => Promise<ID_Output>;
+  subjectName: () => Promise<String>;
+  name: () => Promise<String>;
+  adrress: () => Promise<String>;
+  contact: () => Promise<String>;
+  telephone: () => Promise<String>;
+  zipCode: () => Promise<String>;
+  sampleReason: () => Promise<String>;
+  currencyType: () => Promise<String>;
+  sendDate: () => Promise<String>;
+  sendNo: () => Promise<String>;
+  receiveDate: () => Promise<String>;
+  receiveNo: () => Promise<String>;
+  balance: () => Promise<Float>;
+  amount: () => Promise<Float>;
+  sendBalance: () => Promise<Float>;
+  sendAmount: () => Promise<Float>;
+  receiveBalance: () => Promise<Float>;
+  receiveAmount: () => Promise<Float>;
+  sendPhoto: () => Promise<String>;
+  receivePhoto: () => Promise<String>;
+  proofPhoto: () => Promise<String>;
   project: <T = ProjectPromise>() => T;
-  user: <T = UserPromise>() => T;
-  role: () => Promise<ProjectRole>;
 }
 
-export interface HolderEdge {
-  node: Holder;
-  cursor: String;
-}
-
-export interface HolderEdgePromise extends Promise<HolderEdge>, Fragmentable {
-  node: <T = HolderPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface HolderEdgeSubscription
-  extends Promise<AsyncIterator<HolderEdge>>,
-    Fragmentable {
-  node: <T = HolderSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface NoneCompanySubscriptionPayload {
-  mutation: MutationType;
-  node: NoneCompany;
-  updatedFields: String[];
-  previousValues: NoneCompanyPreviousValues;
-}
-
-export interface NoneCompanySubscriptionPayloadPromise
-  extends Promise<NoneCompanySubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = NoneCompanyPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = NoneCompanyPreviousValuesPromise>() => T;
-}
-
-export interface NoneCompanySubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<NoneCompanySubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = NoneCompanySubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = NoneCompanyPreviousValuesSubscription>() => T;
-}
-
-export interface FileConnection {
-  pageInfo: PageInfo;
-  edges: FileEdge[];
-}
-
-export interface FileConnectionPromise
-  extends Promise<FileConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<FileEdge>>() => T;
-  aggregate: <T = AggregateFilePromise>() => T;
-}
-
-export interface FileConnectionSubscription
-  extends Promise<AsyncIterator<FileConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<FileEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateFileSubscription>() => T;
-}
-
-export interface NoneCompanyPreviousValues {
+export interface RelatedPartyPreviousValues {
   id: ID_Output;
+  grade: Int;
+  relationship: String;
+  type: String;
   name: String;
 }
 
-export interface NoneCompanyPreviousValuesPromise
-  extends Promise<NoneCompanyPreviousValues>,
+export interface RelatedPartyPreviousValuesPromise
+  extends Promise<RelatedPartyPreviousValues>,
     Fragmentable {
   id: () => Promise<ID_Output>;
+  grade: () => Promise<Int>;
+  relationship: () => Promise<String>;
+  type: () => Promise<String>;
   name: () => Promise<String>;
 }
 
-export interface NoneCompanyPreviousValuesSubscription
-  extends Promise<AsyncIterator<NoneCompanyPreviousValues>>,
+export interface RelatedPartyPreviousValuesSubscription
+  extends Promise<AsyncIterator<RelatedPartyPreviousValues>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
+  grade: () => Promise<AsyncIterator<Int>>;
+  relationship: () => Promise<AsyncIterator<String>>;
+  type: () => Promise<AsyncIterator<String>>;
   name: () => Promise<AsyncIterator<String>>;
 }
 
-export interface TbSubjectPreviousValues {
-  id: ID_Output;
-  show: String;
-  subject: String;
-  direction: String;
-  order: Int;
+export interface FSSubjectEdge {
+  node: FSSubject;
+  cursor: String;
 }
 
-export interface TbSubjectPreviousValuesPromise
-  extends Promise<TbSubjectPreviousValues>,
+export interface FSSubjectEdgePromise
+  extends Promise<FSSubjectEdge>,
+    Fragmentable {
+  node: <T = FSSubjectPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface FSSubjectEdgeSubscription
+  extends Promise<AsyncIterator<FSSubjectEdge>>,
+    Fragmentable {
+  node: <T = FSSubjectSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface RelatedParty {
+  id: ID_Output;
+  grade: Int;
+  relationship: String;
+  type: String;
+  name: String;
+}
+
+export interface RelatedPartyPromise
+  extends Promise<RelatedParty>,
     Fragmentable {
   id: () => Promise<ID_Output>;
-  show: () => Promise<String>;
-  subject: () => Promise<String>;
-  direction: () => Promise<String>;
-  order: () => Promise<Int>;
+  grade: () => Promise<Int>;
+  relationship: () => Promise<String>;
+  type: () => Promise<String>;
+  name: () => Promise<String>;
+  company: <T = CompanyPromise>() => T;
 }
 
-export interface TbSubjectPreviousValuesSubscription
-  extends Promise<AsyncIterator<TbSubjectPreviousValues>>,
+export interface RelatedPartySubscription
+  extends Promise<AsyncIterator<RelatedParty>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
-  show: () => Promise<AsyncIterator<String>>;
-  subject: () => Promise<AsyncIterator<String>>;
-  direction: () => Promise<AsyncIterator<String>>;
-  order: () => Promise<AsyncIterator<Int>>;
+  grade: () => Promise<AsyncIterator<Int>>;
+  relationship: () => Promise<AsyncIterator<String>>;
+  type: () => Promise<AsyncIterator<String>>;
+  name: () => Promise<AsyncIterator<String>>;
+  company: <T = CompanySubscription>() => T;
+}
+
+export interface RelatedPartyNullablePromise
+  extends Promise<RelatedParty | null>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  grade: () => Promise<Int>;
+  relationship: () => Promise<String>;
+  type: () => Promise<String>;
+  name: () => Promise<String>;
+  company: <T = CompanyPromise>() => T;
+}
+
+export interface SubjectContrastConnection {
+  pageInfo: PageInfo;
+  edges: SubjectContrastEdge[];
+}
+
+export interface SubjectContrastConnectionPromise
+  extends Promise<SubjectContrastConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<SubjectContrastEdge>>() => T;
+  aggregate: <T = AggregateSubjectContrastPromise>() => T;
+}
+
+export interface SubjectContrastConnectionSubscription
+  extends Promise<AsyncIterator<SubjectContrastConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<SubjectContrastEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateSubjectContrastSubscription>() => T;
 }
 
 export interface Company {
@@ -6864,258 +7937,29 @@ export interface CompanyNullablePromise
   }) => T;
 }
 
-export interface UserEdge {
-  node: User;
-  cursor: String;
-}
-
-export interface UserEdgePromise extends Promise<UserEdge>, Fragmentable {
-  node: <T = UserPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface UserEdgeSubscription
-  extends Promise<AsyncIterator<UserEdge>>,
-    Fragmentable {
-  node: <T = UserSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface ProjectSubscriptionPayload {
+export interface SubjectContrastSubscriptionPayload {
   mutation: MutationType;
-  node: Project;
-  updatedFields: String[];
-  previousValues: ProjectPreviousValues;
-}
-
-export interface ProjectSubscriptionPayloadPromise
-  extends Promise<ProjectSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = ProjectPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = ProjectPreviousValuesPromise>() => T;
-}
-
-export interface ProjectSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<ProjectSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = ProjectSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = ProjectPreviousValuesSubscription>() => T;
-}
-
-export interface SubjectContrastEdge {
   node: SubjectContrast;
-  cursor: String;
-}
-
-export interface SubjectContrastEdgePromise
-  extends Promise<SubjectContrastEdge>,
-    Fragmentable {
-  node: <T = SubjectContrastPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface SubjectContrastEdgeSubscription
-  extends Promise<AsyncIterator<SubjectContrastEdge>>,
-    Fragmentable {
-  node: <T = SubjectContrastSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface ProjectPreviousValues {
-  id: ID_Output;
-  startTime: DateTimeOutput;
-  endTime: DateTimeOutput;
-}
-
-export interface ProjectPreviousValuesPromise
-  extends Promise<ProjectPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  startTime: () => Promise<DateTimeOutput>;
-  endTime: () => Promise<DateTimeOutput>;
-}
-
-export interface ProjectPreviousValuesSubscription
-  extends Promise<AsyncIterator<ProjectPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  startTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-  endTime: () => Promise<AsyncIterator<DateTimeOutput>>;
-}
-
-export interface AggregateRelatedParty {
-  count: Int;
-}
-
-export interface AggregateRelatedPartyPromise
-  extends Promise<AggregateRelatedParty>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateRelatedPartySubscription
-  extends Promise<AsyncIterator<AggregateRelatedParty>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface RelatedParty {
-  id: ID_Output;
-  grade: Int;
-  relationship: String;
-  type: String;
-  name: String;
-}
-
-export interface RelatedPartyPromise
-  extends Promise<RelatedParty>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  grade: () => Promise<Int>;
-  relationship: () => Promise<String>;
-  type: () => Promise<String>;
-  name: () => Promise<String>;
-  company: <T = CompanyPromise>() => T;
-}
-
-export interface RelatedPartySubscription
-  extends Promise<AsyncIterator<RelatedParty>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  grade: () => Promise<AsyncIterator<Int>>;
-  relationship: () => Promise<AsyncIterator<String>>;
-  type: () => Promise<AsyncIterator<String>>;
-  name: () => Promise<AsyncIterator<String>>;
-  company: <T = CompanySubscription>() => T;
-}
-
-export interface RelatedPartyNullablePromise
-  extends Promise<RelatedParty | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  grade: () => Promise<Int>;
-  relationship: () => Promise<String>;
-  type: () => Promise<String>;
-  name: () => Promise<String>;
-  company: <T = CompanyPromise>() => T;
-}
-
-export interface NoneCompanyConnection {
-  pageInfo: PageInfo;
-  edges: NoneCompanyEdge[];
-}
-
-export interface NoneCompanyConnectionPromise
-  extends Promise<NoneCompanyConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<NoneCompanyEdge>>() => T;
-  aggregate: <T = AggregateNoneCompanyPromise>() => T;
-}
-
-export interface NoneCompanyConnectionSubscription
-  extends Promise<AsyncIterator<NoneCompanyConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<NoneCompanyEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateNoneCompanySubscription>() => T;
-}
-
-export interface RelatedPartySubscriptionPayload {
-  mutation: MutationType;
-  node: RelatedParty;
   updatedFields: String[];
-  previousValues: RelatedPartyPreviousValues;
+  previousValues: SubjectContrastPreviousValues;
 }
 
-export interface RelatedPartySubscriptionPayloadPromise
-  extends Promise<RelatedPartySubscriptionPayload>,
+export interface SubjectContrastSubscriptionPayloadPromise
+  extends Promise<SubjectContrastSubscriptionPayload>,
     Fragmentable {
   mutation: () => Promise<MutationType>;
-  node: <T = RelatedPartyPromise>() => T;
+  node: <T = SubjectContrastPromise>() => T;
   updatedFields: () => Promise<String[]>;
-  previousValues: <T = RelatedPartyPreviousValuesPromise>() => T;
+  previousValues: <T = SubjectContrastPreviousValuesPromise>() => T;
 }
 
-export interface RelatedPartySubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<RelatedPartySubscriptionPayload>>,
+export interface SubjectContrastSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<SubjectContrastSubscriptionPayload>>,
     Fragmentable {
   mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = RelatedPartySubscription>() => T;
+  node: <T = SubjectContrastSubscription>() => T;
   updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = RelatedPartyPreviousValuesSubscription>() => T;
-}
-
-export interface MainMemberConnection {
-  pageInfo: PageInfo;
-  edges: MainMemberEdge[];
-}
-
-export interface MainMemberConnectionPromise
-  extends Promise<MainMemberConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<MainMemberEdge>>() => T;
-  aggregate: <T = AggregateMainMemberPromise>() => T;
-}
-
-export interface MainMemberConnectionSubscription
-  extends Promise<AsyncIterator<MainMemberConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<MainMemberEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateMainMemberSubscription>() => T;
-}
-
-export interface RelatedPartyPreviousValues {
-  id: ID_Output;
-  grade: Int;
-  relationship: String;
-  type: String;
-  name: String;
-}
-
-export interface RelatedPartyPreviousValuesPromise
-  extends Promise<RelatedPartyPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  grade: () => Promise<Int>;
-  relationship: () => Promise<String>;
-  type: () => Promise<String>;
-  name: () => Promise<String>;
-}
-
-export interface RelatedPartyPreviousValuesSubscription
-  extends Promise<AsyncIterator<RelatedPartyPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  grade: () => Promise<AsyncIterator<Int>>;
-  relationship: () => Promise<AsyncIterator<String>>;
-  type: () => Promise<AsyncIterator<String>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface FSSubjectEdge {
-  node: FSSubject;
-  cursor: String;
-}
-
-export interface FSSubjectEdgePromise
-  extends Promise<FSSubjectEdge>,
-    Fragmentable {
-  node: <T = FSSubjectPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface FSSubjectEdgeSubscription
-  extends Promise<AsyncIterator<FSSubjectEdge>>,
-    Fragmentable {
-  node: <T = FSSubjectSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
+  previousValues: <T = SubjectContrastPreviousValuesSubscription>() => T;
 }
 
 export interface MainMember {
@@ -7146,100 +7990,6 @@ export interface MainMemberNullablePromise
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
   post: () => Promise<String>;
-  company: <T = CompanyPromise>() => T;
-}
-
-export interface TbSubjectConnection {
-  pageInfo: PageInfo;
-  edges: TbSubjectEdge[];
-}
-
-export interface TbSubjectConnectionPromise
-  extends Promise<TbSubjectConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<TbSubjectEdge>>() => T;
-  aggregate: <T = AggregateTbSubjectPromise>() => T;
-}
-
-export interface TbSubjectConnectionSubscription
-  extends Promise<AsyncIterator<TbSubjectConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<TbSubjectEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateTbSubjectSubscription>() => T;
-}
-
-export interface ProjectEdge {
-  node: Project;
-  cursor: String;
-}
-
-export interface ProjectEdgePromise extends Promise<ProjectEdge>, Fragmentable {
-  node: <T = ProjectPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface ProjectEdgeSubscription
-  extends Promise<AsyncIterator<ProjectEdge>>,
-    Fragmentable {
-  node: <T = ProjectSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface SubjectContrastSubscriptionPayload {
-  mutation: MutationType;
-  node: SubjectContrast;
-  updatedFields: String[];
-  previousValues: SubjectContrastPreviousValues;
-}
-
-export interface SubjectContrastSubscriptionPayloadPromise
-  extends Promise<SubjectContrastSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = SubjectContrastPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = SubjectContrastPreviousValuesPromise>() => T;
-}
-
-export interface SubjectContrastSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<SubjectContrastSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = SubjectContrastSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = SubjectContrastPreviousValuesSubscription>() => T;
-}
-
-export interface Holder {
-  id: ID_Output;
-  name: String;
-  ratio: Float;
-}
-
-export interface HolderPromise extends Promise<Holder>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  ratio: () => Promise<Float>;
-  company: <T = CompanyPromise>() => T;
-}
-
-export interface HolderSubscription
-  extends Promise<AsyncIterator<Holder>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  ratio: () => Promise<AsyncIterator<Float>>;
-  company: <T = CompanySubscription>() => T;
-}
-
-export interface HolderNullablePromise
-  extends Promise<Holder | null>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  ratio: () => Promise<Float>;
   company: <T = CompanyPromise>() => T;
 }
 
@@ -7290,56 +8040,58 @@ export interface StdSubjectSubscriptionPayloadSubscription
   previousValues: <T = StdSubjectPreviousValuesSubscription>() => T;
 }
 
-export interface MemberEdge {
-  node: Member;
-  cursor: String;
-}
-
-export interface MemberEdgePromise extends Promise<MemberEdge>, Fragmentable {
-  node: <T = MemberPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface MemberEdgeSubscription
-  extends Promise<AsyncIterator<MemberEdge>>,
-    Fragmentable {
-  node: <T = MemberSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface StdSubjectEdge {
-  node: StdSubject;
-  cursor: String;
-}
-
-export interface StdSubjectEdgePromise
-  extends Promise<StdSubjectEdge>,
-    Fragmentable {
-  node: <T = StdSubjectPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface StdSubjectEdgeSubscription
-  extends Promise<AsyncIterator<StdSubjectEdge>>,
-    Fragmentable {
-  node: <T = StdSubjectSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateDataRecord {
+export interface AggregateLetterOfProof {
   count: Int;
 }
 
-export interface AggregateDataRecordPromise
-  extends Promise<AggregateDataRecord>,
+export interface AggregateLetterOfProofPromise
+  extends Promise<AggregateLetterOfProof>,
     Fragmentable {
   count: () => Promise<Int>;
 }
 
-export interface AggregateDataRecordSubscription
-  extends Promise<AsyncIterator<AggregateDataRecord>>,
+export interface AggregateLetterOfProofSubscription
+  extends Promise<AsyncIterator<AggregateLetterOfProof>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface RelatedPartyEdge {
+  node: RelatedParty;
+  cursor: String;
+}
+
+export interface RelatedPartyEdgePromise
+  extends Promise<RelatedPartyEdge>,
+    Fragmentable {
+  node: <T = RelatedPartyPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface RelatedPartyEdgeSubscription
+  extends Promise<AsyncIterator<RelatedPartyEdge>>,
+    Fragmentable {
+  node: <T = RelatedPartySubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface DataRecordEdge {
+  node: DataRecord;
+  cursor: String;
+}
+
+export interface DataRecordEdgePromise
+  extends Promise<DataRecordEdge>,
+    Fragmentable {
+  node: <T = DataRecordPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface DataRecordEdgeSubscription
+  extends Promise<AsyncIterator<DataRecordEdge>>,
+    Fragmentable {
+  node: <T = DataRecordSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
 }
 
 export interface AggregateFile {
@@ -7358,13 +8110,12 @@ export interface AggregateFileSubscription
   count: () => Promise<AsyncIterator<Int>>;
 }
 
-export type Long = string;
-
 /*
-The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 */
-export type ID_Input = string | number;
-export type ID_Output = string;
+export type String = string;
+
+export type Long = string;
 
 /*
 The `Boolean` scalar type represents `true` or `false`.
@@ -7387,9 +8138,10 @@ The `Float` scalar type represents signed double-precision fractional values as 
 export type Float = number;
 
 /*
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
 */
-export type String = string;
+export type ID_Input = string | number;
+export type ID_Output = string;
 
 /*
 The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
@@ -7443,6 +8195,10 @@ export const models: Model[] = [
   },
   {
     name: "RelatedParty",
+    embedded: false
+  },
+  {
+    name: "LetterOfProof",
     embedded: false
   },
   {

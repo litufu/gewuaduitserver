@@ -49,6 +49,10 @@ var models = [
     embedded: false
   },
   {
+    name: "LetterOfProof",
+    embedded: false
+  },
+  {
     name: "Project",
     embedded: false
   },

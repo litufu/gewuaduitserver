@@ -827,6 +827,19 @@ const Mutation = {
       return false
     }
    },
+   addOrUpdateLetterOfProofSetting:async(parent,{projectId,customerAmount,customeBalance,supplierAmount,supplierBalance,otherBalance},ctx)=>{
+    //  用标准化名称修改公司账套
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    
+    const addOrUpdateLetterOfProofSettingPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/add_or_update_letter_of_proof_setting.py')
+    const addOrUpdateLetterOfProofSettingProcess = spawnSync('python',[addOrUpdateLetterOfProofSettingPath, dbPath,startTimeStr,endTimeStr,customerAmount,customeBalance,supplierAmount,supplierBalance,otherBalance]);
+    const res = addOrUpdateLetterOfProofSettingProcess.stdout.toString()
+    if(res==="success"){
+      return true
+    }else{
+      return false
+    }
+   },
 }
 
 module.exports = {
