@@ -236,6 +236,7 @@ def get_tb_origin_value(origin_text,df_km_new,df_xsz_new,):
         origins = json.loads(origin_text)
         sum_value = 0.00
         for origin in origins:
+            value= 0.00
             if origin["table_name"] == "km":
                 subject_num = origin["values"]["location"]["subject_num"]
                 value_type = origin["values"]["value_type"]

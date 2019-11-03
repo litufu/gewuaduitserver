@@ -35,6 +35,8 @@ const typeDefs = gql`
     getStdCompanyNames(projectId:String!):[CompanyStdName]
     getCompanyDeal(projectId:String!,type:String!,num:Int!):[CompanyDeal]
     getRate(currencyType:String!,date:String!):String!
+    getLetterOfProofSetting(projectId:String!):String!
+    getLetterOfProofs(projectId:String!):[LetterOfProof]
   }
 
   type Mutation {
@@ -66,7 +68,10 @@ const typeDefs = gql`
     addStdCompanyName(originName:String!,stdName:String!,projectId:String!):CompanyStdName
     setStandardizedAccountName(projectId:String!):Boolean!
     addOrUpdateLetterOfProofSetting(projectId:String,customerAmount:String!,customeBalance:String!,supplierAmount:String!,supplierBalance:String!,otherBalance:String!):Boolean!
-    
+    downloadLetterOfProofs(projectId:String!,record:String!):[LetterOfProof]
+    addLetterOfProof(record:String):LetterOfProof
+    updateLetterOfProof(record:String!):LetterOfProof
+    deleteLetterOfProof(proofId:String):LetterOfProof
     
   }
 

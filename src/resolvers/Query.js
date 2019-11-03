@@ -292,6 +292,17 @@ const Query = {
     const res = getRateProcess.stdout.toString() 
     return res
   },
+  getLetterOfProofSetting:async (parent,{projectId},ctx)=>{
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const getLetterOfProofSettingPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_letter_of_proof_setting.py') 
+    const getLetterOfProofSettingProcess = spawnSync('python',[getLetterOfProofSettingPath,dbPath,startTimeStr,endTimeStr ]);
+    const res = getLetterOfProofSettingProcess.stdout.toString() 
+    return res
+  },
+  getLetterOfProofs:async (parent,{projectId},ctx)=>{
+    const letterOfProofs = await ctx.prisma.letterOfProofs({where:{project:{id:projectId}}})
+    return letterOfProofs
+  },
 }
 
 module.exports = {

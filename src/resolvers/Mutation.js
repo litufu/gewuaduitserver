@@ -840,6 +840,90 @@ const Mutation = {
       return false
     }
    },
+   downloadLetterOfProofs:async(parent,{projectId,record},ctx)=>{
+    const records = JSON.parse(record)
+    for(let i=0;i<records.length;i++){
+      const proofs = await ctx.prisma.letterOfProofs({
+        where:{
+          AND:[
+            {subjectName:records[i].subjectName},
+            {name:records[i].name},
+            {project:{id:projectId}}
+          ]
+        }
+      })
+      if(proofs.length===0){
+        await ctx.prisma.createLetterOfProof({
+          subjectName:records[i].subjectName,
+          name:records[i].name,
+          balance:records[i].balance,
+          sendBalance:records[i].balance,
+          amount:records[i].amount,
+          sendAmount:records[i].amount,
+          sampleReason:records[i].sampleReason,
+          project:{connect:{id:projectId}}
+        })
+      }
+    }
+    const newProofs = await ctx.prisma.letterOfProofs({where:{project:{id:projectId}}})
+    return newProofs
+   },
+   addLetterOfProof:async(parent,{record},ctx)=>{
+    const newRecord = JSON.parse(record)
+    const proof = await ctx.prisma.createLetterOfProof({
+        adrress:newRecord.address,
+        contact:newRecord.contact,
+        telephone:newRecord.telephone,
+        zipCode:newRecord.zipCode,
+        sampleReason:newRecord.sampleReason,
+        currencyType:newRecord.currencyType,
+        sendDate:newRecord.sendDate,
+        sendNo:newRecord.sendNo,
+        receiveDate:newRecord.receiveDate,
+        receiveNo:newRecord.receiveNo,
+        balance:newRecord.balance,
+        amount:newRecord.amount,
+        sendBalance:newRecord.sendBalance,
+        sendAmount:newRecord.sendAmount,
+        receiveBalance:newRecord.receiveBalance,
+        receiveAmount:newRecord.receiveAmount,
+        sendPhoto:newRecord.sendPhoto,
+        receivePhoto:newRecord.receivePhoto,
+        proofPhoto:newRecord.proofPhoto,
+    })
+    return proof
+   },
+   updateLetterOfProof:async(parent,{record},ctx)=>{
+    const newRecord = JSON.parse(record)
+    const proof = await ctx.prisma.updateLetterOfProof({
+      where:{id:newRecord.id},
+      data:{
+        adrress:newRecord.address,
+        contact:newRecord.contact,
+        telephone:newRecord.telephone,
+        zipCode:newRecord.zipCode,
+        sampleReason:newRecord.sampleReason,
+        currencyType:newRecord.currencyType,
+        sendDate:newRecord.sendDate,
+        sendNo:newRecord.sendNo,
+        receiveDate:newRecord.receiveDate,
+        receiveNo:newRecord.receiveNo,
+        balance:newRecord.balance,
+        amount:newRecord.amount,
+        sendBalance:newRecord.sendBalance,
+        sendAmount:newRecord.sendAmount,
+        receiveBalance:newRecord.receiveBalance,
+        receiveAmount:newRecord.receiveAmount,
+        sendPhoto:newRecord.sendPhoto,
+        receivePhoto:newRecord.receivePhoto,
+        proofPhoto:newRecord.proofPhoto,
+      }
+    })
+    return proof
+   },
+   deleteLetterOfProof:async(parent,{proofId},ctx)=>{
+    return ctx.prisma.deleteLetterOfProof({id:proofId})
+   },
 }
 
 module.exports = {
