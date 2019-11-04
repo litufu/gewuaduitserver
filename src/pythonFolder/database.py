@@ -224,8 +224,6 @@ class LetterOfProofSetting(Base):
     supplier_balance = Column(Float)
     other_balance = Column(Float)
 
-
-
 # 凭证交易或事项描述
 class TransactionEvent(Base):
     __tablename__ = 'transactionevent'

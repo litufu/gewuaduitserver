@@ -909,7 +909,17 @@ export type AccountingFirmOrderByInput =
   | "email_ASC"
   | "email_DESC"
   | "contact_ASC"
-  | "contact_DESC";
+  | "contact_DESC"
+  | "zipCode_ASC"
+  | "zipCode_DESC"
+  | "fax_ASC"
+  | "fax_DESC"
+  | "returnAddress_ASC"
+  | "returnAddress_DESC"
+  | "returnPhone_ASC"
+  | "returnPhone_DESC"
+  | "returnPerson_ASC"
+  | "returnPerson_DESC";
 
 export type FSSubjectOrderByInput =
   | "id_ASC"
@@ -1217,6 +1227,11 @@ export interface AccountingFirmCreateWithoutCustomersInput {
   phone: String;
   email: String;
   contact: String;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
   employees?: Maybe<UserCreateManyWithoutAccountingFirmInput>;
 }
 
@@ -1389,6 +1404,11 @@ export interface AccountingFirmCreateWithoutEmployeesInput {
   phone: String;
   email: String;
   contact: String;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
   customers?: Maybe<CompanyCreateManyWithoutAccountingFirmsInput>;
 }
 
@@ -1588,6 +1608,11 @@ export interface AccountingFirmUpdateInput {
   phone?: Maybe<String>;
   email?: Maybe<String>;
   contact?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
   employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
   customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
 }
@@ -1757,6 +1782,76 @@ export interface AccountingFirmWhereInput {
   contact_not_starts_with?: Maybe<String>;
   contact_ends_with?: Maybe<String>;
   contact_not_ends_with?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  zipCode_not?: Maybe<String>;
+  zipCode_in?: Maybe<String[] | String>;
+  zipCode_not_in?: Maybe<String[] | String>;
+  zipCode_lt?: Maybe<String>;
+  zipCode_lte?: Maybe<String>;
+  zipCode_gt?: Maybe<String>;
+  zipCode_gte?: Maybe<String>;
+  zipCode_contains?: Maybe<String>;
+  zipCode_not_contains?: Maybe<String>;
+  zipCode_starts_with?: Maybe<String>;
+  zipCode_not_starts_with?: Maybe<String>;
+  zipCode_ends_with?: Maybe<String>;
+  zipCode_not_ends_with?: Maybe<String>;
+  fax?: Maybe<String>;
+  fax_not?: Maybe<String>;
+  fax_in?: Maybe<String[] | String>;
+  fax_not_in?: Maybe<String[] | String>;
+  fax_lt?: Maybe<String>;
+  fax_lte?: Maybe<String>;
+  fax_gt?: Maybe<String>;
+  fax_gte?: Maybe<String>;
+  fax_contains?: Maybe<String>;
+  fax_not_contains?: Maybe<String>;
+  fax_starts_with?: Maybe<String>;
+  fax_not_starts_with?: Maybe<String>;
+  fax_ends_with?: Maybe<String>;
+  fax_not_ends_with?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnAddress_not?: Maybe<String>;
+  returnAddress_in?: Maybe<String[] | String>;
+  returnAddress_not_in?: Maybe<String[] | String>;
+  returnAddress_lt?: Maybe<String>;
+  returnAddress_lte?: Maybe<String>;
+  returnAddress_gt?: Maybe<String>;
+  returnAddress_gte?: Maybe<String>;
+  returnAddress_contains?: Maybe<String>;
+  returnAddress_not_contains?: Maybe<String>;
+  returnAddress_starts_with?: Maybe<String>;
+  returnAddress_not_starts_with?: Maybe<String>;
+  returnAddress_ends_with?: Maybe<String>;
+  returnAddress_not_ends_with?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPhone_not?: Maybe<String>;
+  returnPhone_in?: Maybe<String[] | String>;
+  returnPhone_not_in?: Maybe<String[] | String>;
+  returnPhone_lt?: Maybe<String>;
+  returnPhone_lte?: Maybe<String>;
+  returnPhone_gt?: Maybe<String>;
+  returnPhone_gte?: Maybe<String>;
+  returnPhone_contains?: Maybe<String>;
+  returnPhone_not_contains?: Maybe<String>;
+  returnPhone_starts_with?: Maybe<String>;
+  returnPhone_not_starts_with?: Maybe<String>;
+  returnPhone_ends_with?: Maybe<String>;
+  returnPhone_not_ends_with?: Maybe<String>;
+  returnPerson?: Maybe<String>;
+  returnPerson_not?: Maybe<String>;
+  returnPerson_in?: Maybe<String[] | String>;
+  returnPerson_not_in?: Maybe<String[] | String>;
+  returnPerson_lt?: Maybe<String>;
+  returnPerson_lte?: Maybe<String>;
+  returnPerson_gt?: Maybe<String>;
+  returnPerson_gte?: Maybe<String>;
+  returnPerson_contains?: Maybe<String>;
+  returnPerson_not_contains?: Maybe<String>;
+  returnPerson_starts_with?: Maybe<String>;
+  returnPerson_not_starts_with?: Maybe<String>;
+  returnPerson_ends_with?: Maybe<String>;
+  returnPerson_not_ends_with?: Maybe<String>;
   employees_every?: Maybe<UserWhereInput>;
   employees_some?: Maybe<UserWhereInput>;
   employees_none?: Maybe<UserWhereInput>;
@@ -1841,6 +1936,11 @@ export interface AccountingFirmUpdateDataInput {
   phone?: Maybe<String>;
   email?: Maybe<String>;
   contact?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
   employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
   customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
 }
@@ -3118,6 +3218,11 @@ export interface AccountingFirmCreateInput {
   phone: String;
   email: String;
   contact: String;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
   employees?: Maybe<UserCreateManyWithoutAccountingFirmInput>;
   customers?: Maybe<CompanyCreateManyWithoutAccountingFirmsInput>;
 }
@@ -3229,6 +3334,11 @@ export interface AccountingFirmUpdateWithoutCustomersDataInput {
   phone?: Maybe<String>;
   email?: Maybe<String>;
   contact?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
   employees?: Maybe<UserUpdateManyWithoutAccountingFirmInput>;
 }
 
@@ -3361,6 +3471,76 @@ export interface AccountingFirmScalarWhereInput {
   contact_not_starts_with?: Maybe<String>;
   contact_ends_with?: Maybe<String>;
   contact_not_ends_with?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  zipCode_not?: Maybe<String>;
+  zipCode_in?: Maybe<String[] | String>;
+  zipCode_not_in?: Maybe<String[] | String>;
+  zipCode_lt?: Maybe<String>;
+  zipCode_lte?: Maybe<String>;
+  zipCode_gt?: Maybe<String>;
+  zipCode_gte?: Maybe<String>;
+  zipCode_contains?: Maybe<String>;
+  zipCode_not_contains?: Maybe<String>;
+  zipCode_starts_with?: Maybe<String>;
+  zipCode_not_starts_with?: Maybe<String>;
+  zipCode_ends_with?: Maybe<String>;
+  zipCode_not_ends_with?: Maybe<String>;
+  fax?: Maybe<String>;
+  fax_not?: Maybe<String>;
+  fax_in?: Maybe<String[] | String>;
+  fax_not_in?: Maybe<String[] | String>;
+  fax_lt?: Maybe<String>;
+  fax_lte?: Maybe<String>;
+  fax_gt?: Maybe<String>;
+  fax_gte?: Maybe<String>;
+  fax_contains?: Maybe<String>;
+  fax_not_contains?: Maybe<String>;
+  fax_starts_with?: Maybe<String>;
+  fax_not_starts_with?: Maybe<String>;
+  fax_ends_with?: Maybe<String>;
+  fax_not_ends_with?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnAddress_not?: Maybe<String>;
+  returnAddress_in?: Maybe<String[] | String>;
+  returnAddress_not_in?: Maybe<String[] | String>;
+  returnAddress_lt?: Maybe<String>;
+  returnAddress_lte?: Maybe<String>;
+  returnAddress_gt?: Maybe<String>;
+  returnAddress_gte?: Maybe<String>;
+  returnAddress_contains?: Maybe<String>;
+  returnAddress_not_contains?: Maybe<String>;
+  returnAddress_starts_with?: Maybe<String>;
+  returnAddress_not_starts_with?: Maybe<String>;
+  returnAddress_ends_with?: Maybe<String>;
+  returnAddress_not_ends_with?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPhone_not?: Maybe<String>;
+  returnPhone_in?: Maybe<String[] | String>;
+  returnPhone_not_in?: Maybe<String[] | String>;
+  returnPhone_lt?: Maybe<String>;
+  returnPhone_lte?: Maybe<String>;
+  returnPhone_gt?: Maybe<String>;
+  returnPhone_gte?: Maybe<String>;
+  returnPhone_contains?: Maybe<String>;
+  returnPhone_not_contains?: Maybe<String>;
+  returnPhone_starts_with?: Maybe<String>;
+  returnPhone_not_starts_with?: Maybe<String>;
+  returnPhone_ends_with?: Maybe<String>;
+  returnPhone_not_ends_with?: Maybe<String>;
+  returnPerson?: Maybe<String>;
+  returnPerson_not?: Maybe<String>;
+  returnPerson_in?: Maybe<String[] | String>;
+  returnPerson_not_in?: Maybe<String[] | String>;
+  returnPerson_lt?: Maybe<String>;
+  returnPerson_lte?: Maybe<String>;
+  returnPerson_gt?: Maybe<String>;
+  returnPerson_gte?: Maybe<String>;
+  returnPerson_contains?: Maybe<String>;
+  returnPerson_not_contains?: Maybe<String>;
+  returnPerson_starts_with?: Maybe<String>;
+  returnPerson_not_starts_with?: Maybe<String>;
+  returnPerson_ends_with?: Maybe<String>;
+  returnPerson_not_ends_with?: Maybe<String>;
   AND?: Maybe<
     AccountingFirmScalarWhereInput[] | AccountingFirmScalarWhereInput
   >;
@@ -3470,6 +3650,11 @@ export interface AccountingFirmUpdateManyDataInput {
   phone?: Maybe<String>;
   email?: Maybe<String>;
   contact?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
 }
 
 export interface HolderWhereInput {
@@ -3818,6 +4003,11 @@ export interface AccountingFirmUpdateWithoutEmployeesDataInput {
   phone?: Maybe<String>;
   email?: Maybe<String>;
   contact?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
   customers?: Maybe<CompanyUpdateManyWithoutAccountingFirmsInput>;
 }
 
@@ -4685,6 +4875,11 @@ export interface AccountingFirmUpdateManyMutationInput {
   phone?: Maybe<String>;
   email?: Maybe<String>;
   contact?: Maybe<String>;
+  zipCode?: Maybe<String>;
+  fax?: Maybe<String>;
+  returnAddress?: Maybe<String>;
+  returnPhone?: Maybe<String>;
+  returnPerson?: Maybe<String>;
 }
 
 export interface LetterOfProofCreateInput {
@@ -5745,6 +5940,11 @@ export interface AccountingFirmPreviousValues {
   phone: String;
   email: String;
   contact: String;
+  zipCode?: String;
+  fax?: String;
+  returnAddress?: String;
+  returnPhone?: String;
+  returnPerson?: String;
 }
 
 export interface AccountingFirmPreviousValuesPromise
@@ -5757,6 +5957,11 @@ export interface AccountingFirmPreviousValuesPromise
   phone: () => Promise<String>;
   email: () => Promise<String>;
   contact: () => Promise<String>;
+  zipCode: () => Promise<String>;
+  fax: () => Promise<String>;
+  returnAddress: () => Promise<String>;
+  returnPhone: () => Promise<String>;
+  returnPerson: () => Promise<String>;
 }
 
 export interface AccountingFirmPreviousValuesSubscription
@@ -5769,6 +5974,11 @@ export interface AccountingFirmPreviousValuesSubscription
   phone: () => Promise<AsyncIterator<String>>;
   email: () => Promise<AsyncIterator<String>>;
   contact: () => Promise<AsyncIterator<String>>;
+  zipCode: () => Promise<AsyncIterator<String>>;
+  fax: () => Promise<AsyncIterator<String>>;
+  returnAddress: () => Promise<AsyncIterator<String>>;
+  returnPhone: () => Promise<AsyncIterator<String>>;
+  returnPerson: () => Promise<AsyncIterator<String>>;
 }
 
 export interface StdSubjectEdge {
@@ -7281,6 +7491,11 @@ export interface AccountingFirm {
   phone: String;
   email: String;
   contact: String;
+  zipCode?: String;
+  fax?: String;
+  returnAddress?: String;
+  returnPhone?: String;
+  returnPerson?: String;
 }
 
 export interface AccountingFirmPromise
@@ -7293,6 +7508,11 @@ export interface AccountingFirmPromise
   phone: () => Promise<String>;
   email: () => Promise<String>;
   contact: () => Promise<String>;
+  zipCode: () => Promise<String>;
+  fax: () => Promise<String>;
+  returnAddress: () => Promise<String>;
+  returnPhone: () => Promise<String>;
+  returnPerson: () => Promise<String>;
   employees: <T = FragmentableArray<User>>(args?: {
     where?: UserWhereInput;
     orderBy?: UserOrderByInput;
@@ -7323,6 +7543,11 @@ export interface AccountingFirmSubscription
   phone: () => Promise<AsyncIterator<String>>;
   email: () => Promise<AsyncIterator<String>>;
   contact: () => Promise<AsyncIterator<String>>;
+  zipCode: () => Promise<AsyncIterator<String>>;
+  fax: () => Promise<AsyncIterator<String>>;
+  returnAddress: () => Promise<AsyncIterator<String>>;
+  returnPhone: () => Promise<AsyncIterator<String>>;
+  returnPerson: () => Promise<AsyncIterator<String>>;
   employees: <T = Promise<AsyncIterator<UserSubscription>>>(args?: {
     where?: UserWhereInput;
     orderBy?: UserOrderByInput;
@@ -7353,6 +7578,11 @@ export interface AccountingFirmNullablePromise
   phone: () => Promise<String>;
   email: () => Promise<String>;
   contact: () => Promise<String>;
+  zipCode: () => Promise<String>;
+  fax: () => Promise<String>;
+  returnAddress: () => Promise<String>;
+  returnPhone: () => Promise<String>;
+  returnPerson: () => Promise<String>;
   employees: <T = FragmentableArray<User>>(args?: {
     where?: UserWhereInput;
     orderBy?: UserOrderByInput;

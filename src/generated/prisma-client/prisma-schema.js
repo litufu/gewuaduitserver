@@ -11,6 +11,11 @@ module.exports = {
   phone: String!
   email: String!
   contact: String!
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   employees(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
   customers(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Company!]
 }
@@ -29,6 +34,11 @@ input AccountingFirmCreateInput {
   phone: String!
   email: String!
   contact: String!
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   employees: UserCreateManyWithoutAccountingFirmInput
   customers: CompanyCreateManyWithoutAccountingFirmsInput
 }
@@ -56,6 +66,11 @@ input AccountingFirmCreateWithoutCustomersInput {
   phone: String!
   email: String!
   contact: String!
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   employees: UserCreateManyWithoutAccountingFirmInput
 }
 
@@ -67,6 +82,11 @@ input AccountingFirmCreateWithoutEmployeesInput {
   phone: String!
   email: String!
   contact: String!
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   customers: CompanyCreateManyWithoutAccountingFirmsInput
 }
 
@@ -90,6 +110,16 @@ enum AccountingFirmOrderByInput {
   email_DESC
   contact_ASC
   contact_DESC
+  zipCode_ASC
+  zipCode_DESC
+  fax_ASC
+  fax_DESC
+  returnAddress_ASC
+  returnAddress_DESC
+  returnPhone_ASC
+  returnPhone_DESC
+  returnPerson_ASC
+  returnPerson_DESC
 }
 
 type AccountingFirmPreviousValues {
@@ -100,6 +130,11 @@ type AccountingFirmPreviousValues {
   phone: String!
   email: String!
   contact: String!
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
 }
 
 input AccountingFirmScalarWhereInput {
@@ -201,6 +236,76 @@ input AccountingFirmScalarWhereInput {
   contact_not_starts_with: String
   contact_ends_with: String
   contact_not_ends_with: String
+  zipCode: String
+  zipCode_not: String
+  zipCode_in: [String!]
+  zipCode_not_in: [String!]
+  zipCode_lt: String
+  zipCode_lte: String
+  zipCode_gt: String
+  zipCode_gte: String
+  zipCode_contains: String
+  zipCode_not_contains: String
+  zipCode_starts_with: String
+  zipCode_not_starts_with: String
+  zipCode_ends_with: String
+  zipCode_not_ends_with: String
+  fax: String
+  fax_not: String
+  fax_in: [String!]
+  fax_not_in: [String!]
+  fax_lt: String
+  fax_lte: String
+  fax_gt: String
+  fax_gte: String
+  fax_contains: String
+  fax_not_contains: String
+  fax_starts_with: String
+  fax_not_starts_with: String
+  fax_ends_with: String
+  fax_not_ends_with: String
+  returnAddress: String
+  returnAddress_not: String
+  returnAddress_in: [String!]
+  returnAddress_not_in: [String!]
+  returnAddress_lt: String
+  returnAddress_lte: String
+  returnAddress_gt: String
+  returnAddress_gte: String
+  returnAddress_contains: String
+  returnAddress_not_contains: String
+  returnAddress_starts_with: String
+  returnAddress_not_starts_with: String
+  returnAddress_ends_with: String
+  returnAddress_not_ends_with: String
+  returnPhone: String
+  returnPhone_not: String
+  returnPhone_in: [String!]
+  returnPhone_not_in: [String!]
+  returnPhone_lt: String
+  returnPhone_lte: String
+  returnPhone_gt: String
+  returnPhone_gte: String
+  returnPhone_contains: String
+  returnPhone_not_contains: String
+  returnPhone_starts_with: String
+  returnPhone_not_starts_with: String
+  returnPhone_ends_with: String
+  returnPhone_not_ends_with: String
+  returnPerson: String
+  returnPerson_not: String
+  returnPerson_in: [String!]
+  returnPerson_not_in: [String!]
+  returnPerson_lt: String
+  returnPerson_lte: String
+  returnPerson_gt: String
+  returnPerson_gte: String
+  returnPerson_contains: String
+  returnPerson_not_contains: String
+  returnPerson_starts_with: String
+  returnPerson_not_starts_with: String
+  returnPerson_ends_with: String
+  returnPerson_not_ends_with: String
   AND: [AccountingFirmScalarWhereInput!]
   OR: [AccountingFirmScalarWhereInput!]
   NOT: [AccountingFirmScalarWhereInput!]
@@ -231,6 +336,11 @@ input AccountingFirmUpdateDataInput {
   phone: String
   email: String
   contact: String
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   employees: UserUpdateManyWithoutAccountingFirmInput
   customers: CompanyUpdateManyWithoutAccountingFirmsInput
 }
@@ -242,6 +352,11 @@ input AccountingFirmUpdateInput {
   phone: String
   email: String
   contact: String
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   employees: UserUpdateManyWithoutAccountingFirmInput
   customers: CompanyUpdateManyWithoutAccountingFirmsInput
 }
@@ -253,6 +368,11 @@ input AccountingFirmUpdateManyDataInput {
   phone: String
   email: String
   contact: String
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
 }
 
 input AccountingFirmUpdateManyMutationInput {
@@ -262,6 +382,11 @@ input AccountingFirmUpdateManyMutationInput {
   phone: String
   email: String
   contact: String
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
 }
 
 input AccountingFirmUpdateManyWithoutCustomersInput {
@@ -304,6 +429,11 @@ input AccountingFirmUpdateWithoutCustomersDataInput {
   phone: String
   email: String
   contact: String
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   employees: UserUpdateManyWithoutAccountingFirmInput
 }
 
@@ -314,6 +444,11 @@ input AccountingFirmUpdateWithoutEmployeesDataInput {
   phone: String
   email: String
   contact: String
+  zipCode: String
+  fax: String
+  returnAddress: String
+  returnPhone: String
+  returnPerson: String
   customers: CompanyUpdateManyWithoutAccountingFirmsInput
 }
 
@@ -437,6 +572,76 @@ input AccountingFirmWhereInput {
   contact_not_starts_with: String
   contact_ends_with: String
   contact_not_ends_with: String
+  zipCode: String
+  zipCode_not: String
+  zipCode_in: [String!]
+  zipCode_not_in: [String!]
+  zipCode_lt: String
+  zipCode_lte: String
+  zipCode_gt: String
+  zipCode_gte: String
+  zipCode_contains: String
+  zipCode_not_contains: String
+  zipCode_starts_with: String
+  zipCode_not_starts_with: String
+  zipCode_ends_with: String
+  zipCode_not_ends_with: String
+  fax: String
+  fax_not: String
+  fax_in: [String!]
+  fax_not_in: [String!]
+  fax_lt: String
+  fax_lte: String
+  fax_gt: String
+  fax_gte: String
+  fax_contains: String
+  fax_not_contains: String
+  fax_starts_with: String
+  fax_not_starts_with: String
+  fax_ends_with: String
+  fax_not_ends_with: String
+  returnAddress: String
+  returnAddress_not: String
+  returnAddress_in: [String!]
+  returnAddress_not_in: [String!]
+  returnAddress_lt: String
+  returnAddress_lte: String
+  returnAddress_gt: String
+  returnAddress_gte: String
+  returnAddress_contains: String
+  returnAddress_not_contains: String
+  returnAddress_starts_with: String
+  returnAddress_not_starts_with: String
+  returnAddress_ends_with: String
+  returnAddress_not_ends_with: String
+  returnPhone: String
+  returnPhone_not: String
+  returnPhone_in: [String!]
+  returnPhone_not_in: [String!]
+  returnPhone_lt: String
+  returnPhone_lte: String
+  returnPhone_gt: String
+  returnPhone_gte: String
+  returnPhone_contains: String
+  returnPhone_not_contains: String
+  returnPhone_starts_with: String
+  returnPhone_not_starts_with: String
+  returnPhone_ends_with: String
+  returnPhone_not_ends_with: String
+  returnPerson: String
+  returnPerson_not: String
+  returnPerson_in: [String!]
+  returnPerson_not_in: [String!]
+  returnPerson_lt: String
+  returnPerson_lte: String
+  returnPerson_gt: String
+  returnPerson_gte: String
+  returnPerson_contains: String
+  returnPerson_not_contains: String
+  returnPerson_starts_with: String
+  returnPerson_not_starts_with: String
+  returnPerson_ends_with: String
+  returnPerson_not_ends_with: String
   employees_every: UserWhereInput
   employees_some: UserWhereInput
   employees_none: UserWhereInput

@@ -28,6 +28,11 @@ type AccountingFirm{
   phone:String!
   email:String!
   contact:String!
+  zipCode:String
+  fax:String
+  returnAddress:String
+  returnPhone:String
+  returnPerson:String
   employees:[User!]!
   customers:[Company!]!
 }

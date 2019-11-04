@@ -37,6 +37,7 @@ const typeDefs = gql`
     getRate(currencyType:String!,date:String!):String!
     getLetterOfProofSetting(projectId:String!):String!
     getLetterOfProofs(projectId:String!):[LetterOfProof]
+    accountingFirm:AccountingFirm
   }
 
   type Mutation {
@@ -72,6 +73,7 @@ const typeDefs = gql`
     addLetterOfProof(record:String):LetterOfProof
     updateLetterOfProof(record:String!):LetterOfProof
     deleteLetterOfProof(proofId:String):LetterOfProof
+    updateAccountingFirm(record:String!):AccountingFirm
     
   }
 
@@ -130,6 +132,11 @@ const typeDefs = gql`
     phone:String!
     email:String!
     contact:String!
+    zipCode:String
+    fax:String
+    returnAddress:String
+    returnPhone:String
+    returnPerson:String
     employees:[User]
     customers:[Company]
   }

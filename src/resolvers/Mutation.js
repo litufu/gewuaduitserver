@@ -924,6 +924,34 @@ const Mutation = {
    deleteLetterOfProof:async(parent,{proofId},ctx)=>{
     return ctx.prisma.deleteLetterOfProof({id:proofId})
    },
+   updateAccountingFirm:async(parent,{record},ctx)=>{
+     const newRecord = JSON.parse(record)
+     const userId = getUserId(ctx)
+     const user = await ctx.prisma.user({ id: userId })
+     if (!user) {
+       throw new Error("用户不存在")
+     }
+      // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+        throw new Error("你还没有加入会计师事务所，无法上传数据")
+    }else{
+      if(accountingFirm.id!==newRecord.id){
+        throw new Error("你不属于这个会计师事务所")
+      }
+    }
+    const newAccountingFirm = await ctx.prisma.updateAccountingFirm({
+      where:{id:newRecord.id},
+      data:{
+        zipCode:newRecord.zipCode,
+        fax:newRecord.fax,
+        returnAddress:newRecord.returnAddress,
+        returnPhone:newRecord.returnPhone,
+        returnPerson:newRecord.returnPerson,
+      }
+    })
+    return newAccountingFirm
+   },
 }
 
 module.exports = {

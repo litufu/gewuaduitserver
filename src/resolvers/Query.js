@@ -73,6 +73,19 @@ const Query = {
     const company = await ctx.prisma.project({id:projectId}).company()
     return company
   },
+  accountingFirm:async (parent, args, ctx) => {
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+      throw new Error("你还没有加入会计师事务所，无法上传数据")
+    }
+    return accountingFirm
+  },
   companies:async (parent, {inputvalue}, ctx) => {
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
