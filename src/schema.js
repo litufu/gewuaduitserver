@@ -74,7 +74,7 @@ const typeDefs = gql`
     updateLetterOfProof(record:String!):LetterOfProof
     deleteLetterOfProof(proofId:String):LetterOfProof
     updateAccountingFirm(record:String!):AccountingFirm
-    
+    addProofPhoto(id:String!,type:String!,name:String!):LetterOfProof
   }
 
 

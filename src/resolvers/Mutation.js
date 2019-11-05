@@ -914,9 +914,6 @@ const Mutation = {
         sendAmount:newRecord.sendAmount,
         receiveBalance:newRecord.receiveBalance,
         receiveAmount:newRecord.receiveAmount,
-        sendPhoto:newRecord.sendPhoto,
-        receivePhoto:newRecord.receivePhoto,
-        proofPhoto:newRecord.proofPhoto,
       }
     })
     return proof
@@ -951,6 +948,21 @@ const Mutation = {
       }
     })
     return newAccountingFirm
+   },
+   addProofPhoto:async(parent,{id,type,name},ctx)=>{
+    let newData
+    if(type==="sendProof"){
+      newData={sendPhoto:name}
+    }else if(type==="receiveProof"){
+      newData={receivePhoto:name}
+    }else if(type==="proof"){
+      newData={proofPhoto:name} 
+    }
+    const newProof = await ctx.prisma.updateLetterOfProof({
+      where:{id},
+      data:newData
+    })
+    return newProof
    },
 }
 
