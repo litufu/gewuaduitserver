@@ -182,7 +182,6 @@ def recaculate_auxiliary(df_auxiliary,df_xsz):
         try:
             df_xsz_pivot_tmp = df_xsz_pivot.loc[subject_num_and_name]
         except Exception as e:
-            print(e)
             continue
         # 序时账借方合计
         debit = df_xsz_pivot_tmp['debit'].sum()
@@ -273,9 +272,9 @@ if __name__ == '__main__':
     db_path = sys.argv[1]
     start_time = sys.argv[2]
     end_time = sys.argv[3]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
-    # start_time = "2016-1-1"
-    # end_time = "2016-12-31"
+    # db_path = "D:\gewuaduit\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # start_time = "2015-1-1"
+    # end_time = "2015-12-31"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()

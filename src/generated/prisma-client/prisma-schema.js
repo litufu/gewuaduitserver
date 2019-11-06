@@ -663,6 +663,10 @@ type AggregateAccountingFirm {
   count: Int!
 }
 
+type AggregateComment {
+  count: Int!
+}
+
 type AggregateCompany {
   count: Int!
 }
@@ -729,6 +733,145 @@ type AggregateUser {
 
 type BatchPayload {
   count: Long!
+}
+
+type Comment {
+  id: ID!
+  title: String!
+  content: String!
+  email: String
+}
+
+type CommentConnection {
+  pageInfo: PageInfo!
+  edges: [CommentEdge]!
+  aggregate: AggregateComment!
+}
+
+input CommentCreateInput {
+  id: ID
+  title: String!
+  content: String!
+  email: String
+}
+
+type CommentEdge {
+  node: Comment!
+  cursor: String!
+}
+
+enum CommentOrderByInput {
+  id_ASC
+  id_DESC
+  title_ASC
+  title_DESC
+  content_ASC
+  content_DESC
+  email_ASC
+  email_DESC
+}
+
+type CommentPreviousValues {
+  id: ID!
+  title: String!
+  content: String!
+  email: String
+}
+
+type CommentSubscriptionPayload {
+  mutation: MutationType!
+  node: Comment
+  updatedFields: [String!]
+  previousValues: CommentPreviousValues
+}
+
+input CommentSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: CommentWhereInput
+  AND: [CommentSubscriptionWhereInput!]
+  OR: [CommentSubscriptionWhereInput!]
+  NOT: [CommentSubscriptionWhereInput!]
+}
+
+input CommentUpdateInput {
+  title: String
+  content: String
+  email: String
+}
+
+input CommentUpdateManyMutationInput {
+  title: String
+  content: String
+  email: String
+}
+
+input CommentWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  title: String
+  title_not: String
+  title_in: [String!]
+  title_not_in: [String!]
+  title_lt: String
+  title_lte: String
+  title_gt: String
+  title_gte: String
+  title_contains: String
+  title_not_contains: String
+  title_starts_with: String
+  title_not_starts_with: String
+  title_ends_with: String
+  title_not_ends_with: String
+  content: String
+  content_not: String
+  content_in: [String!]
+  content_not_in: [String!]
+  content_lt: String
+  content_lte: String
+  content_gt: String
+  content_gte: String
+  content_contains: String
+  content_not_contains: String
+  content_starts_with: String
+  content_not_starts_with: String
+  content_ends_with: String
+  content_not_ends_with: String
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  AND: [CommentWhereInput!]
+  OR: [CommentWhereInput!]
+  NOT: [CommentWhereInput!]
+}
+
+input CommentWhereUniqueInput {
+  id: ID
 }
 
 type Company {
@@ -3409,6 +3552,12 @@ type Mutation {
   upsertAccountingFirm(where: AccountingFirmWhereUniqueInput!, create: AccountingFirmCreateInput!, update: AccountingFirmUpdateInput!): AccountingFirm!
   deleteAccountingFirm(where: AccountingFirmWhereUniqueInput!): AccountingFirm
   deleteManyAccountingFirms(where: AccountingFirmWhereInput): BatchPayload!
+  createComment(data: CommentCreateInput!): Comment!
+  updateComment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment
+  updateManyComments(data: CommentUpdateManyMutationInput!, where: CommentWhereInput): BatchPayload!
+  upsertComment(where: CommentWhereUniqueInput!, create: CommentCreateInput!, update: CommentUpdateInput!): Comment!
+  deleteComment(where: CommentWhereUniqueInput!): Comment
+  deleteManyComments(where: CommentWhereInput): BatchPayload!
   createCompany(data: CompanyCreateInput!): Company!
   updateCompany(data: CompanyUpdateInput!, where: CompanyWhereUniqueInput!): Company
   updateManyCompanies(data: CompanyUpdateManyMutationInput!, where: CompanyWhereInput): BatchPayload!
@@ -3887,6 +4036,9 @@ type Query {
   accountingFirm(where: AccountingFirmWhereUniqueInput!): AccountingFirm
   accountingFirms(where: AccountingFirmWhereInput, orderBy: AccountingFirmOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [AccountingFirm]!
   accountingFirmsConnection(where: AccountingFirmWhereInput, orderBy: AccountingFirmOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AccountingFirmConnection!
+  comment(where: CommentWhereUniqueInput!): Comment
+  comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment]!
+  commentsConnection(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CommentConnection!
   company(where: CompanyWhereUniqueInput!): Company
   companies(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Company]!
   companiesConnection(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CompanyConnection!
@@ -4566,6 +4718,7 @@ input SubjectContrastWhereUniqueInput {
 
 type Subscription {
   accountingFirm(where: AccountingFirmSubscriptionWhereInput): AccountingFirmSubscriptionPayload
+  comment(where: CommentSubscriptionWhereInput): CommentSubscriptionPayload
   company(where: CompanySubscriptionWhereInput): CompanySubscriptionPayload
   companyStdName(where: CompanyStdNameSubscriptionWhereInput): CompanyStdNameSubscriptionPayload
   dataRecord(where: DataRecordSubscriptionWhereInput): DataRecordSubscriptionPayload

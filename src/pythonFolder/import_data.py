@@ -383,6 +383,4 @@ if __name__ == '__main__':
     save_supplier_to_db(engine,session, start_time, end_time)
     # 客户分析
     save_customer_to_db(engine,session, start_time, end_time)
-    # 计算往来款发生明细
-    # save_account_occur_times_to_db(session,start_time,end_time)
     print("success")

@@ -964,6 +964,14 @@ const Mutation = {
     })
     return newProof
    },
+   addComment:async(parent,{title,content,email},ctx)=>{
+      const comment = await ctx.prisma.createComment({
+        title,
+        content,
+        email
+      })
+      return comment
+   },
 }
 
 module.exports = {

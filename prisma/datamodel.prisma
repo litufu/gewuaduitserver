@@ -20,6 +20,13 @@ type User {
   dataRecords:[DataRecord!]!
 }
 
+type Comment{
+  id: ID! @id
+  title:String!
+  content:String!
+  email:String
+}
+
 type AccountingFirm{
   id: ID! @id
   name:String!  @unique

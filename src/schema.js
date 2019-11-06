@@ -38,6 +38,7 @@ const typeDefs = gql`
     getLetterOfProofSetting(projectId:String!):String!
     getLetterOfProofs(projectId:String!):[LetterOfProof]
     accountingFirm:AccountingFirm
+    comments:[Comment]
   }
 
   type Mutation {
@@ -75,6 +76,7 @@ const typeDefs = gql`
     deleteLetterOfProof(proofId:String):LetterOfProof
     updateAccountingFirm(record:String!):AccountingFirm
     addProofPhoto(id:String!,type:String!,name:String!):LetterOfProof
+    addComment(title:String!,content:String!,email:String):Comment
   }
 
 
@@ -107,6 +109,14 @@ const typeDefs = gql`
       ADMIN
       CUSTOMER
   }
+
+  
+type Comment{
+  id: ID!
+  title:String!
+  content:String!
+  email:String
+}
 
   type User {
     id: ID!

@@ -316,6 +316,9 @@ const Query = {
     const letterOfProofs = await ctx.prisma.letterOfProofs({where:{project:{id:projectId}}})
     return letterOfProofs
   },
+  comments:async (parent,args,ctx)=>{
+    return ctx.prisma.comments({last:100})
+  },
 }
 
 module.exports = {
