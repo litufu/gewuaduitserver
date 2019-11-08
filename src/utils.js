@@ -29,6 +29,7 @@ function getUserId(context) {
     const verifiedToken = verify(token, APP_SECRET)
     return verifiedToken && verifiedToken.userId
   }
+  throw new Error('你尚未登录')
 }
 
 const UPLOAD_DIR = './uploads'

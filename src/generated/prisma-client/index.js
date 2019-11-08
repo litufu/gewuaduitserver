@@ -17,6 +17,10 @@ var models = [
     embedded: false
   },
   {
+    name: "Vedio",
+    embedded: false
+  },
+  {
     name: "AccountingFirm",
     embedded: false
   },

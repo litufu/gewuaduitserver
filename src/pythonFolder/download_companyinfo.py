@@ -2,13 +2,12 @@
 
 import sys
 import os
-import time
+import random
 import pandas as pd
 import requests
 import re
 from bs4 import BeautifulSoup
 import io
-from datetime import datetime
 import json
 from utils import replace_brace
 
@@ -25,7 +24,10 @@ def get_cookies():
     # 将cookies字符串转化为dict
     f = open(cookies_path, 'r')  # 打开所保存的cookies内容文件
     cookies = {}  # 初始化cookies字典变量
-    for line in f.read().split(';'):  # 按照字符：进行划分读取
+    lines = f.readlines()
+    choice = random.randint(0,len(lines)-1)
+    content = lines[choice]
+    for line in content.split(';'):  # 按照字符：进行划分读取
         # 其设置为1就会把字符串拆分成2份
         name, value = line.strip().split('=', 1)
         cookies[name] = value  # 为字典cookies添加内容
@@ -379,4 +381,4 @@ def download_company(company_name):
 if __name__ == "__main__":
     company_name = sys.argv[1]
     download_company(company_name)
-    # download_company("中铁高新工业股份有限公司")
+    # download_company("深圳市众恒世讯科技股份有限公司")

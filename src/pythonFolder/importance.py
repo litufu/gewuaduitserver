@@ -1,3 +1,8 @@
+
+
+import sys
+from sqlalchemy import create_engine,and_
+from sqlalchemy.orm import sessionmaker
 from get_tb import get_new_km_xsz_df,get_tb
 
 def importance_level(company_type,pre_tax_profit,income,net_assets,total_assets,mini_level=50000):
@@ -113,3 +118,13 @@ def get_actual_importance_level(company_type,start_time,end_time,engine,session,
     metrological_basis, metrological_basis_value, overall_report_form_level_ratio, \
     actual_importance_level_ratio, uncorrected_misstatement = importance_level(company_type,pre_tax_profit,income,net_assets,total_assets)
     return int(int(metrological_basis_value * overall_report_form_level_ratio) * actual_importance_level_ratio)
+
+
+if __name__ == '__main__':
+    # db_path = sys.argv[1]
+    db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2n939vt003x0720e19fw5n1.sqlite"
+    engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    from utils import add_suggestion
+    res = get_actual_importance_level("其他企业","2016-1-1","2016-12-31",engine,session,add_suggestion)

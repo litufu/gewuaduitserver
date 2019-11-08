@@ -22,8 +22,9 @@ def get_customer_and_supplier_names(session,engine,start_time,end_time,num):
 
     suppliers = get_first_company(session,engine,start_time,end_time,num,"supplier")
     customers = get_first_company(session,engine,start_time,end_time,num,"customer")
-
-    companies = [*suppliers,*customers]
+    supplier_names = list(suppliers["name"].values)
+    customer_names = list(customers["name"].values)
+    companies = [*supplier_names,*customer_names]
     # auxiliaries = session.query(Auxiliary).filter(Auxiliary.start_time==start_time,Auxiliary.end_time==end_time).all()
     # for auxiliary in auxiliaries:
     #     if ("客户" in auxiliary.type_name) or ("供应商" in auxiliary.type_name):
@@ -32,9 +33,13 @@ def get_customer_and_supplier_names(session,engine,start_time,end_time,num):
 
 if __name__ == '__main__':
     db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2ok4ozx000i07205dds201w.sqlite"
     start_time = sys.argv[2]
     end_time = sys.argv[3]
     num = int(sys.argv[4])
+    # start_time = "2016-1-1"
+    # end_time = "2016-12-31"
+    # num = 10
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()

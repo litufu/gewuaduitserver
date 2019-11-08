@@ -40,7 +40,6 @@ def str_to_float(str1):
     elif isinstance(str1,float):
         return str1
     elif isinstance(str1,int):
-        print(" int")
         return float(str1)
 
 def replace_brace(obj):
@@ -297,7 +296,17 @@ class DateEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 
+import time
 
+def count_time(func):
+    def int_time(*args, **kwargs):
+        start_time = time.time()  # 程序开始时间
+        func(*args, **kwargs)
+        over_time = time.time()   # 程序结束时间
+        total_time = over_time - start_time
+        print('程序共计%s秒' % total_time)
+
+    return int_time
 
 if __name__ == '__main__':
     # str_to_float(np.nan)

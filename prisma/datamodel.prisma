@@ -27,6 +27,14 @@ type Comment{
   email:String
 }
 
+type Vedio{
+  id: ID! @id
+  no: Int!
+  title:String!
+  url:String!
+  poster:String
+}
+
 type AccountingFirm{
   id: ID! @id
   name:String!  @unique

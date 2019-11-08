@@ -731,6 +731,10 @@ type AggregateUser {
   count: Int!
 }
 
+type AggregateVedio {
+  count: Int!
+}
+
 type BatchPayload {
   count: Long!
 }
@@ -3654,6 +3658,12 @@ type Mutation {
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   deleteUser(where: UserWhereUniqueInput!): User
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  createVedio(data: VedioCreateInput!): Vedio!
+  updateVedio(data: VedioUpdateInput!, where: VedioWhereUniqueInput!): Vedio
+  updateManyVedios(data: VedioUpdateManyMutationInput!, where: VedioWhereInput): BatchPayload!
+  upsertVedio(where: VedioWhereUniqueInput!, create: VedioCreateInput!, update: VedioUpdateInput!): Vedio!
+  deleteVedio(where: VedioWhereUniqueInput!): Vedio
+  deleteManyVedios(where: VedioWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -4087,6 +4097,9 @@ type Query {
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  vedio(where: VedioWhereUniqueInput!): Vedio
+  vedios(where: VedioWhereInput, orderBy: VedioOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Vedio]!
+  vediosConnection(where: VedioWhereInput, orderBy: VedioOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): VedioConnection!
   node(id: ID!): Node
 }
 
@@ -4735,6 +4748,7 @@ type Subscription {
   subjectContrast(where: SubjectContrastSubscriptionWhereInput): SubjectContrastSubscriptionPayload
   tbSubject(where: TbSubjectSubscriptionWhereInput): TbSubjectSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  vedio(where: VedioSubscriptionWhereInput): VedioSubscriptionPayload
 }
 
 type TbSubject {
@@ -5426,6 +5440,160 @@ input UserWhereUniqueInput {
   email: String
   validateEmailToken: String
   resetPasswordToken: String
+}
+
+type Vedio {
+  id: ID!
+  no: Int!
+  title: String!
+  url: String!
+  poster: String
+}
+
+type VedioConnection {
+  pageInfo: PageInfo!
+  edges: [VedioEdge]!
+  aggregate: AggregateVedio!
+}
+
+input VedioCreateInput {
+  id: ID
+  no: Int!
+  title: String!
+  url: String!
+  poster: String
+}
+
+type VedioEdge {
+  node: Vedio!
+  cursor: String!
+}
+
+enum VedioOrderByInput {
+  id_ASC
+  id_DESC
+  no_ASC
+  no_DESC
+  title_ASC
+  title_DESC
+  url_ASC
+  url_DESC
+  poster_ASC
+  poster_DESC
+}
+
+type VedioPreviousValues {
+  id: ID!
+  no: Int!
+  title: String!
+  url: String!
+  poster: String
+}
+
+type VedioSubscriptionPayload {
+  mutation: MutationType!
+  node: Vedio
+  updatedFields: [String!]
+  previousValues: VedioPreviousValues
+}
+
+input VedioSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: VedioWhereInput
+  AND: [VedioSubscriptionWhereInput!]
+  OR: [VedioSubscriptionWhereInput!]
+  NOT: [VedioSubscriptionWhereInput!]
+}
+
+input VedioUpdateInput {
+  no: Int
+  title: String
+  url: String
+  poster: String
+}
+
+input VedioUpdateManyMutationInput {
+  no: Int
+  title: String
+  url: String
+  poster: String
+}
+
+input VedioWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  no: Int
+  no_not: Int
+  no_in: [Int!]
+  no_not_in: [Int!]
+  no_lt: Int
+  no_lte: Int
+  no_gt: Int
+  no_gte: Int
+  title: String
+  title_not: String
+  title_in: [String!]
+  title_not_in: [String!]
+  title_lt: String
+  title_lte: String
+  title_gt: String
+  title_gte: String
+  title_contains: String
+  title_not_contains: String
+  title_starts_with: String
+  title_not_starts_with: String
+  title_ends_with: String
+  title_not_ends_with: String
+  url: String
+  url_not: String
+  url_in: [String!]
+  url_not_in: [String!]
+  url_lt: String
+  url_lte: String
+  url_gt: String
+  url_gte: String
+  url_contains: String
+  url_not_contains: String
+  url_starts_with: String
+  url_not_starts_with: String
+  url_ends_with: String
+  url_not_ends_with: String
+  poster: String
+  poster_not: String
+  poster_in: [String!]
+  poster_not_in: [String!]
+  poster_lt: String
+  poster_lte: String
+  poster_gt: String
+  poster_gte: String
+  poster_contains: String
+  poster_not_contains: String
+  poster_starts_with: String
+  poster_not_starts_with: String
+  poster_ends_with: String
+  poster_not_ends_with: String
+  AND: [VedioWhereInput!]
+  OR: [VedioWhereInput!]
+  NOT: [VedioWhereInput!]
+}
+
+input VedioWhereUniqueInput {
+  id: ID
 }
 `
       }

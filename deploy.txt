@@ -32,6 +32,10 @@ conda install
 因此只能使用node执行
 
 前段：
+0.1停止服务
+pm2 stop app
+pm2 delete app
+pm2 status
 0.1删除文件夹
 rm -rf gewuaduitfront
 1、复制

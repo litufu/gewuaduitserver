@@ -1,4 +1,5 @@
 import sys
+from multiprocessing import Pool
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import json
@@ -502,7 +503,8 @@ def add_audit_record(start_time,end_time,session,problem,voucher):
     session.add(audit_record)
     session.commit()
 
-def handle_entry(df_entry,record,grades,start_time, end_time, session):
+def handle_entry(df_entry,record,grades,start_time, end_time, session,judge_entry_events_orders_dict):
+    entry_subjects = list(df_entry["tb_subject"].values)
     # 获取凭证科目名称
     subjects = get_entry_subjects(df_entry, "subject_name_1")
     debit_subjects_list = subjects["debit"]
@@ -510,62 +512,70 @@ def handle_entry(df_entry,record,grades,start_time, end_time, session):
     # 合并科目名称
     debit_subject_desc = "%".join(debit_subjects_list)
     credit_subjects_desc = "%".join(credit_subjects_list)
-    for judge_entry_event in judge_entry_events:
-        subject = judge_entry_event["subject"]
-        if entry_contain_subject(df_entry, subject):
-            subject_direction = entry_subject_direction(df_entry,subject)
-            same_subjects_only_one_judge = is_same_subjects_only_one(debit_subjects_list,credit_subjects_list,subject_direction)
-            opposite_subjects_list = get_opposite_subjects_list(debit_subjects_list,credit_subjects_list,subject_direction)
-            judges = judge_entry_event["judge"]
-            for judge in judges:
-                logic = judge.get("logic","and")
-                event = judge.get("event", "")
-                problem = judge.get("problem", None)
-                conditions = judge.get("condition",None)
-                condition_judges = []
+    try:
+        nums = [judge_entry_events_orders_dict[entry_subject] for entry_subject in entry_subjects]
+        nums.sort()
+        no = nums[0]
+        judge_entry_event = judge_entry_events[no - 1]
 
-                for condition in conditions:
-                    # 判断是否要求科目唯一
-                    same_subjects_only_one = condition.get("same_subjects_only_one",None)
-                    if same_subjects_only_one != None:
-                        condition_judges.append(same_subjects_only_one_judge)
-                    # 判断科目方向是否正确
-                    expected_subject_direction = condition.get("subject_direction",None)
-                    if expected_subject_direction != None:
-                        if expected_subject_direction == subject_direction:
-                            subject_direction_judge = True
-                        else:
-                            subject_direction_judge = False
-                        condition_judges.append(subject_direction_judge)
-                    judge_opposite_subjects = condition.get("opposite_subjects",None)
-                    # 判断对方科目是否包含
-                    if judge_opposite_subjects != None:
-                        opposite_subjects_contain_judge = is_opposite_subjects_contain(opposite_subjects_list,judge_opposite_subjects)
-                        condition_judges.append(opposite_subjects_contain_judge)
-                    entry_keywords = condition.get("entry_keywords",None)
-                    # 判断凭证是否包含关键词
-                    if entry_keywords != None:
-                        contain_entry_keywords_judge = check_subject_and_desc_contains(df_entry,entry_keywords,grades)
-                        condition_judges.append(contain_entry_keywords_judge)
-                if logic == "and":
-                    condition_judges_set = set(condition_judges)
-                    if (len(condition_judges_set) == 1) and (True in condition_judges_set):
-                        add_entry_desc(start_time, end_time, session, df_entry, event)
-                        if problem != None:
-                            voucher = "{}-{}-{}".format(record['month'],record['vocher_type'],record['vocher_num'])
-                            add_audit_record(start_time, end_time, session, problem,voucher)
-                        return
-                elif logic == "or":
-                    if True in condition_judges:
-                        add_entry_desc(start_time, end_time, session, df_entry, event)
-                        if problem != None:
-                            voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
-                            add_audit_record(start_time, end_time, session, problem,voucher)
-                        return
-            add_entry_desc(start_time, end_time, session, df_entry, "非标准-{}借方{}-贷方{}".format(subject,debit_subject_desc,credit_subjects_desc))
-            voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
-            problem = "{}，记账凭证为非标准记账凭证".format(subject)
-            add_audit_record(start_time, end_time, session, problem,voucher)
+        subject = judge_entry_event["subject"]
+        subject_direction = entry_subject_direction(df_entry, subject)
+        same_subjects_only_one_judge = is_same_subjects_only_one(debit_subjects_list, credit_subjects_list,
+                                                                 subject_direction)
+        opposite_subjects_list = get_opposite_subjects_list(debit_subjects_list, credit_subjects_list,
+                                                            subject_direction)
+        judges = judge_entry_event["judge"]
+        for judge in judges:
+            logic = judge.get("logic", "and")
+            event = judge.get("event", "")
+            problem = judge.get("problem", None)
+            conditions = judge.get("condition", None)
+            condition_judges = []
+
+            for condition in conditions:
+                # 判断是否要求科目唯一
+                same_subjects_only_one = condition.get("same_subjects_only_one", None)
+                if same_subjects_only_one != None:
+                    condition_judges.append(same_subjects_only_one_judge)
+                # 判断科目方向是否正确
+                expected_subject_direction = condition.get("subject_direction", None)
+                if expected_subject_direction != None:
+                    if expected_subject_direction == subject_direction:
+                        subject_direction_judge = True
+                    else:
+                        subject_direction_judge = False
+                    condition_judges.append(subject_direction_judge)
+                judge_opposite_subjects = condition.get("opposite_subjects", None)
+                # 判断对方科目是否包含
+                if judge_opposite_subjects != None:
+                    opposite_subjects_contain_judge = is_opposite_subjects_contain(opposite_subjects_list,
+                                                                                   judge_opposite_subjects)
+                    condition_judges.append(opposite_subjects_contain_judge)
+                entry_keywords = condition.get("entry_keywords", None)
+                # 判断凭证是否包含关键词
+                if entry_keywords != None:
+                    contain_entry_keywords_judge = check_subject_and_desc_contains(df_entry, entry_keywords, grades)
+                    condition_judges.append(contain_entry_keywords_judge)
+            if logic == "and":
+                condition_judges_set = set(condition_judges)
+                if (len(condition_judges_set) == 1) and (True in condition_judges_set):
+                    add_entry_desc(start_time, end_time, session, df_entry, event)
+                    if problem != None:
+                        voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
+                        add_audit_record(start_time, end_time, session, problem, voucher)
+                    return
+            elif logic == "or":
+                if True in condition_judges:
+                    add_entry_desc(start_time, end_time, session, df_entry, event)
+                    if problem != None:
+                        voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
+                        add_audit_record(start_time, end_time, session, problem, voucher)
+                    return
+    except Exception as e:
+        add_entry_desc(start_time, end_time, session, df_entry, "非标准-借方{}-贷方{}".format(debit_subject_desc,credit_subjects_desc))
+        voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
+        problem = "记账凭证为非标准记账凭证"
+        add_audit_record(start_time, end_time, session, problem,voucher)
 
 
 def get_subject_nature(obj,debit_subjects_list,credit_subjects_list,df_entry,grades):
@@ -757,11 +767,16 @@ def aduit_entry(start_time,end_time,session,engine,add_suggestion):
                 continue
         # 处理其他凭证
         df_split_entries = split_entry(df_tmp)
+        judge_entry_events_orders_dict  = dict()
+        for judge_entry_event in judge_entry_events:
+            judge_entry_events_orders_dict[judge_entry_event["subject"]] = judge_entry_event["no"]
+        # p = Pool(4)
         for df_split_entry in df_split_entries:
-            handle_entry(df_split_entry, record, grades,start_time, end_time, session)
 
-
-
+            # p.apply_async(handle_entry, args=(df_split_entry, record, grades,start_time, end_time, session,judge_entry_events_orders_dict))
+            handle_entry(df_split_entry, record, grades,start_time, end_time, session,judge_entry_events_orders_dict)
+        # p.close()
+        # p.join()
 
 
 if __name__ == '__main__':

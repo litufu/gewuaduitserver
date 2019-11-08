@@ -319,6 +319,9 @@ const Query = {
   comments:async (parent,args,ctx)=>{
     return ctx.prisma.comments({last:100})
   },
+  vedios:async (parent,args,ctx)=>{
+    return ctx.prisma.vedios({last:100})
+  },
 }
 
 module.exports = {

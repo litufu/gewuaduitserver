@@ -279,6 +279,9 @@ const Mutation = {
     const pythonProcess = spawn('python',[filepath, name]);
     pythonProcess.stdout.on('data', async (data) => {
         let res = JSON.parse(data)
+        if(res.hasOwnProperty("name")){
+          throw Error("下载公司工商信息失败，请检查公司名称是否正确")
+        }
         let companyInfo = res.companyInfo
         let holders = res.holders
         let members = res.members
@@ -360,44 +363,43 @@ const Mutation = {
       throw new Error("公司名称不正确")
     }
     const companyType = companyNature[company.nature]
-
     const db_name = `${accountingFirm.id}-${company.id}.sqlite`
     const dbPath = path.join(path.resolve(__dirname, '../../../db'), `./${db_name}`)
-    const files = []
+
+    // 保存文件到本地
+    const records = []
     for(const upload of uploads){
       // 解析上传文件
       const { createReadStream, filename, mimetype } = await upload.file
       const stream = createReadStream()
-      // 存储文件记录
+      const uploadType = upload.type
       const file = await ctx.prisma.createFile({
         path:UPLOAD_DIR,
         filename,
         mimetype,
-        type:upload.type
+        type:uploadType
       })
-      // 存储文件
       const storeFilePath = `${UPLOAD_DIR}/${file.id}-${filename}`
       await storeFS({ storeFilePath,stream })
-     
-    //  读取文件并存储到数据库
-      const importDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/import_data.py') 
-      const uploadType = upload.type
-      const importDataProcess = spawn('python',[importDataPath, dbPath,startTimeStr,endTimeStr,storeFilePath,uploadType,companyType]); 
-      importDataProcess.stdout.on('data', async (data) => {
-          console.log(data)
+      records.push({fileId:file.id,storeFilePath,uploadType})
+    }
+    const recordsJson = JSON.stringify(records)
+    // 将上传的文件导入本地sqlite数据库
+    const importDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/import_data.py') 
+    const importDataProcess = spawnSync('python',[importDataPath, dbPath,startTimeStr,endTimeStr,recordsJson]); 
+    const res = importDataProcess.stdout.toString() 
+    
+    for(let i=0;i<records.length;i++){
+      const fileId = records[i].fileId
+      const storeFilePath = records[i].storeFilePath
+      // 删除上传的文件
+      fs.unlink(storeFilePath, function(err) {
+        if (err) {
+            return console.error(err);
+        }
+        console.log("文件删除成功！");
       })
-      importDataProcess.stderr.on('data', (data) => {
-        console.log(`数据录入失败${data}`)
-      });
-      importDataProcess.on('close', (code) => {
-        console.log(`数据录入完成 ${code}`);
-        fs.unlink(storeFilePath, function(err) {
-          if (err) {
-              return console.error(err);
-          }
-          console.log("文件删除成功！");
-        })
-      });
+      // 添加上传记录
       const dataRecords = await ctx.prisma.dataRecords({
         where:{
           AND:[
@@ -410,30 +412,42 @@ const Mutation = {
       })
       if(dataRecords.length>0){
         const dataRecord = dataRecords[0]
-        await ctx.prisma.updateDataRecord({
+        const update = await ctx.prisma.updateDataRecord({
           where:{id:dataRecord.id},
           data:{
-            files:{connect:{id:file.id}},
+            files:{connect:{id:fileId}},
             users:{connect:{id:userId}}
           }
         })
       }else{
-        await ctx.prisma.createDataRecord({
+        const create = await ctx.prisma.createDataRecord({
           startTime,
           endTime,
           accountingFirm:{connect:{id:accountingFirm.id}},
           company:{connect:{name:companyName}},
-          files:{connect:{id:file.id}},
+          files:{connect:{id:fileId}},
           users:{connect:{id:userId}}
         })
       }
-      // 登记文件信息
-      
-      files.push(file)
     }
+    // 开始项目数据初始化
+    const projectInitDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/project_init_data.py') 
+    const projectInitDataProcess = spawn('python',[projectInitDataPath, dbPath,startTimeStr,endTimeStr,companyType]);
+    projectInitDataProcess.stdout.on('data', async (data) => {
+        console.log(data)
+    });
     
+    projectInitDataProcess.stderr.on('data', (data) => {
+        throw new Error(`项目数据初始化失败${data}`)
+    });
+
+    projectInitDataProcess.on('exit', (code) => {
+      if(code!==0){
+        throw new Error(`项目数据初始化失败`)
+      }
+    });
     
-    return files
+    return true
   },
   addDataRecordUsers:async (parent, { userEmails,companyName,startTime,endTime}, ctx) => {
     // 验证上传者
@@ -518,6 +532,18 @@ const Mutation = {
       return project
     }else{
       throw new Error("未发现数据记录")
+    }
+  },
+  projectInitData:async(parent,{projectId},ctx)=>{
+    const {dbPath,startTimeStr,endTimeStr,company} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const companyType = company.type
+    const projectInitDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/project_init_data.py') 
+    const projectInitDataProcess = spawnSync('python',[projectInitDataPath, dbPath,startTimeStr,endTimeStr,companyType]);
+    const res = projectInitDataProcess.stdout.toString() 
+    if(res==="success"){
+      return true
+    }else{
+      return false
     }
   },
   addAduitAdjustment:async(parent,{projectId,record},ctx)=>{
@@ -674,7 +700,7 @@ const Mutation = {
      });
      return true
   },
-  downloadRelatedPatiesCompany:async(parent,{companyName,speed},ctx)=>{
+  downloadRelatedPaties:async(parent,{companyName,speed},ctx)=>{
     const company = await ctx.prisma.company({name:companyName})
     if(company){
       const companyRelatedParties = await ctx.prisma.company({name:companyName}).relatedParties()

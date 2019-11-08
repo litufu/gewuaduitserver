@@ -39,6 +39,7 @@ const typeDefs = gql`
     getLetterOfProofs(projectId:String!):[LetterOfProof]
     accountingFirm:AccountingFirm
     comments:[Comment]
+    vedios:[Vedio]
   }
 
   type Mutation {
@@ -52,9 +53,10 @@ const typeDefs = gql`
     contactToAccountingFirm(accountingFirmName:String!):User!
     createCustomer(name:String!,type:CompanyType!,nature:CompanyNature!):Company!
     updateCompanyDataSettings(companyName:String!):Boolean!
-    uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):[File]
+    uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):Boolean
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
+    projectInitData(projectId:String!):Boolean!
     addAduitAdjustment(projectId:String!,record:String!):Boolean!
     deleteAdutiAdjustment(projectId:String!,vocherNum:Int!,vocherType:String!):Boolean!
     modifyAduitAdjustment(projectId:String!,record:String!,vocherNum:Int!):Boolean!
@@ -66,7 +68,7 @@ const typeDefs = gql`
     computeAccountAge(projectId:String!):Boolean!
     downloadCompanyInfo(companyName:String!):Company
     downloadCustomerAndSupplierInfo(projectId:String!,num:Int!):Boolean!
-    downloadRelatedPatiesCompany(companyName:String!,speed:String!):Company!
+    downloadRelatedPaties(companyName:String!,speed:String!):Company!
     addStdCompanyName(originName:String!,stdName:String!,projectId:String!):CompanyStdName
     setStandardizedAccountName(projectId:String!):Boolean!
     addOrUpdateLetterOfProofSetting(projectId:String,customerAmount:String!,customeBalance:String!,supplierAmount:String!,supplierBalance:String!,otherBalance:String!):Boolean!
@@ -116,6 +118,14 @@ type Comment{
   title:String!
   content:String!
   email:String
+}
+
+type Vedio{
+  id: ID!
+  no:Int!
+  title:String!
+  url:String!
+  poster:String
 }
 
   type User {

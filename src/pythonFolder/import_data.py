@@ -1,23 +1,16 @@
 # -*- coding:utf-8 -*-
 
-import os
 import sys
+import json
 import pandas as pd
 from datetime import datetime
 from decimal import Decimal
-from sqlalchemy import create_engine,and_
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import math
 from database import Auxiliary, SubjectBalance, ChronologicalAccount
 from utils import str_to_float,check_start_end_date
-from supplier_natrue import add_supplier_nature
-from entry_classify import analyse_entry
-from entry_test import aduit_entry
-from check_entry import check_entry
-from importance import get_actual_importance_level
-from supplier import save_supplier_to_db
-from customer import save_customer_to_db
-# from current_account_age import save_account_occur_times_to_db
+
 
 
 def save_km(start_time, end_time, km_path,session):
@@ -46,11 +39,9 @@ def save_km(start_time, end_time, km_path,session):
                                                SubjectBalance.end_time == end_time).all()
     #如果已经存储了，则替代原来的
     if len(kms) > 0:
-        print('开始删除')
         for km in kms:
             session.delete(km)
         session.commit()
-    print('开始存储')
 
     # 重新索引
     df = df.rename(index=str, columns={
@@ -157,9 +148,13 @@ def save_xsz(start_time, end_time, xsz_path,session):
 
     # 检查是否已经存储序时账,存储则删除
     min_month = int(df.loc[:,'month'].min())
+    print(min_month)
     max_month = int(df.loc[:,'month'].max())
+    print(max_month)
     min_year = int(df.loc[:,'year'].min())
+    print(min_year)
     max_year = int(df.loc[:,'year'].max())
+    print(max_year)
     if ( min_year!= start_time.year) or (max_year != end_time.year) or  (max_month != end_time.month) :
         raise Exception("序时账实际期间与上传的数据期间不一致")
 
@@ -353,34 +348,23 @@ def save_to_db(session,start_time,end_time,path,type):
 
 if __name__ == '__main__':
     db_path = sys.argv[1]
-    # db_path = "D:\gewuaduit\server\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
+    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2ok4ozx000i07205dds201w.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     start_time = sys.argv[2]
     end_time = sys.argv[3]
-    path=sys.argv[4]
-    type=sys.argv[5]
-    company_type = sys.argv[6]
-    from utils import add_suggestion
-
-    # start_time = "2013-1-1"
-    # end_time = "2013-12-31"
-    # path=r"D:\zhxs\2014\km.xlsx"
-    # type="SUBJECTBALANCE"
-    # company_type = "其他企业"
-    save_to_db(session,start_time,end_time,path,type)
-    # 向辅助核算中添加供应商款项性质
-    add_supplier_nature(start_time, end_time, session, engine)
-    # # 分析凭证分类
-    analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
-    # # 凭证测试
-    aduit_entry(start_time, end_time, session, engine, add_suggestion)
-    # 凭证抽查
-    actual_importance_level = get_actual_importance_level(company_type,start_time,end_time,engine,session,add_suggestion)
-    check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
-    # # 供应商分析
-    save_supplier_to_db(engine,session, start_time, end_time)
-    # 客户分析
-    save_customer_to_db(engine,session, start_time, end_time)
+    record = sys.argv[4]
+    # start_time="2014-1-1"
+    # end_time="2014-12-31"
+    # record ='[{"fileId":"ck2ovcr7600er0720rwl2izyj","storeFilePath":"./uploads/ck2ovcr7600er0720rwl2izyj-km.xlsx","uploadType":"SUBJECTBALANCE"},{"fileId":"ck2ovcr7q00ew07200124lygg","storeFilePath":"./uploads/ck2ovcr7q00ew07200124lygg-pz.xlsx","uploadType":"CHRONOLOGICALACCOUNT"},{"fileId":"ck2ovcr8j00f10720akg43ppw","storeFilePath":"./uploads/ck2ovcr8j00f10720akg43ppw-hs.xlsx","uploadType":"AUXILIARYACCOUNTING"}]'
+    records = json.loads(record)
+    for record in records:
+        path = record["storeFilePath"]
+        type = record["uploadType"]
+        save_to_db(session, start_time, end_time, path, type)
     print("success")
+
+
+    # ck2ovcr7600er0720rwl2izyj-km
+    # ck2ovcr7600er0720rwl2izyj-km
