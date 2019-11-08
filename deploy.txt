@@ -51,3 +51,12 @@ npm run build
 cp -r /home/gewuaduitfront/build /home/node_server
 6、开启前段服务
 pm2 start app.js
+
+
+sts服务器
+1、下载
+git clone git@github.com:litufu/stssever.git
+2、安装
+cd stssever && npm install
+3、启动
+pm2 start app.js

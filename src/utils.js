@@ -16,6 +16,8 @@ const companyNature = {
   "OTHER":"其他公司"
 }
 
+const TIMEOUT = 30*60*1000
+
 class AuthError extends Error {
   constructor() {
     super('Not authorized')
@@ -323,6 +325,7 @@ module.exports = {
   ALLOW_UPLOAD_TYPES,
   dateToString,
   delDir,
+  TIMEOUT,
   getProjectDBPathStartTimeEndtime,
   companyType,
   saveMainMembersToRelatedParty,

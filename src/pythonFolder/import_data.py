@@ -365,6 +365,3 @@ if __name__ == '__main__':
         save_to_db(session, start_time, end_time, path, type)
     print("success")
 
-
-    # ck2ovcr7600er0720rwl2izyj-km
-    # ck2ovcr7600er0720rwl2izyj-km

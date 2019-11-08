@@ -8,7 +8,7 @@ const { spawn, spawnSync} = require('child_process');
 const { sign } = require('jsonwebtoken')
 const { APP_SECRET, getUserId,storeFS,DB_DIR,UPLOAD_DIR,ALLOW_UPLOAD_TYPES,dateToString,
   companyNature,getProjectDBPathStartTimeEndtime,saveHoldersToRelatedParty ,companyType,
-  saveMainMembersToRelatedParty,saveCompanyToRelatedParty,addOrupdateCompanyInfo} = require('../utils')
+  saveMainMembersToRelatedParty,saveCompanyToRelatedParty,addOrupdateCompanyInfo,TIMEOUT} = require('../utils')
 const emailGenerator = require('../emailGenerator');
 
 mkdirp.sync(UPLOAD_DIR)
@@ -445,7 +445,12 @@ const Mutation = {
       if(code!==0){
         throw new Error(`项目数据初始化失败`)
       }
+      console.log('子进程已退出，代码：' + code);
     });
+
+    setTimeout(()=>{
+      projectInitDataProcess.kill('SIGTERM')
+    },TIMEOUT);
     
     return true
   },
@@ -698,6 +703,9 @@ const Mutation = {
          throw new Error(`客户信息下载失败，请确认客户名称是否正确`)
        }
      });
+     setTimeout(()=>{
+      downloadCompaniesInfoProcess.kill('SIGTERM')
+      },TIMEOUT);
      return true
   },
   downloadRelatedPaties:async(parent,{companyName,speed},ctx)=>{
@@ -907,15 +915,12 @@ const Mutation = {
         sendNo:newRecord.sendNo,
         receiveDate:newRecord.receiveDate,
         receiveNo:newRecord.receiveNo,
-        balance:newRecord.balance,
-        amount:newRecord.amount,
-        sendBalance:newRecord.sendBalance,
-        sendAmount:newRecord.sendAmount,
-        receiveBalance:newRecord.receiveBalance,
-        receiveAmount:newRecord.receiveAmount,
-        sendPhoto:newRecord.sendPhoto,
-        receivePhoto:newRecord.receivePhoto,
-        proofPhoto:newRecord.proofPhoto,
+        balance:parseFloat(newRecord.balance),
+        amount:parseFloat(newRecord.amount),
+        sendBalance:parseFloat(newRecord.sendBalance),
+        sendAmount:parseFloat(newRecord.sendAmount),
+        receiveBalance:parseFloat(newRecord.receiveBalance),
+        receiveAmount:parseFloat(newRecord.receiveAmount),
     })
     return proof
    },
@@ -934,12 +939,10 @@ const Mutation = {
         sendNo:newRecord.sendNo,
         receiveDate:newRecord.receiveDate,
         receiveNo:newRecord.receiveNo,
-        balance:newRecord.balance,
-        amount:newRecord.amount,
-        sendBalance:newRecord.sendBalance,
-        sendAmount:newRecord.sendAmount,
-        receiveBalance:newRecord.receiveBalance,
-        receiveAmount:newRecord.receiveAmount,
+        sendBalance:parseFloat(newRecord.sendBalance),
+        sendAmount:parseFloat(newRecord.sendAmount),
+        receiveBalance:parseFloat(newRecord.receiveBalance),
+        receiveAmount:parseFloat(newRecord.receiveAmount),
       }
     })
     return proof
