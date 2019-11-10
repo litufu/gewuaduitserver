@@ -744,6 +744,7 @@ type Comment {
   title: String!
   content: String!
   email: String
+  createdAt: DateTime
 }
 
 type CommentConnection {
@@ -773,6 +774,8 @@ enum CommentOrderByInput {
   content_DESC
   email_ASC
   email_DESC
+  createdAt_ASC
+  createdAt_DESC
 }
 
 type CommentPreviousValues {
@@ -780,6 +783,7 @@ type CommentPreviousValues {
   title: String!
   content: String!
   email: String
+  createdAt: DateTime
 }
 
 type CommentSubscriptionPayload {
@@ -869,6 +873,14 @@ input CommentWhereInput {
   email_not_starts_with: String
   email_ends_with: String
   email_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
   AND: [CommentWhereInput!]
   OR: [CommentWhereInput!]
   NOT: [CommentWhereInput!]

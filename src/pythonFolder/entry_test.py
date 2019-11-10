@@ -1,3 +1,6 @@
+# -*- coding:utf-8 -*-
+
+import os
 import sys
 from multiprocessing import Pool
 from sqlalchemy import create_engine
@@ -14,6 +17,10 @@ from constant import inventory,long_term_assets,expense,recognition_income_debit
 from entry_classify import get_entry_subjects,add_tb_subject_to_xsz
 
 
+judge_entry_events_orders_dict = dict()
+for judge_entry_event in judge_entry_events:
+    judge_entry_events_orders_dict[judge_entry_event["subject"]] = judge_entry_event["no"]
+
 def one_to_many_split(df_entry_one,df_entry_many,one_direction):
     '''
     将一对多的凭证进行分拆
@@ -28,16 +35,20 @@ def one_to_many_split(df_entry_one,df_entry_many,one_direction):
         opposite_direction = "debit"
     one_amount = df_entry_one[one_direction].sum()
     res = []
-    for i in range(len(df_entry_many)):
-        df_tmp_many_split = df_entry_many.iloc[[i]]
-        df_tmp_ome = df_entry_one.copy()
-        opposite_amount = df_tmp_many_split[opposite_direction].sum()
-        df_tmp_ome[one_direction] = opposite_amount
-        foreign_currency = "{}_foreign_currency".format(one_direction)
-        df_tmp_ome[foreign_currency] = df_entry_one[foreign_currency].sum() * (
-                opposite_amount / one_amount)
-        df_tmp = pd.concat([df_tmp_ome, df_tmp_many_split])
+    if math.isclose(one_amount,0,rel_tol=1e-5):
+        df_tmp = pd.concat([df_entry_one, df_entry_many])
         res.append(df_tmp)
+    else:
+        for i in range(len(df_entry_many)):
+            df_tmp_many_split = df_entry_many.iloc[[i]]
+            df_tmp_ome = df_entry_one.copy()
+            opposite_amount = df_tmp_many_split[opposite_direction].sum()
+            df_tmp_ome[one_direction] = opposite_amount
+            foreign_currency = "{}_foreign_currency".format(one_direction)
+            df_tmp_ome[foreign_currency] = df_entry_one[foreign_currency].sum() * (
+                    opposite_amount / one_amount)
+            df_tmp = pd.concat([df_tmp_ome, df_tmp_many_split])
+            res.append(df_tmp)
     return res
 
 def one_to_many_split_only_monetary(df_entry_one,df_entry_many,one_direction):
@@ -141,7 +152,7 @@ def get_account_nature(df_xsz,name):
     :return: 供应商采购的款项性质
     '''
     df_tmp_xsz = df_xsz[
-        (df_xsz["auxiliary"].str.contains(name)) & (df_xsz["credit"].abs() > 0)]
+        (df_xsz["auxiliary"].str.contains(name,regex=False)) & (df_xsz["credit"].abs() > 0)]
     if len(df_tmp_xsz) > 0:
         for obj in gen_df_line(df_tmp_xsz.tail(1)):
             df_supplier_xsz = df_xsz[
@@ -485,7 +496,7 @@ def add_event(start_time, end_time, session, desc, obj):
     session.add(event)
 
 
-def add_audit_record(start_time,end_time,session,problem,voucher):
+def add_audit_record(start_time,end_time,session,problem,voucher,count,records_length):
     '''
     添加审核记录
     :param start_time: 开始时间
@@ -494,6 +505,8 @@ def add_audit_record(start_time,end_time,session,problem,voucher):
     :param problem: 审核问题
     :return: 向数据库添加审核记录
     '''
+    print(count)
+    print(records_length)
     audit_record = AuditRecord(
         start_time=start_time,
         end_time=end_time,
@@ -501,9 +514,12 @@ def add_audit_record(start_time,end_time,session,problem,voucher):
         voucher=voucher
     )
     session.add(audit_record)
-    session.commit()
+    if (count % 500==0) or (count==(records_length-1)):
+        print("提交")
+        session.commit()
 
-def handle_entry(df_entry,record,grades,start_time, end_time, session,judge_entry_events_orders_dict):
+def handle_entry(df_entry,record,grades,start_time,end_time,session,count,records_length):
+
     entry_subjects = list(df_entry["tb_subject"].values)
     # 获取凭证科目名称
     subjects = get_entry_subjects(df_entry, "subject_name_1")
@@ -562,20 +578,20 @@ def handle_entry(df_entry,record,grades,start_time, end_time, session,judge_entr
                     add_entry_desc(start_time, end_time, session, df_entry, event)
                     if problem != None:
                         voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
-                        add_audit_record(start_time, end_time, session, problem, voucher)
+                        add_audit_record(start_time, end_time, session, problem, voucher,count,records_length)
                     return
             elif logic == "or":
                 if True in condition_judges:
                     add_entry_desc(start_time, end_time, session, df_entry, event)
                     if problem != None:
                         voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
-                        add_audit_record(start_time, end_time, session, problem, voucher)
+                        add_audit_record(start_time, end_time, session, problem, voucher,count,records_length)
                     return
     except Exception as e:
         add_entry_desc(start_time, end_time, session, df_entry, "非标准-借方{}-贷方{}".format(debit_subject_desc,credit_subjects_desc))
         voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
         problem = "记账凭证为非标准记账凭证"
-        add_audit_record(start_time, end_time, session, problem,voucher)
+        add_audit_record(start_time, end_time, session, problem,voucher,count,records_length)
 
 
 def get_subject_nature(obj,debit_subjects_list,credit_subjects_list,df_entry,grades):
@@ -728,6 +744,38 @@ def check_is_exist(start_time,end_time,session):
             session.delete(event)
         session.commit()
 
+def handle_one_entry(start_time, end_time,df_xsz,record,not_through_salary_entries,grades,session,count,records_length):
+    '''
+
+    :param start_time:
+    :param end_time:
+    :param df_xsz:
+    :param record:
+    :param not_through_salary_entries:
+    :param grades:
+    :param session:
+    :param count:
+    :param records_length:
+    :return:
+    '''
+    print('Run task %s...' % (record))
+    df_tmp = get_df_one_entry(df_xsz, record)
+    # 处理没有通过应付职工薪酬核算的职工薪酬
+    if len(not_through_salary_entries) > 0:
+        res = "{}-{}-{}".format(record["month"], record["vocher_type"], record["vocher_num"])
+        if res in not_through_salary_entries:
+            for obj in gen_df_line(df_tmp):
+                add_event(start_time, end_time, session, "职工薪酬-未通过应付职工薪酬核算", obj)
+            session.commit()
+        else:
+            df_split_entries = split_entry(df_tmp)
+            for df_split_entry in df_split_entries:
+                handle_entry(df_split_entry, record, grades, start_time, end_time, session, count,records_length)
+    else:
+        df_split_entries = split_entry(df_tmp)
+        for df_split_entry in df_split_entries:
+            handle_entry(df_split_entry, record, grades, start_time, end_time, session, count,records_length)
+    
 def aduit_entry(start_time,end_time,session,engine,add_suggestion):
     # 检查是否已经分析过了
     check_is_exist(start_time, end_time, session)
@@ -754,29 +802,12 @@ def aduit_entry(start_time,end_time,session,engine,add_suggestion):
     # 获取可能未通过应付职工薪酬核算的职工薪酬项目
     not_through_salary_entries = get_not_through_salary_entry(df_xsz,grades,start_time,end_time,add_suggestion,session)
 
-    for record in records:
-        # 获取单笔凭证
-        df_tmp = get_df_one_entry(df_xsz,record)
-        # 处理没有通过应付职工薪酬核算的职工薪酬
-        if len(not_through_salary_entries) > 0:
-            res = "{}-{}-{}".format(record["month"], record["vocher_type"], record["vocher_num"])
-            if res in not_through_salary_entries:
-                for obj in gen_df_line(df_tmp):
-                    add_event(start_time, end_time, session, "职工薪酬-未通过应付职工薪酬核算",obj)
-                session.commit()
-                continue
-        # 处理其他凭证
-        df_split_entries = split_entry(df_tmp)
-        judge_entry_events_orders_dict  = dict()
-        for judge_entry_event in judge_entry_events:
-            judge_entry_events_orders_dict[judge_entry_event["subject"]] = judge_entry_event["no"]
-        # p = Pool(4)
-        for df_split_entry in df_split_entries:
+    records_length = len(records)
+    for count,record in enumerate(records):
+        handle_one_entry(start_time, end_time, df_xsz, record, not_through_salary_entries, grades,session,count,records_length)
 
-            # p.apply_async(handle_entry, args=(df_split_entry, record, grades,start_time, end_time, session,judge_entry_events_orders_dict))
-            handle_entry(df_split_entry, record, grades,start_time, end_time, session,judge_entry_events_orders_dict)
-        # p.close()
-        # p.join()
+
+
 
 
 if __name__ == '__main__':
@@ -788,9 +819,5 @@ if __name__ == '__main__':
     from utils import add_suggestion
     start_time = "2016-1-1"
     end_time = "2016-12-31"
-    # df_km, df_xsz = get_new_km_xsz_df(company_name, start_time, end_time, engine, add_suggestion, session)
-    # df_xsz_new = df_xsz[(df_xsz["month"]==1) & (df_xsz["vocher_num"]==178)]
-    # res = split_entry(df_xsz_new)
-    # print(res)
-    aduit_entry(start_time, end_time, session, engine, add_suggestion)
-    # cash_flow(company_name, start_time, end_time, session, engine, add_suggestion)
+
+

@@ -851,7 +851,9 @@ export type CommentOrderByInput =
   | "content_ASC"
   | "content_DESC"
   | "email_ASC"
-  | "email_DESC";
+  | "email_DESC"
+  | "createdAt_ASC"
+  | "createdAt_DESC";
 
 export type HolderOrderByInput =
   | "id_ASC"
@@ -1548,6 +1550,14 @@ export interface CommentWhereInput {
   email_not_starts_with?: Maybe<String>;
   email_ends_with?: Maybe<String>;
   email_not_ends_with?: Maybe<String>;
+  createdAt?: Maybe<DateTimeInput>;
+  createdAt_not?: Maybe<DateTimeInput>;
+  createdAt_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  createdAt_not_in?: Maybe<DateTimeInput[] | DateTimeInput>;
+  createdAt_lt?: Maybe<DateTimeInput>;
+  createdAt_lte?: Maybe<DateTimeInput>;
+  createdAt_gt?: Maybe<DateTimeInput>;
+  createdAt_gte?: Maybe<DateTimeInput>;
   AND?: Maybe<CommentWhereInput[] | CommentWhereInput>;
   OR?: Maybe<CommentWhereInput[] | CommentWhereInput>;
   NOT?: Maybe<CommentWhereInput[] | CommentWhereInput>;
@@ -6527,6 +6537,7 @@ export interface CommentPreviousValues {
   title: String;
   content: String;
   email?: String;
+  createdAt?: DateTimeOutput;
 }
 
 export interface CommentPreviousValuesPromise
@@ -6536,6 +6547,7 @@ export interface CommentPreviousValuesPromise
   title: () => Promise<String>;
   content: () => Promise<String>;
   email: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
 }
 
 export interface CommentPreviousValuesSubscription
@@ -6545,6 +6557,7 @@ export interface CommentPreviousValuesSubscription
   title: () => Promise<AsyncIterator<String>>;
   content: () => Promise<AsyncIterator<String>>;
   email: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
 }
 
 export interface StdSubjectConnection {
@@ -7136,6 +7149,7 @@ export interface Comment {
   title: String;
   content: String;
   email?: String;
+  createdAt?: DateTimeOutput;
 }
 
 export interface CommentPromise extends Promise<Comment>, Fragmentable {
@@ -7143,6 +7157,7 @@ export interface CommentPromise extends Promise<Comment>, Fragmentable {
   title: () => Promise<String>;
   content: () => Promise<String>;
   email: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
 }
 
 export interface CommentSubscription
@@ -7152,6 +7167,7 @@ export interface CommentSubscription
   title: () => Promise<AsyncIterator<String>>;
   content: () => Promise<AsyncIterator<String>>;
   email: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
 }
 
 export interface CommentNullablePromise
@@ -7161,6 +7177,7 @@ export interface CommentNullablePromise
   title: () => Promise<String>;
   content: () => Promise<String>;
   email: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
 }
 
 export interface HolderConnection {

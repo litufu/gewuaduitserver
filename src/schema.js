@@ -118,6 +118,7 @@ type Comment{
   title:String!
   content:String!
   email:String
+  createdAt:DateTime
 }
 
 type Vedio{

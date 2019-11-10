@@ -287,7 +287,7 @@ def check_profit_subject_dirction(df_km, df_xsz, engine, add_suggestion,start_ti
                                        & (df_xsz_profit_reverse["vocher_type"] == record["vocher_type"])
                                        ]
         # 检查凭证中是否包含本年利润，如果不包含则调整序时账
-        if not df_tmp["subject_name_1"].str.contains('本年利润', regex=False).any():
+        if (not df_tmp["subject_name_1"].str.contains('本年利润', regex=False).any()) and (not df_tmp["subject_name_1"].str.contains('利润分配', regex=False).any()):
             # 第四部：修改序时账
             # 合并标准方向
             df_tmp = pd.merge(df_tmp, df_km_first_subject_profit_direction, left_on="subject_num_1",
@@ -372,6 +372,7 @@ def recaculate_km(df_km, df_xsz,type):
     else:
         raise Exception("tb类型错误")
 
+    df_km_new["origin_initial"] = df_km["initial_amount"]
     df_km_new["origin_debit"] = df_km["debit_amount"]
     df_km_new["origin_credit"] = df_km["credit_amount"]
     df_km_new["origin_terminal"] = df_km["terminal_amount"]
@@ -379,6 +380,7 @@ def recaculate_km(df_km, df_xsz,type):
     df_km_new['credit_amount'] = 0.00
     df_km_new['terminal_amount'] = 0.00
     df_km_new = df_km_new.set_index('subject_num')
+    profit_dividend_subject_num = get_subject_num_by_name("利润分配",df_km)
 
     if len(df_xsz)>0:
         # 计算序时账发生额
@@ -392,38 +394,35 @@ def recaculate_km(df_km, df_xsz,type):
         initial_debit = df_km_new[df_km_new.index.str.startswith("6")&
                                   (df_km_new["direction"] == "借") &
                                   (df_km_new["is_specific"])]["initial_amount"].sum()
-        profit_dividend = df_km_new[df_km_new["subject_name"]=="利润分配"]["initial_amount"].sum()
-        profit_this_year = df_km_new[df_km_new["subject_name"]=="本年利润"]["initial_amount"].sum()
+        profit_dividend = df_km_new[(df_km_new["subject_name"]=="利润分配") & (df_km_new["subject_gradation"]==1)]["initial_amount"].sum()
+        profit_this_year = df_km_new[(df_km_new["subject_name"]=="本年利润") & (df_km_new["subject_gradation"]==1)]["initial_amount"].sum()
+        # 确定利润分配期初数=本年利润+利润分配+损益类科目期初数
+        df_km_new.at[profit_dividend_subject_num, "initial_amount"] = profit_dividend + profit_this_year + initial_credit - initial_debit
 
         # 确定借方发生额/贷方发生额，损益类科目结转分录中应该减去期初自动结转的部分。
         for i in range(len(df_km_new)):
             subject_num = df_km_new.index[i]
-            # 确定利润分配期初数=本年利润+利润分配+损益类科目期初数
-            if df_km_new.at[subject_num,"subject_name"] == "利润分配":
-                df_km_new.at[subject_num, "initial_amount"] = profit_dividend + profit_this_year + initial_credit - initial_debit
             # 序时账透视表中筛选出所有科目和子科目
             df_xsz_pivot_tmp = df_xsz_pivot.loc[df_xsz_pivot.index.str.startswith(subject_num)]
             # 期初数
-            initial_amount = df_km_new.at[subject_num, "initial_amount"]
+            initial_amount = df_km_new.at[subject_num, "origin_initial"]
             # 序时账借方合计
             debit = df_xsz_pivot_tmp['debit'].sum()
             # 序时账贷方合计
             credit = df_xsz_pivot_tmp['credit'].sum()
             # 因为上面利润分配期初数确认时将本年利润和损益类科目的期初数结转了一次，在本年度做一次冲销处理。将损益类科目的期初数从本年结转发生额中减去，
-            if (str(subject_num).startswith("6") and abs(initial_amount)>0.00) or (
-                    df_km_new.at[subject_num, "subject_name"] == "本年利润" and abs(initial_amount) > 0.00) :
+            if (str(subject_num).startswith("6") and abs(initial_amount)>1e-5) or (
+                    df_km_new.at[subject_num, "subject_name"] == "本年利润" and abs(initial_amount) > 1e-5) :
                 if df_km_new.at[subject_num, "direction"] == "借":
                     df_km_new.at[subject_num, "debit_amount"] = debit
                     df_km_new.at[subject_num, "credit_amount"] = credit - initial_amount
                     df_km_new.at[subject_num, "initial_amount"] = 0.00
-                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                       subject_num, "initial_amount"] + debit - credit
+                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[subject_num, "initial_amount"] + df_km_new.at[subject_num, "debit_amount"] - df_km_new.at[subject_num, "credit_amount"]
                 elif df_km_new.at[subject_num, "direction"] == "贷":
                     df_km_new.at[subject_num, "debit_amount"] = debit - initial_amount
                     df_km_new.at[subject_num, "credit_amount"] = credit
                     df_km_new.at[subject_num, "initial_amount"] = 0.00
-                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
-                                                                       subject_num, "initial_amount"] - debit + credit
+                    df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[subject_num, "initial_amount"] - df_km_new.at[subject_num, "debit_amount"] + df_km_new.at[subject_num, "credit_amount"]
             else:
                 df_km_new.at[subject_num, "debit_amount"] = debit
                 df_km_new.at[subject_num, "credit_amount"] = credit
@@ -434,7 +433,22 @@ def recaculate_km(df_km, df_xsz,type):
                     df_km_new.at[subject_num, "terminal_amount"] = df_km_new.at[
                                                                         subject_num, "initial_amount"] - debit + credit
         # 检查期末数中的损益是否有数据，如有做一次结转处理。自动结转未结转损益。
-
+            if (str(subject_num).startswith("6") and abs(df_km_new.at[subject_num, "terminal_amount"])>1e-5) :
+                modify_amount = df_km_new.at[subject_num, "terminal_amount"]
+                if df_km_new.at[subject_num, "direction"] == "借":
+                    df_km_new.at[subject_num, "credit_amount"] = df_km_new.at[subject_num, "credit_amount"] + modify_amount
+                    df_km_new.at[subject_num, "terminal_amount"] = 0.00
+                #     同时修改利润分配
+                    df_km_new.at[profit_dividend_subject_num, "debit_amount"] = df_km_new.at[profit_dividend_subject_num, "debit_amount"] + modify_amount
+                    df_km_new.at[profit_dividend_subject_num, "terminal_amount"] = df_km_new.at[profit_dividend_subject_num, "terminal_amount"] - modify_amount
+                elif df_km_new.at[subject_num, "direction"] == "贷":
+                    df_km_new.at[subject_num, "debit_amount"] = df_km_new.at[subject_num, "debit_amount"] + modify_amount
+                    df_km_new.at[subject_num, "terminal_amount"] = 0.00
+                    #     同时修改利润分配
+                    df_km_new.at[profit_dividend_subject_num, "credit_amount"] = df_km_new.at[
+                                                                                    profit_dividend_subject_num, "credit_amount"] + modify_amount
+                    df_km_new.at[profit_dividend_subject_num, "terminal_amount"] = df_km_new.at[
+                                                                                       profit_dividend_subject_num, "terminal_amount"] + modify_amount
     df_km_new = df_km_new.reset_index()
     return df_km_new
 
@@ -455,9 +469,8 @@ def get_bad_debt(df_km, add_suggestion,start_time,end_time):
     '''
 
     # 获取坏账准备期末金额，如果等于0，则应收账款坏账准备和其他应收款坏账准备都为0
-    origin_json = json.dumps([])
-    bad_debt_ar = {"origin":origin_json,"value":0.00}
-    bad_debt_or = {"origin":origin_json,"value":0.00}
+    bad_debt_ar = 0.00
+    bad_debt_or = 0.00
 
     bad_debt = get_subject_value_by_name("坏账准备", df_km, "terminal_amount")
     bad_debt_df = df_km[df_km["subject_name"]=="坏账准备"]
@@ -474,18 +487,15 @@ def get_bad_debt(df_km, add_suggestion,start_time,end_time):
             df_km_bad_debt_or = df_km_bad_debt[df_km_bad_debt["subject_name"].str.contains("其他应收")]
             if len(df_km_bad_debt_ar) == 1:
                 value,origin = get_bad_debt_value_and_origin(df_km_bad_debt_ar)
-                bad_debt_ar["value"] = value
-                bad_debt_ar["origin"] = origin
+                bad_debt_ar = value
             if len(df_km_bad_debt_or) == 1:
                 value, origin = get_bad_debt_value_and_origin(df_km_bad_debt_or)
-                bad_debt_or["value"] = value
-                bad_debt_or["origin"] = origin
-            if bad_debt_ar["value"] + bad_debt_or["value"] == bad_debt:
+                bad_debt_or = value
+            if bad_debt_ar + bad_debt_or == bad_debt:
                 return bad_debt_ar, bad_debt_or
             else:
                 value, origin = get_bad_debt_value_and_origin(bad_debt_df)
-                bad_debt_ar["value"] = value
-                bad_debt_ar["origin"] = origin
+                bad_debt_ar = value
                 return bad_debt_ar, bad_debt_or
         else:
             add_suggestion(
@@ -495,8 +505,7 @@ def get_bad_debt(df_km, add_suggestion,start_time,end_time):
                 end_time=end_time,
             )
             value, origin = get_bad_debt_value_and_origin(bad_debt_df)
-            bad_debt_ar["value"] = value
-            bad_debt_ar["origin"] = origin
+            bad_debt_ar = value
             return bad_debt_ar, bad_debt_or
 
 def get_df_km_occurrence_value_and_origin(df_one_line,direction):
@@ -512,27 +521,26 @@ def get_reserve_fund_provision(df_km, add_suggestion,start_time,end_time):
     :param df_km:科目余额表
     :return:本期计提的各盈余公积明细
     '''
-    origin_json = json.dumps([])
     # 法定盈余公积
-    legal_reserve = {"origin":origin_json,"value":0.00}
+    legal_reserve = 0.00
     # 任意盈余公积
-    discretionary_surplus_reserve = {"origin":origin_json,"value":0.00}
+    discretionary_surplus_reserve = 0.00
     # 法定公益金
-    legal_public_welfare_fund = {"origin":origin_json,"value":0.00}
+    legal_public_welfare_fund = 0.00
     # 储备基金
-    reserve_fund = {"origin":origin_json,"value":0.00}
+    reserve_fund = 0.00
     # 企业发展基金
-    enterprise_development_fund = {"origin":origin_json,"value":0.00}
+    enterprise_development_fund = 0.00
     # 利润归还投资
-    profit_return_investment = {"origin":origin_json,"value":0.00}
+    profit_return_investment = 0.00
 
     match_table = {
-        "法定盈余公积":legal_reserve,
-        "任意盈余公积":discretionary_surplus_reserve,
-        "法定公益金":legal_public_welfare_fund,
-        "储备基金":reserve_fund,
-        "企业发展基金":enterprise_development_fund,
-        "利润归还投资":profit_return_investment
+        "法定盈余公积": legal_reserve,
+        "任意盈余公积": discretionary_surplus_reserve,
+        "法定公益金": legal_public_welfare_fund,
+        "储备基金": reserve_fund,
+        "企业发展基金": enterprise_development_fund,
+        "利润归还投资": profit_return_investment
     }
 
     df_reserve_fund = df_km[df_km["subject_name"] == "盈余公积"]
@@ -548,7 +556,7 @@ def get_reserve_fund_provision(df_km, add_suggestion,start_time,end_time):
     # 如果设置了盈余公积，检查有没有明细科目
     if len(df_reserve_fund_detail) == 0:
         # 如果盈余公积没有明细核算，检查利润分配是否有明细核算，根据利润分配来确认各个明细
-        if df_reserve_fund["terminal_amount"].values[0] > 0.00:
+        if df_reserve_fund["terminal_amount"].values[0] > 1e-5:
             add_suggestion(kind="会计处理",
                            content="盈余公积账户下应当分别设“法定盈余公积”“任意盈余公积”“法定公益金”“储备基金”“企业发展基金”和“利润归还投资”等进行明细核算",
                            start_time=start_time,
@@ -558,8 +566,7 @@ def get_reserve_fund_provision(df_km, add_suggestion,start_time,end_time):
         df_profit_distribution_detail = get_detail_subject_df("利润分配", df_km)
         if len(df_profit_distribution_detail) == 0:
             value,origin = get_df_km_occurrence_value_and_origin(df_reserve_fund,"贷")
-            legal_reserve["value"] = value
-            legal_reserve["origin"] = origin
+            legal_reserve  = value
             return legal_reserve, discretionary_surplus_reserve, legal_public_welfare_fund, reserve_fund, enterprise_development_fund, profit_return_investment
         else:
             for obj in gen_df_line(df_profit_distribution_detail):
@@ -567,37 +574,70 @@ def get_reserve_fund_provision(df_km, add_suggestion,start_time,end_time):
                 value = obj["debit_amount"]
                 for name in match_table:
                     if name in obj["subject_name"]:
-                        match_table[name]["origin"] = ""
-                        match_table[name]["value"] = value
+                        match_table[name] = value
     else:
         for obj in gen_df_line(df_reserve_fund_detail):
             value = obj["credit_amount"]
             for name in match_table:
                 if name in obj["subject_name"]:
-                    match_table[name]["origin"] = ""
-                    match_table[name]["value"] = value
+                    match_table[name] = value
     return legal_reserve, discretionary_surplus_reserve, legal_public_welfare_fund, reserve_fund, enterprise_development_fund, profit_return_investment
 
-def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,session):
+def get_none_adjust_xsz(df_xsz):
+    '''
+    将序时账中的调整分录摘出来，只剩下非调整分录
+    :param df_xsz:
+    :return:
+    '''
+    df_xsz_record = df_xsz[
+        ["month", "vocher_num", "vocher_type"]].drop_duplicates()
+    records = df_xsz_record.to_dict('records')
+    none_adjust_dfs = []
+    for record in records:
+        df_tmp = df_xsz[(df_xsz["month"] == record["month"])
+                                & (df_xsz["vocher_num"] == record["vocher_num"])
+                                & (df_xsz["vocher_type"] == record["vocher_type"])
+                                ]
+        contain_audit_str_df = df_tmp[df_tmp["description"].str.contains("审计")]
+        contain_adjust_str_df = df_tmp[df_tmp["description"].str.contains("调整")]
+        if len(contain_audit_str_df) > 0 or len(contain_adjust_str_df) > 0 :
+            pass
+        else:
+            none_adjust_dfs.append(df_tmp)
+    if len(none_adjust_dfs) > 0:
+        df_xsz_new = pd.concat(none_adjust_dfs)
+    else:
+        df_xsz_new = df_xsz[df_xsz["subject_name"] == ""]
+    return df_xsz_new
+
+def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,session,engine):
     '''
     分析利润分配科目
     :param df_km:
     :param df_xsz:
     :return:
     '''
-    origin_json = json.dumps([])
+    # 获取标准科目对照表
+    df_std = pd.read_sql_table('subjectcontrast', engine)
     # 转作资本（或股本）的普通股股利
-    convert_to_capital = {"origin":origin_json,"value":0.00}
+    convert_to_capital = 0.00
     # 优先股股利
-    preferred_dividend = {"origin":origin_json,"value":0.00}
+    preferred_dividend = 0.00
     # 普通股股利
-    dividend = {"origin":origin_json,"value":0.00}
+    dividend = 0.00
     # 年初未分配利润调整
-    adjustment_profit = {"origin":origin_json,"value":0.00}
+    adjustment_profit = 0.00
     # 盈余公积
-    reserves = get_reserve_fund_provision(
+    legal_reserve, discretionary_surplus_reserve, legal_public_welfare_fund, reserve_fund, enterprise_development_fund, profit_return_investment = get_reserve_fund_provision(
         df_km, add_suggestion,start_time,end_time)
-
+    match_table = {
+        "法定盈余公积": legal_reserve,
+        "任意盈余公积": discretionary_surplus_reserve,
+        "法定公益金": legal_public_welfare_fund,
+        "储备基金": reserve_fund,
+        "企业发展基金": enterprise_development_fund,
+        "利润归还投资": profit_return_investment
+    }
     #     检查利润分配是否有明细科目
     df_profit_distribution_detail = get_detail_subject_df("利润分配", df_km)
     # 利润分配没有设置明细科目
@@ -615,18 +655,29 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,se
     # 获取利润分配的所有凭证包含借贷方
     if subject_num_profit:
         df_profit_xsz = get_xsz_by_subject_num(df_xsz, grade=1, subject_num=subject_num_profit)
+        df_this_year_profit_xsz = df_profit_xsz[df_profit_xsz["subject_name_1"]=="本年利润"]
+        # 从利润分配凭证中减去本年利润结转类凭证
+        for obj in gen_df_line(df_this_year_profit_xsz):
+            df_profit_xsz = df_profit_xsz[~((df_profit_xsz["month"] == obj["month"]) & (df_profit_xsz["vocher_num"] == obj["vocher_num"]) & (
+                    df_profit_xsz["vocher_type"] == obj["vocher_type"]))]
         # 检查利润分配-提取盈余公积
         # 获取利润分配凭证中的提取盈余公积的凭证
         subject_num_reserve = get_subject_num_by_name("盈余公积", df_km)
         df_xsz_reserve = pd.DataFrame()
         if subject_num_reserve:
             df_xsz_reserve = get_xsz_by_subject_num(df_profit_xsz, grade=1, subject_num=subject_num_reserve)
-            # 检查序时账提取盈余公积与科目余额表是否一致
+        #     # 检查序时账提取盈余公积与科目余额表是否一致
             df_profit_xsz_reserve = df_xsz_reserve[df_xsz_reserve["subject_name_1"] == "利润分配"]
             reserve_value_in_xsz = df_profit_xsz_reserve["debit"].sum() - df_profit_xsz_reserve["credit"].sum()
-            reserves_sum = sum([reserve["value"] for reserve in reserves])
+            reserves_sum = legal_reserve+discretionary_surplus_reserve+legal_public_welfare_fund+reserve_fund+enterprise_development_fund+profit_return_investment
             if abs(reserve_value_in_xsz - reserves_sum) > 1e-5:
-                raise Exception("利润分配提取盈余公积与科目余额表计算盈余公积提取不一致")
+                # 根据序时账计算盈余公积
+                # 将序时账中的调整分录扣除
+                df_xsz_reserve = get_none_adjust_xsz(df_xsz_reserve)
+                # 计算盈余公积的各项值
+                for name in match_table:
+                    df_reserve = df_xsz_reserve[df_xsz_reserve["subject_name"] == name]
+                    match_table[name] = df_reserve["credit"].sum() - df_reserve["debit"].sum()
 
         # 检查利润分配-转为资本
         subject_num_paid_up_capital = get_subject_num_by_similar_name("实收资本", df_km)
@@ -638,10 +689,11 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,se
             if item:
                 subject_num_capital.append(item)
         df_xsz_capital = get_xsz_by_subject_num(df_profit_xsz, grade=1, subject_num=subject_num_capital)
+        # 扣除调整分录
+        df_xsz_capital = get_none_adjust_xsz(df_xsz_capital)
         df_profit_xsz_capital = df_xsz_capital[df_xsz_capital["subject_name_1"] == "利润分配"]
         value = df_profit_xsz_capital["debit"].sum() - df_profit_xsz_capital["credit"].sum()
-        convert_to_capital["origin"] = ""
-        convert_to_capital["value"] = value
+        convert_to_capital = value
 
         # 分配股利
         subject_num_ividend_payable = get_subject_num_by_name("应付股利", df_km)
@@ -653,22 +705,22 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,se
             if item:
                 subject_num_dividend.append(item)
         df_xsz_dividend = get_xsz_by_subject_num(df_profit_xsz, grade=1, subject_num=subject_num_dividend)
+        # 扣除调整分录
+        df_xsz_dividend = get_none_adjust_xsz(df_xsz_dividend)
         #     优先股股利
         df_preferred_dividend = df_xsz_dividend[
             (df_xsz_dividend["subject_name_1"] == "利润分配") &
             (df_xsz_dividend["subject_name_2"].str.contains("优先股"))]
         if len(df_preferred_dividend)>0:
             value = df_preferred_dividend["debit"].sum() - df_preferred_dividend["credit"].sum()
-            preferred_dividend["origin"] = ""
-            preferred_dividend["value"] = value
+            preferred_dividend = value
         #     普通股股利
         df_profit_xsz_dividend = df_xsz_dividend[(df_xsz_dividend["subject_name_1"] == "利润分配") &
             ~(df_xsz_dividend["subject_name_2"].str.contains("优先股"))
         ]
         if len(df_profit_xsz_dividend)>0:
             value = df_profit_xsz_dividend["debit"].sum() - df_profit_xsz_dividend["credit"].sum()
-            dividend["origin"] = ""
-            dividend["value"] = value
+            dividend = value
 
         #     以前年度损益调整
         subject_num_prior_year_income_adjustment = get_subject_num_by_name("以前年度损益调整", df_km)
@@ -679,12 +731,11 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,se
             df_profit_xsz_adjustment = df_xsz_adjustment[df_xsz_adjustment["subject_name_1"] == "以前年度损益调整"]
             if len(df_profit_xsz_adjustment) > 0:
                 value = df_profit_xsz_adjustment["debit"].sum() - df_profit_xsz_adjustment["credit"].sum()
-                adjustment_profit["origin"] = ""
-                adjustment_profit["value"] = value
+                adjustment_profit = value
 
         # 未通过损益表项目直接计入本年利润
         not_throgh_profit_and_loss_to_this_year_profit = get_not_through_profit_and_loss_to_this_year_profit(df_km,df_xsz,start_time,end_time,add_suggestion,session)
-        adjustment_profit["value"] = adjustment_profit["value"] + not_throgh_profit_and_loss_to_this_year_profit
+        adjustment_profit = adjustment_profit + not_throgh_profit_and_loss_to_this_year_profit
 
         # 本年利润
         subject_num_this_year_profit = get_subject_num_by_name("本年利润", df_km)
@@ -697,16 +748,23 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,se
         df_has_check = df_has_check[["month", "vocher_num", "vocher_type"]].drop_duplicates()
 
         df_tmp = df_profit_xsz.copy()
+        # 获取未检查的可能的调整分录
         for obj in gen_df_line(df_has_check):
             df_tmp = df_tmp[~((df_tmp["month"] == obj["month"]) & (df_tmp["vocher_num"] == obj["vocher_num"]) & (
                         df_tmp["vocher_type"] == obj["vocher_type"]))]
 
         if len(df_tmp) > 0:
-            # 扣除掉对方科目是损益类的科目
+            # 扣除掉损益结转类科目
+            # （1）如果含有非损益类科目，则不是损益结转凭证
+            # （2）如果不含有非损益类科目，但损益类科目方向不相反（费用类为借方，收入类为贷方，则认定为调整分录）
             profit_and_loss = df_tmp[df_tmp["subject_num"].str.startswith("6")]
+            profit_and_loss = pd.merge(profit_and_loss, df_std, how="inner",
+                                                            left_on='subject_name_1',
+                                                            right_on="origin_subject")
             for obj in gen_df_line(profit_and_loss):
-                df_tmp = df_tmp[~((df_tmp["month"] == obj["month"]) & (df_tmp["vocher_num"] == obj["vocher_num"]) & (
-                        df_tmp["vocher_type"] == obj["vocher_type"]))]
+                if (obj["direction"] == "借" and abs(obj["credit"])>0) or  (obj["direction"] == "贷" and abs(obj["debit"])>0):
+                    df_tmp = df_tmp[~((df_tmp["month"] == obj["month"]) & (df_tmp["vocher_num"] == obj["vocher_num"]) & (
+                            df_tmp["vocher_type"] == obj["vocher_type"]))]
             df_rest_profit = df_tmp[df_tmp["subject_name_1"] != "利润分配"]
             add_suggestion(
                 kind="会计处理",
@@ -720,16 +778,14 @@ def get_profit_distribution(df_km, df_xsz, add_suggestion,start_time,end_time,se
                     df_profit_xsz_adjustment = df_xsz_adjustment[df_xsz_adjustment["subject_name_1"] == "以前年度损益调整"]
                     df_profit_and_other_xsz_adjustment = pd.concat([df_rest_profit,df_profit_xsz_adjustment])
                     value = df_profit_and_other_xsz_adjustment["debit"].sum() - df_profit_and_other_xsz_adjustment["credit"].sum()
-                    adjustment_profit["origin"] = ""
-                    adjustment_profit["value"] = value
+                    adjustment_profit = value
                 else:
                     value = df_rest_profit["debit"].sum() - df_rest_profit["credit"].sum()
-                    adjustment_profit["origin"] = ""
-                    adjustment_profit["value"] = value
+                    adjustment_profit = value
     else:
         raise Exception("公司没有设置利润分配科目")
 
-    result = [convert_to_capital, preferred_dividend, dividend, adjustment_profit, *reserves]
+    result = [convert_to_capital, preferred_dividend, dividend, adjustment_profit, *list(match_table.values())]
     return tuple(result)
 
 def get_not_through_profit_and_loss_to_this_year_profit(df_km,df_xsz,start_time,end_time,add_suggestion,session):
@@ -810,7 +866,7 @@ def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time,session):
     bad_debt_ar, bad_debt_or = get_bad_debt(df_km, add_suggestion,start_time,end_time)
     # 获取利润分配项目
     convert_to_capital, preferred_dividend, dividend, adjustment_profit, legal_reserve, discretionary_surplus_reserve, legal_public_welfare_fund, reserve_fund, enterprise_development_fund, profit_return_investment = get_profit_distribution(
-        df_km, df_xsz, add_suggestion,start_time,end_time,session)
+        df_km, df_xsz, add_suggestion,start_time,end_time,session,engine)
     subject_match = {
         "坏账准备--应收账款": bad_debt_ar,
         "坏账准备--其他应收款": bad_debt_or,
@@ -870,15 +926,15 @@ def get_tb(df_km, df_xsz, engine, add_suggestion,start_time,end_time,session):
                     # 添加数据结果
                     df_tb.at[subject, "amount"] = df_km_first_subject_match.at[subject, 'credit_amount']
         elif subject in subject_match:
-            df_tb.at[subject, "amount"] = subject_match[subject]["value"]
+            df_tb.at[subject, "amount"] = subject_match[subject]
             df_tb.at[subject, "origin"] = ""
         elif subject == "年初未分配利润":
             # 利润分配+本年利润+损益类科目贷方-损益类科目借方+年初调整数
             df_tb.at[subject, "origin"] = ""
             if "利润分配" in df_km_first_subject_not_match.index:
-                df_tb.at[subject, "amount"] = df_km_first_subject_not_match.at["利润分配", 'initial_amount'] + adjustment_profit["value"]
+                df_tb.at[subject, "amount"] = df_km_first_subject_not_match.at["利润分配", 'initial_amount'] + adjustment_profit
             else:
-                df_tb.at[subject, "amount"] = 0.00 + adjustment_profit["value"]
+                df_tb.at[subject, "amount"] = 0.00 + adjustment_profit
 
 
     # 最后计算公式

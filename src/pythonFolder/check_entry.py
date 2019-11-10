@@ -3,7 +3,7 @@ import pandas as pd
 import json
 from decimal import Decimal
 from datetime import datetime
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,or_
 from sqlalchemy.orm import sessionmaker
 from database import TransactionEvent
 from constant import monetary_funds,inventory,long_term_assets,expense
@@ -133,15 +133,23 @@ def not_pass_payable_account(session,df_xsz,actual_importance_level,ratio=0.7):
     session.commit()
 
 
-def clean_check(session,df_xsz):
-    df_xsz_records = df_xsz.to_dict('records')
-    for record in df_xsz_records:
-        events = get_events_by_record(session, record)
-        for event in events:
-            if (event.is_check == True) or (event.is_check == False):
-                event.is_check = None
-                event.check_reason = None
+def clean_check(session,start_time,end_time):
+    events = session.query(TransactionEvent).filter(
+        TransactionEvent.start_time==start_time,TransactionEvent.end_time==end_time).filter(
+        or_(TransactionEvent.is_check==True,TransactionEvent.is_check==False)
+    ).all()
+    for event in events:
+        event.is_check = None
+        event.check_reason=None
     session.commit()
+    # df_xsz_records = df_xsz.to_dict('records')
+    # for record in df_xsz_records:
+    #     events = get_events_by_record(session, record)
+    #     for event in events:
+    #         if (event.is_check == True) or (event.is_check == False):
+    #             event.is_check = None
+    #             event.check_reason = None
+    # session.commit()
 
 
 def adjustment_bussiness(session,df_xsz,actual_importance_level,ratio=0.7,integer_num=4):
@@ -217,7 +225,7 @@ def output_check_entry(start_time,end_time,engine):
     df_xsz_new = df_transactionevent[
         [ "month", "vocher_type", "vocher_num",  "description", "subject_num", "subject_name",
          "debit", "credit", "auxiliary","check_reason","tb_subject"]]
-    sys.stdout.write(df_xsz_new.to_json(orient='records'))
+    return df_xsz_new
 
 
 def check_entry(start_time,end_time,actual_importance_level,ratio,num,integer_num,recompute,engine,session):
@@ -231,21 +239,21 @@ def check_entry(start_time,end_time,actual_importance_level,ratio,num,integer_nu
     df_xsz_check = df_xsz[df_xsz["is_check"]==True]
     if len(df_xsz_check)>0:
         if recompute == "yes":
-            clean_check(session, df_xsz)
+            clean_check(session, start_time, end_time)
             deduction_events(session,df_xsz)
             get_none_frequent_event(session,df_xsz,actual_importance_level,ratio,num)
             not_pass_payable_account(session, df_xsz, actual_importance_level, ratio)
             integer_bussiness(session, df_xsz, actual_importance_level, ratio, integer_num)
-            output_check_entry(start_time,end_time,engine)
+            return output_check_entry(start_time,end_time,engine)
         else:
-            output_check_entry(start_time, end_time,engine)
+            return output_check_entry(start_time, end_time,engine)
     else:
-        clean_check(session, df_xsz)
+        clean_check(session, start_time, end_time)
         deduction_events(session, df_xsz)
         get_none_frequent_event(session, df_xsz, actual_importance_level, ratio, num)
         not_pass_payable_account(session, df_xsz, actual_importance_level, ratio)
         integer_bussiness(session, df_xsz, actual_importance_level, ratio, integer_num)
-        output_check_entry(start_time, end_time,engine)
+        return output_check_entry(start_time, end_time,engine)
 
 
 
@@ -274,4 +282,5 @@ if __name__ == '__main__':
     # company_type = "其他公司"
     actual_importance_level = int(get_actual_importance_level(company_type, start_time, end_time, engine, session,
                                                           add_suggestion))
-    check_entry(start_time,end_time,actual_importance_level,ratio,num,integer_num,recompute,engine,session)
+    df_xsz_new = check_entry(start_time,end_time,actual_importance_level,ratio,num,integer_num,recompute,engine,session)
+    sys.stdout.write(df_xsz_new.to_json(orient='records'))

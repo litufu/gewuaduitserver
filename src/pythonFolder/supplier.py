@@ -323,7 +323,7 @@ def query_supplier(start_time,end_time,session):
                                                        SupplierAnalysis.end_time == end_time,
                                                        ).statement, engine)
     records = df.to_json(orient='records')
-    sys.stdout.write(records)
+    return records
 
 
 
@@ -343,6 +343,7 @@ if __name__ == '__main__':
     session = DBSession()
     # start_time = "2016-1-1"
     # end_time = "2016-12-31"
-    query_supplier(start_time, end_time, session)
+    records = query_supplier(start_time, end_time, session)
+    sys.stdout.write(records)
 
 

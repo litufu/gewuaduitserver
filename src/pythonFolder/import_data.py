@@ -66,7 +66,7 @@ def save_km(start_time, end_time, km_path,session):
         subject_name = df.iat[i, 1]
         subject_type = df.iat[i, 2]
         direction = df.iat[i, 3]
-        is_specific = df.iat[i, 4] == "是"
+        is_specific = (df.iat[i, 4] == "是") or (df.iat[i, 4] == 1)
         subject_gradation = str(df.iat[i, 5])
         initial_amount = str_to_float(df.iat[i, 6])
         debit_amount = str_to_float(df.iat[i, 7])

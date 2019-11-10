@@ -384,10 +384,13 @@ const Mutation = {
       records.push({fileId:file.id,storeFilePath,uploadType})
     }
     const recordsJson = JSON.stringify(records)
+    console.log(recordsJson)
     // 将上传的文件导入本地sqlite数据库
     const importDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/import_data.py') 
     const importDataProcess = spawnSync('python',[importDataPath, dbPath,startTimeStr,endTimeStr,recordsJson]); 
     const res = importDataProcess.stdout.toString() 
+    console.log(res.toString())
+    console.log("数据上传完成")
     
     for(let i=0;i<records.length;i++){
       const fileId = records[i].fileId
@@ -434,7 +437,7 @@ const Mutation = {
     const projectInitDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/project_init_data.py') 
     const projectInitDataProcess = spawn('python',[projectInitDataPath, dbPath,startTimeStr,endTimeStr,companyType]);
     projectInitDataProcess.stdout.on('data', async (data) => {
-        console.log(data)
+        console.log(data.toString())
     });
     
     projectInitDataProcess.stderr.on('data', (data) => {

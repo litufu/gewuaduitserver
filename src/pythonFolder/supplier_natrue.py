@@ -36,7 +36,7 @@ def add_nature(auxiliaries,df_xsz_last,session):
     :return:
     '''
     for auxiliary in auxiliaries:
-        df_tmp_xsz = df_xsz_last[(df_xsz_last["auxiliary"].str.contains(auxiliary.name)) & (df_xsz_last["credit"].abs() > 0)]
+        df_tmp_xsz = df_xsz_last[(df_xsz_last["auxiliary"].str.contains(auxiliary.name,regex=False)) & (df_xsz_last["credit"].abs() > 0)]
         if len(df_tmp_xsz) > 0:
             for obj in gen_df_line(df_tmp_xsz.tail(1)):
                 df_supplier_xsz = df_xsz_last[

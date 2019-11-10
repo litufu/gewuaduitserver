@@ -54,7 +54,7 @@ def output_entryclassify(engine,start_time,end_time):
         (df_entryclassify['start_time'] == start_time_format) & (df_entryclassify['end_time'] == end_time_format)]
     df_entryclassify_new = df_entryclassify[
         ['desc', "value", 'number', 'records']]
-    sys.stdout.write(df_entryclassify_new.to_json(orient='records'))
+    return df_entryclassify_new
 
 def compute(start_time,end_time,session,engine,add_suggestion):
     # 获取科目余额表和序时账
@@ -116,12 +116,12 @@ def analyse_entry(start_time,end_time,session,engine,add_suggestion,recompute):
                 session.delete(entry_classify)
             session.commit()
             compute(start_time, end_time, session, engine, add_suggestion)
-            output_entryclassify(engine, start_time, end_time)
+            return output_entryclassify(engine, start_time, end_time)
         else:
-            output_entryclassify(engine,start_time,end_time)
+            return output_entryclassify(engine,start_time,end_time)
     else:
         compute(start_time, end_time, session, engine, add_suggestion)
-        output_entryclassify(engine, start_time, end_time)
+        return output_entryclassify(engine, start_time, end_time)
 
 
 if __name__ == '__main__':
@@ -140,5 +140,6 @@ if __name__ == '__main__':
     # end_time = "2016-12-31"
     # recompute="yes"
 
-    analyse_entry(start_time,end_time,session,engine,add_suggestion,recompute)
+    df_entryclassify_new = analyse_entry(start_time,end_time,session,engine,add_suggestion,recompute)
+    sys.stdout.write(df_entryclassify_new.to_json(orient='records'))
 

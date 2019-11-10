@@ -16,7 +16,7 @@ const companyNature = {
   "OTHER":"其他公司"
 }
 
-const TIMEOUT = 30*60*1000
+const TIMEOUT = 50*60*1000
 
 class AuthError extends Error {
   constructor() {
