@@ -62,13 +62,13 @@ def get_company_info(soup,company_name,ipo):
     if ipo:
         # （1）获取注册资本
         pattern1 = re.compile("注册资本")
-        element1 = soup.find(text=pattern1).parent.find_next_sibling("td")
+        element1 = soup.find('td',text=pattern1).find_next_sibling("td")
         registered_capital = element1.text.strip()
         # （1.2）获取实缴资本
         padin_capital = registered_capital
         # （2）获取成立日期
         pattern2 = re.compile("成立日期")
-        element2 = soup.find(text=pattern2).parent.find_next_sibling("td")
+        element2 = soup.find('td',text=pattern2).find_next_sibling("td")
         establish_date = element2.text.strip()
         # （3）获取经营范围
         theme = soup.find(id="ipoTheme")
@@ -76,15 +76,15 @@ def get_company_info(soup,company_name,ipo):
         business_scope = element3.text.strip()
         # （4）获取企业信用编码
         pattern4 = re.compile("工商登记")
-        element4 = soup.find(text=pattern4).parent.find_next_sibling("td")
+        element4 = soup.find('td',text=pattern4).find_next_sibling("td")
         code = element4.text.strip()
         # (5)获取企业地址
         pattern5 = re.compile("办公地址")
-        element5 = soup.find(text=pattern5).parent.find_next_sibling("td")
+        element5 = soup.find('td',text=pattern5).find_next_sibling("td")
         address = element5.text.strip()
         # 获取企业法定代表人
         pattern6 = re.compile("法人代表")
-        element6 = soup.find(text=pattern6).parent.find_next_sibling("td")
+        element6 = soup.find('td',text=pattern6).find_next_sibling("td")
         legal_representative = element6.text.strip()
         company = {"name": company_name, "code": code, "address": address, "legalRepresentative": legal_representative,
                    "establishDate": establish_date, "registeredCapital": registered_capital,
@@ -93,27 +93,27 @@ def get_company_info(soup,company_name,ipo):
     else:
         # （1）获取注册资本
         pattern1 = re.compile("注册资本")
-        element1 = soup.find(text=pattern1).parent.find_next_sibling("td")
+        element1 = soup.find('td',text=pattern1).find_next_sibling("td")
         registered_capital = element1.text.strip()
           # （1.2）获取实缴资本
         pattern12 = re.compile("实缴资本")
-        element12 = soup.find(text=pattern12).parent.find_next_sibling("td")
+        element12 = soup.find('td',text=pattern12).find_next_sibling("td")
         padin_capital = element12.text.strip()
         # （2）获取成立日期
         pattern2 = re.compile("成立日期")
-        element2 = soup.find(text=pattern2).parent.find_next_sibling("td")
+        element2 = soup.find('td',text=pattern2).find_next_sibling("td")
         establish_date = element2.text.strip()
         # （3）获取经营范围
         pattern3 = re.compile("经营范围")
-        element3 = soup.find(text=pattern3).parent.find_next_sibling("td")
+        element3 = soup.find('td',text=pattern3).find_next_sibling("td")
         business_scope = element3.text.strip()
         # （4）获取企业信用编码
         pattern4 = re.compile("统一社会信用代码")
-        element4 = soup.find(text=pattern4).parent.find_next_sibling("td")
+        element4 = soup.find('td',text=pattern4).find_next_sibling("td")
         code = element4.text.strip()
         # (5)获取企业地址
         pattern5 = re.compile("企业地址")
-        element5 = soup.find(text=pattern5).parent.find_next_sibling("td")
+        element5 = soup.find('td',text=pattern5).find_next_sibling("td")
         # 移除查看地图和附近企业两个标签
         for link in element5.find_all('a'):
             link.replace_with('')
@@ -351,25 +351,26 @@ def download_company(company_name):
    
     #  没有存储则到企查查爬取
     #  获取详情页页面
-    url = get_company_detail_url(company_name)
-    if url.isspace():
-        sys.stdout.write(json.dumps({"name": company_name}))
-        sys.stdout.flush()
-        return
-    origin_url = 'https://www.qichacha.com'
-    # 请求详情页面
-    r = requests.get(origin_url + url, headers=headers)
-    content = r.text
+    # url = get_company_detail_url(company_name)
+    # if url.isspace():
+    #     sys.stdout.write(json.dumps({"name": company_name}))
+    #     sys.stdout.flush()
+    #     return
+    # origin_url = 'https://www.qichacha.com'
+    # # 请求详情页面
+    # r = requests.get(origin_url + url, headers=headers)
+    # content = r.text
+    from tt import content
     soup = BeautifulSoup(content, 'html.parser')
     # 检查是否为上市公司 如果是上市公司，则按照上市公司的格式获取信息
     ipoBase = soup.find(id="ipoBase")
     ipo = True if ipoBase else False
     # 获取公司基本信息
     try:
-        company_info = get_company_info(soup,company_name,ipo)
-        company_holders = get_company_holders(soup,ipo)
-        main_members = get_main_members(soup,ipo)
-        res = {"companyInfo":company_info,"holders":company_holders,"members":main_members}
+        company_info = get_company_info(soup, company_name, ipo)
+        company_holders = get_company_holders(soup, ipo)
+        main_members = get_main_members(soup, ipo)
+        res = {"companyInfo": company_info, "holders": company_holders, "members": main_members}
         sys.stdout.write(json.dumps(res))
         sys.stdout.flush()
     except Exception as e:
@@ -379,6 +380,6 @@ def download_company(company_name):
   
 
 if __name__ == "__main__":
-    company_name = sys.argv[1]
-    download_company(company_name)
-    # download_company("深圳市众恒世讯科技股份有限公司")
+    # company_name = sys.argv[1]
+    # download_company(company_name)
+    download_company("江苏华兰药用新材料股份有限公司")

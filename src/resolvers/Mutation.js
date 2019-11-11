@@ -685,16 +685,23 @@ const Mutation = {
       }
     }
     const newCompaniesStr = JSON.stringify(newCompanies)
+    console.log(newCompaniesStr)
     const downloadCompaniesInfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companies_info.py')
     const downloadCompaniesInfoProcess = spawn('python',[downloadCompaniesInfoPath, newCompaniesStr]);
 
     downloadCompaniesInfoProcess.stdout.on('data', async (data) => {
-         let res = JSON.parse(data)
-         if(res.hasOwnProperty('name')){
-           await ctx.prisma.createNoneCompany({name:res.name})
-         }else{
-           await addOrupdateCompanyInfo(ctx,res,"DOMESTIC","OTHER")
-         }
+        console.log(data.toString())
+        try{
+          let res = JSON.parse(data)
+          if(res.hasOwnProperty('name')){
+            await ctx.prisma.createNoneCompany({name:res.name})
+          }else{
+            await addOrupdateCompanyInfo(ctx,res,"DOMESTIC","OTHER")
+          }
+        }catch (e) {
+          console.log(e)
+        }
+         
      });
      
      downloadCompaniesInfoProcess.stderr.on('data', (data) => {

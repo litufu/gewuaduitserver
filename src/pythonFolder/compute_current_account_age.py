@@ -154,7 +154,7 @@ def get_auxiliary_name(auxiliary_str):
             name = list(res.values())[0]
     return name.strip()
 
-def recaculate_auxiliary(df_auxiliary,df_xsz):
+def recaculate_auxiliary(df_auxiliary,df_xsz,recompute=False):
     '''
     重新计算辅助核算明细表
     :param df_auxiliary:
@@ -169,33 +169,40 @@ def recaculate_auxiliary(df_auxiliary,df_xsz):
     df_auxiliary_new["origin_debit"] = df_auxiliary["debit_amount"]
     df_auxiliary_new["origin_credit"] = df_auxiliary["credit_amount"]
     df_auxiliary_new["origin_terminal"] = df_auxiliary["terminal_amount"]
-    df_auxiliary_new['debit_amount'] = 0.00
-    df_auxiliary_new['credit_amount'] = 0.00
-    df_auxiliary_new['terminal_amount'] = 0.00
-    df_auxiliary_new = df_auxiliary_new.set_index(['subject_num',"name"])
-    # 计算序时账发生额
-    df_xsz["name"] = df_xsz["auxiliary"].apply(get_auxiliary_name)
-    df_xsz_pivot = df_xsz.pivot_table(values=['debit', 'credit'], index=['subject_num',"name"], aggfunc='sum')
-    for i in range(len(df_auxiliary_new)):
-        subject_num_and_name = df_auxiliary_new.index[i]
-        # 序时账透视表中筛选出所有科目和子科目
-        try:
-            df_xsz_pivot_tmp = df_xsz_pivot.loc[subject_num_and_name]
-        except Exception as e:
-            continue
-        # 序时账借方合计
-        debit = df_xsz_pivot_tmp['debit'].sum()
-        # 序时账贷方合计
-        credit = df_xsz_pivot_tmp['credit'].sum()
-        df_auxiliary_new.at[subject_num_and_name, "debit_amount"] = debit
-        df_auxiliary_new.at[subject_num_and_name, "credit_amount"] = credit
-        if df_auxiliary_new.at[subject_num_and_name, "direction"] == "借":
-            df_auxiliary_new.at[subject_num_and_name, "terminal_amount"] = df_auxiliary_new.at[
-                                                                               subject_num_and_name, "initial_amount"] + debit - credit
-        elif df_auxiliary_new.at[subject_num_and_name, "direction"] == "贷":
-            df_auxiliary_new.at[subject_num_and_name, "terminal_amount"] = df_auxiliary_new.at[
-                                                                               subject_num_and_name, "initial_amount"] - debit + credit
-    df_auxiliary_new = df_auxiliary_new.reset_index()
+    # 此处不再重新计算
+    if recompute:
+        df_auxiliary_new['debit_amount'] = 0.00
+        df_auxiliary_new['credit_amount'] = 0.00
+        df_auxiliary_new['terminal_amount'] = 0.00
+        df_auxiliary_new = df_auxiliary_new.set_index(['subject_num',"name"])
+        # 计算序时账发生额
+        df_xsz["name"] = df_xsz["auxiliary"].apply(get_auxiliary_name)
+        df_xsz_pivot = df_xsz.pivot_table(values=['debit', 'credit'], index=['subject_num',"name"], aggfunc='sum')
+        for i in range(len(df_auxiliary_new)):
+            subject_num_and_name = df_auxiliary_new.index[i]
+            # 序时账透视表中筛选出所有科目和子科目
+            try:
+                df_xsz_pivot_tmp = df_xsz_pivot.loc[subject_num_and_name]
+            except Exception as e:
+                continue
+            # 序时账借方合计
+            debit = df_xsz_pivot_tmp['debit'].sum()
+            # 序时账贷方合计
+            credit = df_xsz_pivot_tmp['credit'].sum()
+            df_auxiliary_new.at[subject_num_and_name, "debit_amount"] = debit
+            df_auxiliary_new.at[subject_num_and_name, "credit_amount"] = credit
+            print(subject_num_and_name)
+            if df_auxiliary_new.at[subject_num_and_name, "direction"] == "借":
+                df_auxiliary_new.at[subject_num_and_name, "terminal_amount"] = df_auxiliary_new.at[
+                                                                                   subject_num_and_name, "initial_amount"] + debit - credit
+            elif df_auxiliary_new.at[subject_num_and_name, "direction"] == "贷":
+                df_auxiliary_new.at[subject_num_and_name, "terminal_amount"] = df_auxiliary_new.at[
+                                                                                   subject_num_and_name, "initial_amount"] - debit + credit
+        df_auxiliary_new = df_auxiliary_new.reset_index()
+    else:
+        df_auxiliary_new['debit_amount'] = df_auxiliary["debit_amount"]
+        df_auxiliary_new['credit_amount'] = df_auxiliary["credit_amount"]
+        df_auxiliary_new['terminal_amount'] = df_auxiliary["terminal_amount"]
     return df_auxiliary_new
 
 def save_account_occur_times_to_db(engine,session,start_time,end_time):
@@ -272,9 +279,9 @@ if __name__ == '__main__':
     db_path = sys.argv[1]
     start_time = sys.argv[2]
     end_time = sys.argv[3]
-    # db_path = "D:\gewuaduit\db\cjz6d855k0crx07207mls869f-ck12xld4000lq0720pmfai22l.sqlite"
-    # start_time = "2015-1-1"
-    # end_time = "2015-12-31"
+    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
+    # start_time = "2016-1-1"
+    # end_time = "2016-12-31"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
