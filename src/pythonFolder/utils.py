@@ -304,7 +304,7 @@ def count_time(func):
         func(*args, **kwargs)
         over_time = time.time()   # 程序结束时间
         total_time = over_time - start_time
-        print('程序共计%s秒' % total_time)
+        print('run time is %s seconds' % total_time)
 
     return int_time
 

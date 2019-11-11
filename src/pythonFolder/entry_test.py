@@ -505,8 +505,6 @@ def add_audit_record(start_time,end_time,session,problem,voucher,count,records_l
     :param problem: 审核问题
     :return: 向数据库添加审核记录
     '''
-    print(count)
-    print(records_length)
     audit_record = AuditRecord(
         start_time=start_time,
         end_time=end_time,
@@ -515,7 +513,6 @@ def add_audit_record(start_time,end_time,session,problem,voucher,count,records_l
     )
     session.add(audit_record)
     if (count % 500==0) or (count==(records_length-1)):
-        print("提交")
         session.commit()
 
 def handle_entry(df_entry,record,grades,start_time,end_time,session,count,records_length):
@@ -758,7 +755,6 @@ def handle_one_entry(start_time, end_time,df_xsz,record,not_through_salary_entri
     :param records_length:
     :return:
     '''
-    print('Run task %s...' % (record))
     df_tmp = get_df_one_entry(df_xsz, record)
     # 处理没有通过应付职工薪酬核算的职工薪酬
     if len(not_through_salary_entries) > 0:

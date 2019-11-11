@@ -88,7 +88,7 @@ def get_supplier_entry(df_transactionEvent,supplier_name):
     :param supplier_name:供应商名称
     :return:获取所有与供应商有关的（应付、预付）凭证
     '''
-    df_supplier_transactionEvent = df_transactionEvent[(df_transactionEvent["auxiliary"].str.contains(supplier_name))&
+    df_supplier_transactionEvent = df_transactionEvent[(df_transactionEvent["auxiliary"].str.contains(supplier_name,regex=False))&
                                               (df_transactionEvent["tb_subject"].isin(["应付账款","预付款项"]))]
     df_supplier_record = df_supplier_transactionEvent[["month", "vocher_num", "vocher_type"]].drop_duplicates()
     # 获取相反凭证的完整借贷方
@@ -106,7 +106,7 @@ def get_puchase_amount(df_supplier_entries,supplier_name):
     '''
     # 获取贷方大于0的，包含供应商名称的行
     df_supplier_entries = df_supplier_entries[
-        (df_supplier_entries["auxiliary"].str.contains(supplier_name))&
+        (df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False))&
         (df_supplier_entries["credit"].abs()>0)
     ]
     return df_supplier_entries["credit"].sum()
@@ -120,7 +120,7 @@ def get_puchase_times(df_supplier_entries,supplier_name):
     '''
     # 获取贷方大于0的，包含供应商名称的行
     df_supplier_entries = df_supplier_entries[
-        (df_supplier_entries["auxiliary"].str.contains(supplier_name))&
+        (df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False))&
         (df_supplier_entries["credit"].abs()>0)
     ]
     return len(df_supplier_entries)
@@ -134,7 +134,7 @@ def get_payment_amount(df_supplier_entries,supplier_name):
     '''
     # 获取贷方大于0的，包含供应商名称的行
     df_supplier_entries = df_supplier_entries[
-        (df_supplier_entries["auxiliary"].str.contains(supplier_name))&
+        (df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False))&
         (df_supplier_entries["debit"].abs()>0)
     ]
     return df_supplier_entries["debit"].sum()
@@ -148,7 +148,7 @@ def get_payment_times(df_supplier_entries,supplier_name):
     '''
     # 获取贷方大于0的，包含供应商名称的行
     df_supplier_entries = df_supplier_entries[
-        (df_supplier_entries["auxiliary"].str.contains(supplier_name))&
+        (df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False))&
         (df_supplier_entries["debit"].abs()>0)
     ]
     return len(df_supplier_entries["debit"])
@@ -163,7 +163,7 @@ def get_payment_method(df_supplier_entries,supplier_name):
     methods_set = {"银行存款","库存现金","应收票据","应付票据"}
     # 获取借方大于0的，包含供应商名称的行
     df_supplier_entries = df_supplier_entries[
-        (df_supplier_entries["auxiliary"].str.contains(supplier_name))&
+        (df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False))&
         (df_supplier_entries["debit"].abs()>0)
     ]
     subjects = []
@@ -190,7 +190,7 @@ def get_consumption_per_month(months,df_supplier_entries,supplier_name,purchase_
 
     if purchase_times >= 2:
         df_supplier_entries = df_supplier_entries[
-            (df_supplier_entries["auxiliary"].str.contains(supplier_name)) &
+            (df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False)) &
             (df_supplier_entries["credit"].abs() > 0)
         ]
         df_supplier_purchase = pd.pivot_table(df_supplier_entries, values="credit", index="month",aggfunc=np.sum)
@@ -216,7 +216,7 @@ def get_payment_term(df_supplier_entries,supplier_name,payment_times):
 
     if payment_times >= 2:
         df_supplier_entries = df_supplier_entries[
-            (df_supplier_entries["auxiliary"] != None) & (df_supplier_entries["auxiliary"].str.contains(supplier_name))]
+            (df_supplier_entries["auxiliary"] != None) & (df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False))]
         df_supplier_payment = pd.pivot_table(df_supplier_entries, values=["debit", "credit"], index="month",
                                              aggfunc=np.sum)
         df_supplier_payment = df_supplier_payment.reset_index()
@@ -234,7 +234,7 @@ def get_payment_term(df_supplier_entries,supplier_name,payment_times):
 
 def get_payment_balance(df_supplier_entries,supplier_name,payment_times):
     if payment_times >= 2:
-        df_supplier_entries = df_supplier_entries[(df_supplier_entries["auxiliary"]!=None) &(df_supplier_entries["auxiliary"].str.contains(supplier_name))]
+        df_supplier_entries = df_supplier_entries[(df_supplier_entries["auxiliary"]!=None) &(df_supplier_entries["auxiliary"].str.contains(supplier_name,regex=False))]
         df_supplier_payment = pd.pivot_table(df_supplier_entries, values=["debit","credit"], index="month",aggfunc=np.sum)
         df_supplier_payment = df_supplier_payment.reset_index()
         df_supplier_payment_next = df_supplier_payment.shift(1)

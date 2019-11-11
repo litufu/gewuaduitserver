@@ -13,7 +13,7 @@ const typeDefs = gql`
     company(projectId:String!):Company
     project(projectId:String!):Project
     projects:[Project]
-    checkImportData(projectId:String):Boolean!
+    checkImportData(projectId:String):String!
     getSubjectBalance(projectId:String):String!
     getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
     getTB(projectId:String,type:String!):String!

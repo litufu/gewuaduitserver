@@ -90,7 +90,7 @@ def get_customer_entry(df_transactionEvent,customer_name):
     :param customer_name:客户名称
     :return:获取所有与客户有关的（应收、预收、合同负债）凭证
     '''
-    df_customer_transactionEvent = df_transactionEvent[(df_transactionEvent["auxiliary"].str.contains(customer_name))&
+    df_customer_transactionEvent = df_transactionEvent[(df_transactionEvent["auxiliary"].str.contains(customer_name,regex=False))&
                                                        (df_transactionEvent["tb_subject"].isin(["应收账款","预收款项","合同负债"]))]
 
     df_customer_record = df_customer_transactionEvent[["month", "vocher_num", "vocher_type"]].drop_duplicates()
@@ -109,7 +109,7 @@ def get_sale_amount(df_customer_entries,customer_name):
     '''
     # 获取借方大于0的，包含客户名称的行
     df_customer_entries = df_customer_entries[
-        (df_customer_entries["auxiliary"].str.contains(customer_name))&
+        (df_customer_entries["auxiliary"].str.contains(customer_name,regex=False))&
         (df_customer_entries["debit"].abs()>0)
     ]
     return df_customer_entries["debit"].sum()
@@ -123,7 +123,7 @@ def get_sale_times(df_customer_entries,customer_name):
     '''
     # 获取借方大于0的，包含客户名称的行
     df_customer_entries = df_customer_entries[
-        (df_customer_entries["auxiliary"].str.contains(customer_name))&
+        (df_customer_entries["auxiliary"].str.contains(customer_name,regex=False))&
         (df_customer_entries["debit"].abs()>0)
     ]
     return len(df_customer_entries)
@@ -137,7 +137,7 @@ def get_receivable_amount(df_customer_entries,customer_name):
     '''
     # 获取贷方大于0的，包含供应商名称的行
     df_customer_entries = df_customer_entries[
-        (df_customer_entries["auxiliary"].str.contains(customer_name))&
+        (df_customer_entries["auxiliary"].str.contains(customer_name,regex=False))&
         (df_customer_entries["credit"].abs()>0)
     ]
     return df_customer_entries["credit"].sum()
@@ -151,7 +151,7 @@ def get_receivable_times(df_customer_entries,customer_name):
     '''
     # 获取贷方大于0的，包含客户名称的行
     df_customer_entries = df_customer_entries[
-        (df_customer_entries["auxiliary"].str.contains(customer_name))&
+        (df_customer_entries["auxiliary"].str.contains(customer_name,regex=False))&
         (df_customer_entries["credit"].abs()>0)
     ]
     return len(df_customer_entries["credit"])
@@ -166,7 +166,7 @@ def get_receivable_method(df_customer_entries,customer_name):
     methods_set = {"银行存款","库存现金","应收票据"}
     # 获取贷方大于0的，包含客户名称的行
     df_customer_entries = df_customer_entries[
-        (df_customer_entries["auxiliary"].str.contains(customer_name))&
+        (df_customer_entries["auxiliary"].str.contains(customer_name,regex=False))&
         (df_customer_entries["credit"].abs()>0)
     ]
     subjects = []
@@ -193,7 +193,7 @@ def get_consumption_per_month(months,df_customer_entries,customer_name,sale_time
 
     if sale_times >= 2:
         df_customer_entries = df_customer_entries[
-            (df_customer_entries["auxiliary"].str.contains(customer_name)) &
+            (df_customer_entries["auxiliary"].str.contains(customer_name,regex=False)) &
             (df_customer_entries["debit"].abs() > 0)
         ]
         df_customer_purchase = pd.pivot_table(df_customer_entries, values="debit", index="month",aggfunc=np.sum)
@@ -219,7 +219,7 @@ def get_receivable_term(df_customer_entries,customer_name,receivable_times):
 
     if receivable_times >= 2:
         df_supplier_entries = df_customer_entries[
-            (df_customer_entries["auxiliary"] != None) & (df_customer_entries["auxiliary"].str.contains(customer_name))]
+            (df_customer_entries["auxiliary"] != None) & (df_customer_entries["auxiliary"].str.contains(customer_name,regex=False))]
         df_customer_payment = pd.pivot_table(df_supplier_entries, values=["debit", "credit"], index="month",
                                              aggfunc=np.sum)
         df_customer_payment = df_customer_payment.reset_index()
@@ -237,7 +237,7 @@ def get_receivable_term(df_customer_entries,customer_name,receivable_times):
 
 def get_receivable_balance(df_customer_entries,customer_name,receivable_times):
     if receivable_times >= 2:
-        df_customer_entries = df_customer_entries[(df_customer_entries["auxiliary"]!=None) &(df_customer_entries["auxiliary"].str.contains(customer_name))]
+        df_customer_entries = df_customer_entries[(df_customer_entries["auxiliary"]!=None) &(df_customer_entries["auxiliary"].str.contains(customer_name,regex=False))]
         df_customer_payment = pd.pivot_table(df_customer_entries, values=["debit","credit"], index="month",aggfunc=np.sum)
         df_customer_payment = df_customer_payment.reset_index()
         df_customer_payment_next = df_customer_payment.shift(1)
@@ -324,6 +324,7 @@ def query_customer(session,start_time,end_time):
                                                        ).statement, engine)
     records = df.to_json(orient='records')
     return records
+
 
 
 

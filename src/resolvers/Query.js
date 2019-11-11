@@ -2,6 +2,7 @@ const { getUserId ,dateToString,companyNature,getProjectDBPathStartTimeEndtime} 
 const _ = require('lodash');
 const {  spawnSync} = require('child_process');
 const path = require('path')
+const iconv = require('iconv-lite');
 
 const Query = {
   me: (parent, args, ctx) => {
@@ -133,10 +134,7 @@ const Query = {
     // 检查数据路数的正确性
     const checkImportDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_import_data.py') 
     const checkImportDataProcess = spawnSync('python',[checkImportDataPath, dbPath,startTimeStr,endTimeStr]); 
-    if(_.trim(checkImportDataProcess.stdout.toString())==="true"){
-      return true
-    }
-    return false
+    return _.trim(iconv.decode(checkImportDataProcess.stdout, 'cp936'))
   },
   getSubjectBalance:async(parent,{projectId},ctx)=>{
     const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)

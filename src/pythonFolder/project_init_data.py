@@ -31,27 +31,28 @@ def project_init_data(company_type,start_time, end_time, session, engine,add_sug
     # # 凭证测试
     # aduit_entry(start_time, end_time, session, engine, add_suggestion)
     # 凭证抽查
-    actual_importance_level = get_actual_importance_level(company_type, start_time, end_time, engine, session,
-                                                          add_suggestion)
+    # actual_importance_level = get_actual_importance_level(company_type, start_time, end_time, engine, session,
+    #                                                       add_suggestion)
     # check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
-    # 供应商分析
+    # # 供应商分析
     # save_supplier_to_db(engine, session, start_time, end_time)
-    # 客户分析
+    # # 客户分析
     # save_customer_to_db(engine, session, start_time, end_time)
+    pass
 
 
 if __name__ == '__main__':
-    # db_path = sys.argv[1]
-    db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
+    db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    # start_time = sys.argv[2]
-    # end_time = sys.argv[3]
-    # company_type = sys.argv[4]
-    start_time="2014-1-1"
-    end_time="2014-12-31"
-    company_type="其他企业"
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    company_type = sys.argv[4]
+    # start_time="2013-1-1"
+    # end_time="2013-12-31"
+    # company_type="其他企业"
     from utils import add_suggestion
     project_init_data(company_type, start_time, end_time, session, engine, add_suggestion)
     sys.stdout.write("success")
