@@ -177,6 +177,6 @@ async function addStdSubject() {
 // addFs(fs2019File,"2019已执行三个新准则")
 // addFs(fs2018File,"2019未执行三个新准则")
 addTbSubject()
-// addSubjectContrast()
+addSubjectContrast()
 // addAccountingFirm()
 // addStdSubject()

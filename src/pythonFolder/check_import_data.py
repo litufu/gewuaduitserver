@@ -43,10 +43,11 @@ def check_import_data(engine,start_time, end_time):
     df1 = pd.merge(df_xsz_pivot, df_km_subject, left_index=True, right_index=True, how='left')
     df1['credit_equal'] = df1['credit'] - df1['credit_amount'] < 0.001
     df1['debit_equal'] = df1['debit'] - df1['debit_amount'] < 0.001
+    texts = []
     if not df1['credit_equal'].all():
-        sys.stdout.write('科目余额表和序时账贷方合计不一致')
+        texts.append('科目余额表和序时账贷方合计不一致')
     if not df1['debit_equal'].all():
-        sys.stdout.write('科目余额表和序时账借方合计不一致')
+        texts.append('科目余额表和序时账借方合计不一致')
     #  （2）检查辅助核算明细表与科目余额表是否一致
     #     分别检查期初数/本期借方/本期贷方/期末数是否一致
     # 获取科目余额表期初数/本期借方/本期贷方/期末数
@@ -60,27 +61,29 @@ def check_import_data(engine,start_time, end_time):
         df2 = pd.merge(df_hs_pivot, df_km_subject2, left_index=True, right_index=True, how='left')
         df2['initial_equal'] = df2['initial_amount_x'] - df2['initial_amount_y'] < 0.001
         if not df2['initial_equal'].all():
-            sys.stdout.write('科目余额表与辅助核算明细表期初数不一致')
+            texts.append('科目余额表与辅助核算明细表期初数不一致')
         df2['credit_equal'] = df2['credit_amount_x'] - df2['credit_amount_y'] < 0.001
         if not df2['credit_equal'].all():
-            sys.stdout.write('科目余额表与辅助核算明细表贷方发生额不一致')
+            texts.append('科目余额表与辅助核算明细表贷方发生额不一致')
         df2['debit_equal'] = df2['debit_amount_x'] - df2['debit_amount_y'] < 0.001
         if not df2['debit_equal'].all():
-            sys.stdout.write('科目余额表与辅助核算明细表借方发生额不一致')
+            texts.append('科目余额表与辅助核算明细表借方发生额不一致')
         df2['terminal_equal'] = df2['terminal_amount_x'] - df2['terminal_amount_y'] < 0.001
         if not df2['terminal_equal'].all():
-            sys.stdout.write('科目余额表与辅助核算明细表期末数不一致')
-
-    sys.stdout.write("核对一致")
+            texts.append('科目余额表与辅助核算明细表期末数不一致')
+    if len(texts)>0:
+        sys.stdout.write(','.join(texts))
+    else:
+        sys.stdout.write("核对一致")
 
 if __name__ == '__main__':
-    db_path = sys.argv[1]
-    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
+    # db_path = sys.argv[1]
+    db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    start_time = sys.argv[2]
-    end_time = sys.argv[3]
-    # start_time = "2016-1-1"
-    # end_time = "2016-12-31"
+    # start_time = sys.argv[2]
+    # end_time = sys.argv[3]
+    start_time = "2015-1-1"
+    end_time = "2015-12-31"
     check_import_data(engine,start_time,end_time)

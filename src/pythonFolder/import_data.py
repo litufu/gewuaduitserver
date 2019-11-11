@@ -148,13 +148,9 @@ def save_xsz(start_time, end_time, xsz_path,session):
 
     # 检查是否已经存储序时账,存储则删除
     min_month = int(df.loc[:,'month'].min())
-    print(min_month)
     max_month = int(df.loc[:,'month'].max())
-    print(max_month)
     min_year = int(df.loc[:,'year'].min())
-    print(min_year)
     max_year = int(df.loc[:,'year'].max())
-    print(max_year)
     if ( min_year!= start_time.year) or (max_year != end_time.year) or  (max_month != end_time.month) :
         raise Exception("序时账实际期间与上传的数据期间不一致")
 
@@ -347,17 +343,17 @@ def save_to_db(session,start_time,end_time,path,type):
 
 
 if __name__ == '__main__':
-    # db_path = sys.argv[1]
-    db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
+    db_path = sys.argv[1]
+    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    # start_time = sys.argv[2]
-    # end_time = sys.argv[3]
-    # record = sys.argv[4]
-    start_time="2016-1-1"
-    end_time="2016-12-31"
-    record ='[{"fileId":"ck2tup8fv00kt0712mn3hp8fr","storeFilePath":"D:/gewuaduit/server/uploads/ck2tup8fv00kt0712mn3hp8fr-pz.xlsx","uploadType":"CHRONOLOGICALACCOUNT"}] '
+    start_time = sys.argv[2]
+    end_time = sys.argv[3]
+    record = sys.argv[4]
+    # start_time="2016-1-1"
+    # end_time="2016-12-31"
+    # record ='[{"fileId":"ck2tup8fv00kt0712mn3hp8fr","storeFilePath":"D:/gewuaduit/server/uploads/ck2tup8fv00kt0712mn3hp8fr-pz.xlsx","uploadType":"CHRONOLOGICALACCOUNT"}] '
     records = json.loads(record)
     for record in records:
         path = record["storeFilePath"]

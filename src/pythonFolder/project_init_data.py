@@ -25,33 +25,33 @@ def project_init_data(company_type,start_time, end_time, session, engine,add_sug
     :param add_suggestion:
     :return:
     '''
-    # add_supplier_nature(start_time, end_time, session, engine)
+    add_supplier_nature(start_time, end_time, session, engine)
     # # 分析凭证分类
-    # analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
+    analyse_entry(start_time, end_time, session, engine, add_suggestion, "yes")
     # # 凭证测试
-    # aduit_entry(start_time, end_time, session, engine, add_suggestion)
+    aduit_entry(start_time, end_time, session, engine, add_suggestion)
     # 凭证抽查
-    # actual_importance_level = get_actual_importance_level(company_type, start_time, end_time, engine, session,
-    #                                                       add_suggestion)
-    # check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
+    actual_importance_level = get_actual_importance_level(company_type, start_time, end_time, engine, session,
+                                                          add_suggestion)
+    check_entry(start_time, end_time, actual_importance_level, 0.7, 5, 4, "yes", engine, session)
     # # 供应商分析
-    # save_supplier_to_db(engine, session, start_time, end_time)
+    save_supplier_to_db(engine, session, start_time, end_time)
     # # 客户分析
-    # save_customer_to_db(engine, session, start_time, end_time)
+    save_customer_to_db(engine, session, start_time, end_time)
     pass
 
 
 if __name__ == '__main__':
     db_path = sys.argv[1]
-    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2qvzkio000p0712cg33k9e9.sqlite"
+    # db_path = "D:\gewuaduit\db\cjz6d8rpd0nat0720w8yj2ave-ck2u9n96t00fo0712l9hr1zx7.sqlite"
     engine = create_engine('sqlite:///{}?check_same_thread=False'.format(db_path))
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     start_time = sys.argv[2]
     end_time = sys.argv[3]
     company_type = sys.argv[4]
-    # start_time="2013-1-1"
-    # end_time="2013-12-31"
+    # start_time="2016-1-1"
+    # end_time="2016-12-31"
     # company_type="其他企业"
     from utils import add_suggestion
     project_init_data(company_type, start_time, end_time, session, engine, add_suggestion)

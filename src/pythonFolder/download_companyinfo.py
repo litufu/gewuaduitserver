@@ -351,16 +351,15 @@ def download_company(company_name):
    
     #  没有存储则到企查查爬取
     #  获取详情页页面
-    # url = get_company_detail_url(company_name)
-    # if url.isspace():
-    #     sys.stdout.write(json.dumps({"name": company_name}))
-    #     sys.stdout.flush()
-    #     return
-    # origin_url = 'https://www.qichacha.com'
+    url = get_company_detail_url(company_name)
+    if url.isspace():
+        sys.stdout.write(json.dumps({"name": company_name}))
+        sys.stdout.flush()
+        return
+    origin_url = 'https://www.qichacha.com'
     # # 请求详情页面
-    # r = requests.get(origin_url + url, headers=headers)
-    # content = r.text
-    from tt import content
+    r = requests.get(origin_url + url, headers=headers)
+    content = r.text
     soup = BeautifulSoup(content, 'html.parser')
     # 检查是否为上市公司 如果是上市公司，则按照上市公司的格式获取信息
     ipoBase = soup.find(id="ipoBase")
@@ -380,6 +379,6 @@ def download_company(company_name):
   
 
 if __name__ == "__main__":
-    # company_name = sys.argv[1]
-    # download_company(company_name)
-    download_company("江苏华兰药用新材料股份有限公司")
+    company_name = sys.argv[1]
+    download_company(company_name)
+    # download_company("陇西丽珠参源药材有限公司")

@@ -103,7 +103,7 @@ const  getProjectDBPathStartTimeEndtime = async (projectId,prisma)=>{
 const companyType = (name)=>{
 
   let type
-  if((name.indexOf("公司")!==-1) ||(name.indexOf("合伙")!==-1)){
+  if((name.indexOf("公司")!==-1) ||(name.indexOf("合伙")!==-1)||(name.indexOf("厂")!==-1)){
     type = "公司"
   }else{
     type = "非公司"

@@ -445,7 +445,7 @@ def check_subject_and_desc_contains(df_one_entry,strs,grades):
                     return True
     return False
 
-def add_entry_desc(start_time, end_time, session, df_entry, desc):
+def add_entry_desc(start_time, end_time, session, df_entry, desc,count,records_length):
     '''
     为凭证所有的分录添加相同的描述
     :param company_name: 公司名
@@ -458,7 +458,10 @@ def add_entry_desc(start_time, end_time, session, df_entry, desc):
     '''
     for obj in gen_df_line(df_entry):
         add_event(start_time, end_time, session, desc, obj)
-    session.commit()
+    # session.commit()
+    # 如果另外的线程调用会引发database is locked错误
+    if (count % 500 == 0) or (count == (records_length - 1)):
+        session.commit()
 
 def add_event(start_time, end_time, session, desc, obj):
     event = TransactionEvent(
@@ -512,6 +515,9 @@ def add_audit_record(start_time,end_time,session,problem,voucher,count,records_l
         voucher=voucher
     )
     session.add(audit_record)
+    # session.commit()
+
+    # 如果另外的线程调用会引发database is locked错误
     if (count % 500==0) or (count==(records_length-1)):
         session.commit()
 
@@ -572,20 +578,20 @@ def handle_entry(df_entry,record,grades,start_time,end_time,session,count,record
             if logic == "and":
                 condition_judges_set = set(condition_judges)
                 if (len(condition_judges_set) == 1) and (True in condition_judges_set):
-                    add_entry_desc(start_time, end_time, session, df_entry, event)
+                    add_entry_desc(start_time, end_time, session, df_entry, event,count,records_length)
                     if problem != None:
                         voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
                         add_audit_record(start_time, end_time, session, problem, voucher,count,records_length)
                     return
             elif logic == "or":
                 if True in condition_judges:
-                    add_entry_desc(start_time, end_time, session, df_entry, event)
+                    add_entry_desc(start_time, end_time, session, df_entry, event,count,records_length)
                     if problem != None:
                         voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
                         add_audit_record(start_time, end_time, session, problem, voucher,count,records_length)
                     return
     except Exception as e:
-        add_entry_desc(start_time, end_time, session, df_entry, "非标准-借方{}-贷方{}".format(debit_subject_desc,credit_subjects_desc))
+        add_entry_desc(start_time, end_time, session, df_entry, "非标准-借方{}-贷方{}".format(debit_subject_desc,credit_subjects_desc),count,records_length)
         voucher = "{}-{}-{}".format(record['month'], record['vocher_type'], record['vocher_num'])
         problem = "记账凭证为非标准记账凭证"
         add_audit_record(start_time, end_time, session, problem,voucher,count,records_length)
@@ -735,11 +741,9 @@ def get_df_one_entry(df_xsz,record):
 def check_is_exist(start_time,end_time,session):
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
-    events = session.query(TransactionEvent).filter(TransactionEvent.start_time ==start_time,TransactionEvent.end_time==end_time).all()
-    if len(events)>0:
-        for event in events:
-            session.delete(event)
-        session.commit()
+    session.query(TransactionEvent).filter(TransactionEvent.start_time ==start_time,TransactionEvent.end_time==end_time).delete()
+    session.commit()
+
 
 def handle_one_entry(start_time, end_time,df_xsz,record,not_through_salary_entries,grades,session,count,records_length):
     '''

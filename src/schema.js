@@ -79,6 +79,7 @@ const typeDefs = gql`
     updateAccountingFirm(record:String!):AccountingFirm
     addProofPhoto(id:String!,type:String!,name:String!):LetterOfProof
     addComment(title:String!,content:String!,email:String):Comment
+    updateCompanyInfo(name:String!):Boolean
   }
 
 

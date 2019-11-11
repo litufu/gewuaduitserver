@@ -1,6 +1,7 @@
 const { hash, compare } = require('bcrypt')
 const fs = require("fs")
 const _ = require("lodash")
+const iconv = require('iconv-lite');
 const crypto = require('crypto')
 const mkdirp = require('mkdirp') 
 const path = require('path')
@@ -332,6 +333,82 @@ const Mutation = {
     
     return newcompany
   },
+  updateCompanyInfo:async (parent, { name }, ctx) => {
+
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+
+    // 搜索公司基本信息
+    const filepath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companyinfo.py')
+    const pythonProcess = spawn('python',[filepath, name]);
+    pythonProcess.stdout.on('data', async (data) => {
+        let res = JSON.parse(data)
+        if(res.hasOwnProperty("name")){
+          throw Error("下载公司工商信息失败，请检查公司名称是否正确")
+        }
+        let companyInfo = res.companyInfo
+        let holders = res.holders
+        let members = res.members
+        // 删除股东信息
+        const count1 = await ctx.prisma.deleteManyHolder({
+           company:{name}
+         }).count()
+          // 增加股东信息
+        for (let i=0;i<holders.length;i++) {
+          const ratio = parseFloat(holders[i].ratio.replace('%',""))
+          const holderName = holders[i].holder_name
+          await ctx.prisma.createHolder({
+            name:holderName,
+            ratio,
+            company:{connect:{name}}
+          })
+        }
+        // 删除成员信息
+        const count2 = await ctx.prisma.deleteManyMainMember({
+           company:{name}
+         }).count()
+        // 增加主要成员信息
+        for (let i=0;i<members.length;i++) {
+          const post = members[i].post
+          const Membername = members[i].name
+          await ctx.prisma.createMainMember({
+            name:Membername,
+            post,
+            company:{connect:{name}}
+          })
+        }
+        // 修改公司信息
+        const company = await ctx.prisma.updateCompany({
+          where: { name },
+          data: {
+            code:companyInfo.code,
+            address:companyInfo.address,
+            legalRepresentative:companyInfo.legalRepresentative,
+            establishDate:companyInfo.establishDate,
+            registeredCapital:companyInfo.registeredCapital,
+            paidinCapital:companyInfo.paidinCapital,
+            businessScope:companyInfo.businessScope
+          }
+        })
+        
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+       throw new Error(`客户信息下载失败，请确认客户名称是否正确${data}`)
+    });
+
+    pythonProcess.on('exit', (code) => {
+      if(code!==0){
+        throw new Error(`客户信息下载失败，请确认客户名称是否正确`)
+      }
+    });
+    return true
+
+
+  },
   uploadDataFiles:async (parent, { uploads,companyName,startTime,endTime}, ctx) => {
     // 验证上传者
     const userId = getUserId(ctx)
@@ -435,9 +512,15 @@ const Mutation = {
     }
     // 开始项目数据初始化
     const projectInitDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/project_init_data.py') 
+    
+    // 同步执行
+    // const projectInitDataProcess = spawnSync('python',[projectInitDataPath, dbPath,startTimeStr,endTimeStr,companyType]);
+    // const projectInitDataProcessRes = projectInitDataProcess.stdout.toString() 
+    // console.log(projectInitDataProcessRes.toString())
+    // 异步执行
     const projectInitDataProcess = spawn('python',[projectInitDataPath, dbPath,startTimeStr,endTimeStr,companyType]);
     projectInitDataProcess.stdout.on('data', async (data) => {
-        console.log(data.toString())
+        console.log(iconv.decode(data, 'cp936'))
     });
     
     projectInitDataProcess.stderr.on('data', (data) => {
@@ -685,12 +768,10 @@ const Mutation = {
       }
     }
     const newCompaniesStr = JSON.stringify(newCompanies)
-    console.log(newCompaniesStr)
     const downloadCompaniesInfoPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/download_companies_info.py')
     const downloadCompaniesInfoProcess = spawn('python',[downloadCompaniesInfoPath, newCompaniesStr]);
 
     downloadCompaniesInfoProcess.stdout.on('data', async (data) => {
-        console.log(data.toString())
         try{
           let res = JSON.parse(data)
           if(res.hasOwnProperty('name')){
@@ -723,8 +804,12 @@ const Mutation = {
     if(company){
       const companyRelatedParties = await ctx.prisma.company({name:companyName}).relatedParties()
       if(companyRelatedParties.length>0 && speed==="yes"){
-        return companyRelatedParties
+        return company
       }
+      const count = await ctx.prisma.deleteManyRelatedParties({
+        company:{name:companyName}
+      }).count()
+      console.log(count)
       // 第一步将公司高管和股东添加到关联方
       // 第二部：检查控股股东是否为公司
       // 第三部：是公司爬取控股股东的高管和股东，并将其添加到公司的关联方中
