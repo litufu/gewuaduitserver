@@ -15,6 +15,7 @@ const typeDefs = gql`
     projects:[Project]
     getChronologicalAccountPivot(projectId:String):String!
     getSubjectBalance(projectId:String):String!
+    getPreviousSubjectBalance(projectId:String):String!
     getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
     getTB(projectId:String,type:String!):String!
     getPreviousTb(projectId:String,statement:String!):String!

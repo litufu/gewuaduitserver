@@ -142,6 +142,19 @@ const Query = {
     const getSubjectBalanceProcess = spawnSync('python',[getSubjectBalancePath, dbPath,startTimeStr,endTimeStr]); 
     return getSubjectBalanceProcess.stdout.toString()
   },
+  getPreviousSubjectBalance:async(parent,{projectId},ctx)=>{
+    const {dbPath,project} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    // 检查数据路数的正确性
+    const startTime = new Date(project.startTime)
+    const endTime = new Date(project.endTime)
+    const previousStartTime = new Date(startTime.getFullYear()-1,startTime.getMonth(),startTime.getDate())
+    const previousEndTime =  new Date(endTime.getFullYear()-1,11,31)
+    const newStartTimeStr = dateToString(previousStartTime)
+    const newEndTimeStr = dateToString(previousEndTime)
+    const getSubjectBalancePath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_subject_balance.py') 
+    const getSubjectBalanceProcess = spawnSync('python',[getSubjectBalancePath, dbPath,newStartTimeStr,newEndTimeStr]); 
+    return getSubjectBalanceProcess.stdout.toString()
+  },
   getChronologicalAccount:async(parent,{projectId,subjectNum,grade},ctx)=>{
     const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getChronologicalAccountPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_chronological_account.py') 
