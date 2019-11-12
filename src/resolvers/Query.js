@@ -161,6 +161,12 @@ const Query = {
     const getChronologicalAccountProcess = spawnSync('python',[getChronologicalAccountPath, dbPath,startTimeStr,endTimeStr,subjectNum,grade]); 
     return getChronologicalAccountProcess.stdout.toString()
   },
+  getProfitAdjustment:async(parent,{projectId},ctx)=>{
+    const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
+    const getProfitAdjustmentPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_profit_adjustment.py') 
+    const getProfitAdjustmentProcess = spawnSync('python',[getProfitAdjustmentPath, dbPath,startTimeStr,endTimeStr]); 
+    return getProfitAdjustmentProcess.stdout.toString()
+  },
   getTB:async(parent,{projectId,type},ctx)=>{
     const types = ["unAudited","adjustment","audited"]
     if(types.indexOf(type)===-1){

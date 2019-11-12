@@ -17,6 +17,7 @@ const typeDefs = gql`
     getSubjectBalance(projectId:String):String!
     getPreviousSubjectBalance(projectId:String):String!
     getChronologicalAccount(projectId:String!,subjectNum:String!,grade:Int!):String!
+    getProfitAdjustment(projectId:String!):String!
     getTB(projectId:String,type:String!):String!
     getPreviousTb(projectId:String,statement:String!):String!
     getAuxiliaries(projectId:String!):String!
@@ -57,6 +58,7 @@ const typeDefs = gql`
     uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):Boolean
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
+    createMergeProject(parentCompanyName:String!,sonCompanyNames:[String!]!,startTime:DateTime!,endTime:DateTime!,userEmails:[String]):MergeProject
     projectInitData(projectId:String!):Boolean!
     addAduitAdjustment(projectId:String!,record:String!):Boolean!
     deleteAdutiAdjustment(projectId:String!,vocherNum:Int!,vocherType:String!):Boolean!
@@ -144,6 +146,7 @@ type Vedio{
     role: Role!
     accountingFirm:AccountingFirm
     projects:[Project]
+    mergeProjects:[MergeProject]
     dataRecords:[DataRecord]
   }
 
@@ -253,6 +256,16 @@ type Vedio{
     proofPhoto:String
     project:Project!
 }
+
+  type MergeProject{
+    id: ID!
+    accountingFirm:AccountingFirm!
+    sonCompanies:[Company]
+    parentCompany:Company! 
+    startTime:DateTime!
+    endTime:DateTime!
+    users:[User!]!
+  }
 
   type Project{
     id: ID!

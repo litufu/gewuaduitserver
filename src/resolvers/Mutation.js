@@ -625,6 +625,50 @@ const Mutation = {
       throw new Error("未发现数据记录")
     }
   },
+  createMergeProject:async (parent, {parentCompanyName, sonCompanyNames,startTime,endTime,userEmails}, ctx) => {
+    // 创建者
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    const newUserEmails = userEmails.indexOf(user.email)===-1?[...userEmails,user.email]:userEmails
+    // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+      throw new Error("你还没有加入会计师事务所，无法创建项目")
+    }
+
+    const mergeProjects = await ctx.prisma.mergeProjects({
+      where:{
+        AND:[
+          {parentCompany:{name:parentCompanyName}},
+          {startTime},
+          {endTime},
+          {accountingFirm:{id:accountingFirm.id}},
+        ]
+      }
+    })
+    if(mergeProjects.length>0){
+      throw new Error("本所已经创建该项目，无法重复创建")
+    }
+
+    const sonCompanyNamesObjs = sonCompanyNames.map(companyName=>({name:companyName}))
+    const userEmailsObjs = newUserEmails.map(userEmail=>({email:userEmail}))
+
+    const mergeProject = await ctx.prisma.createMergeProject({
+      startTime,
+      endTime,
+      parentCompany:{connect:{name:parentCompanyName}},
+      accountingFirm:{connect:{id:accountingFirm.id}},
+      sonCompanies:{connect:sonCompanyNamesObjs},
+      users:{connect:userEmailsObjs}
+    })
+   
+    return mergeProject
+    
+    
+  },
   projectInitData:async(parent,{projectId},ctx)=>{
     const {dbPath,startTimeStr,endTimeStr,company} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const companyType = company.type

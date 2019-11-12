@@ -17,6 +17,7 @@ type User {
   role: Role! @default(value: CUSTOMER)
   accountingFirm:AccountingFirm
   projects:[Project!]!
+  mergeProjects:[MergeProject!]!
   dataRecords:[DataRecord!]!
 }
 
@@ -88,6 +89,8 @@ type Company{
   lastControllCompany:String
   lastControllPerson:String
   relatedParties:[RelatedParty!]!
+  sonProjects:[MergeProject!]! @relation(name: "Son")
+  parentProjects:[MergeProject!]! @relation(name: "Parent")
   accountingFirms:[AccountingFirm!]! @relation(link: TABLE)
 }
 
@@ -154,6 +157,16 @@ type Project{
   startTime:DateTime!
   endTime:DateTime!
   members:[Member!]! @relation(link: TABLE)
+}
+
+type MergeProject{
+  id: ID! @id
+  accountingFirm:AccountingFirm!
+  sonCompanies:[Company!]! @relation(name: "Son")
+  parentCompany:Company! @relation(name: "Parent")
+  startTime:DateTime!
+  endTime:DateTime!
+  users:[User!]!
 }
 
 enum ProjectRole{

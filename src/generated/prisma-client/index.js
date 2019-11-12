@@ -65,6 +65,10 @@ var models = [
     embedded: false
   },
   {
+    name: "MergeProject",
+    embedded: false
+  },
+  {
     name: "ProjectRole",
     embedded: false
   },
