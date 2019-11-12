@@ -8,6 +8,9 @@ const MergeProject = {
     users: ({ id }, args, context) => {
         return context.prisma.mergeProject({ id }).users()
     },
+    accountingFirm:({ id }, args, context) => {
+      return context.prisma.mergeProject({ id }).accountingFirm()
+  },
   }
     
   module.exports = {

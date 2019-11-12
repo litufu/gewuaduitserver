@@ -13,6 +13,7 @@ const typeDefs = gql`
     company(projectId:String!):Company
     project(projectId:String!):Project
     projects:[Project]
+    mergeProjects:[MergeProject]
     getChronologicalAccountPivot(projectId:String):String!
     getSubjectBalance(projectId:String):String!
     getPreviousSubjectBalance(projectId:String):String!

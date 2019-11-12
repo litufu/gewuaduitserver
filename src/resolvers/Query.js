@@ -129,6 +129,29 @@ const Query = {
 
     return projects
   },
+  mergeProjects:async (parent, args, ctx) => {
+    const userId = getUserId(ctx)
+    const user = await ctx.prisma.user({ id: userId })
+    if (!user) {
+      throw new Error("用户不存在")
+    }
+    // 验证会计师事务所
+    const accountingFirm = await ctx.prisma.user({ id: userId }).accountingFirm()
+    if(!accountingFirm){
+      return []
+    }
+
+    const projects = await ctx.prisma.mergeProjects({
+      where:{
+        AND:[
+          {accountingFirm:{id:accountingFirm.id}},
+          {users_some:{id:userId}}
+        ]
+      }
+    })
+
+    return projects
+  },
   getChronologicalAccountPivot:async(parent,{projectId},ctx)=>{
     const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
     const getChronologicalAccountPivotPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_chronological_account_total.py') 
