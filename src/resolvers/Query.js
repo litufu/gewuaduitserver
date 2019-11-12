@@ -129,12 +129,11 @@ const Query = {
 
     return projects
   },
-  checkImportData:async(parent,{projectId},ctx)=>{
+  getChronologicalAccountPivot:async(parent,{projectId},ctx)=>{
     const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
-    // 检查数据路数的正确性
-    const checkImportDataPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/check_import_data.py') 
-    const checkImportDataProcess = spawnSync('python',[checkImportDataPath, dbPath,startTimeStr,endTimeStr]); 
-    return _.trim(iconv.decode(checkImportDataProcess.stdout, 'cp936'))
+    const getChronologicalAccountPivotPath = path.join(path.resolve(__dirname, '..'), './pythonFolder/get_chronological_account_total.py') 
+    const getChronologicalAccountPivotProcess = spawnSync('python',[getChronologicalAccountPivotPath, dbPath,startTimeStr,endTimeStr]); 
+    return getChronologicalAccountPivotProcess.stdout.toString()
   },
   getSubjectBalance:async(parent,{projectId},ctx)=>{
     const {dbPath,startTimeStr,endTimeStr} = await getProjectDBPathStartTimeEndtime(projectId,ctx.prisma)
