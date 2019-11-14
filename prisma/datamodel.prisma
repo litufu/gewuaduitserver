@@ -85,11 +85,11 @@ type Company{
   paidinCapital:String
   businessScope:String
   holders:[Holder!]!
-  mainMembers:[MainMember!]!
+  mainMembers:[MainMember!]! @relation(name: "MainMember")
   lastControllCompany:String
   lastControllPerson:String
+  sonCompanies:[SonCompany!]!@relation(name: "Son")
   relatedParties:[RelatedParty!]!
-  sonProjects:[MergeProject!]! @relation(name: "Son")
   parentProjects:[MergeProject!]! @relation(name: "Parent")
   accountingFirms:[AccountingFirm!]! @relation(link: TABLE)
 }
@@ -105,7 +105,7 @@ type MainMember{
   id: ID! @id
   name:String!
   post:String!
-  company:Company!
+  company:Company! @relation(name: "MainMember")
 }
 
 type Holder{
@@ -162,11 +162,17 @@ type Project{
 type MergeProject{
   id: ID! @id
   accountingFirm:AccountingFirm!
-  sonCompanies:[Company!]! @relation(name: "Son")
+  sonCompanies:[SonCompany!]!
   parentCompany:Company! @relation(name: "Parent")
   startTime:DateTime!
   endTime:DateTime!
   users:[User!]!
+}
+
+type SonCompany{
+  id: ID! @id
+  type:String!
+  company:Company @relation(name: "Son")
 }
 
 enum ProjectRole{

@@ -69,6 +69,10 @@ var models = [
     embedded: false
   },
   {
+    name: "SonCompany",
+    embedded: false
+  },
+  {
     name: "ProjectRole",
     embedded: false
   },

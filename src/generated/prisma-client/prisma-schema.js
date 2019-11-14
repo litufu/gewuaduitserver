@@ -719,6 +719,10 @@ type AggregateRelatedParty {
   count: Int!
 }
 
+type AggregateSonCompany {
+  count: Int!
+}
+
 type AggregateStdSubject {
   count: Int!
 }
@@ -910,8 +914,8 @@ type Company {
   mainMembers(where: MainMemberWhereInput, orderBy: MainMemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MainMember!]
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies(where: SonCompanyWhereInput, orderBy: SonCompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SonCompany!]
   relatedParties(where: RelatedPartyWhereInput, orderBy: RelatedPartyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RelatedParty!]
-  sonProjects(where: MergeProjectWhereInput, orderBy: MergeProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MergeProject!]
   parentProjects(where: MergeProjectWhereInput, orderBy: MergeProjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MergeProject!]
   accountingFirms(where: AccountingFirmWhereInput, orderBy: AccountingFirmOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [AccountingFirm!]
 }
@@ -938,19 +942,14 @@ input CompanyCreateInput {
   mainMembers: MainMemberCreateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyCreateManyWithoutCompanyInput
   relatedParties: RelatedPartyCreateManyWithoutCompanyInput
-  sonProjects: MergeProjectCreateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectCreateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
 
 input CompanyCreateManyWithoutAccountingFirmsInput {
   create: [CompanyCreateWithoutAccountingFirmsInput!]
-  connect: [CompanyWhereUniqueInput!]
-}
-
-input CompanyCreateManyWithoutSonProjectsInput {
-  create: [CompanyCreateWithoutSonProjectsInput!]
   connect: [CompanyWhereUniqueInput!]
 }
 
@@ -979,6 +978,11 @@ input CompanyCreateOneWithoutRelatedPartiesInput {
   connect: CompanyWhereUniqueInput
 }
 
+input CompanyCreateOneWithoutSonCompaniesInput {
+  create: CompanyCreateWithoutSonCompaniesInput
+  connect: CompanyWhereUniqueInput
+}
+
 input CompanyCreateWithoutAccountingFirmsInput {
   id: ID
   type: CompanyType!
@@ -995,8 +999,8 @@ input CompanyCreateWithoutAccountingFirmsInput {
   mainMembers: MainMemberCreateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyCreateManyWithoutCompanyInput
   relatedParties: RelatedPartyCreateManyWithoutCompanyInput
-  sonProjects: MergeProjectCreateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectCreateManyWithoutParentCompanyInput
 }
 
@@ -1015,8 +1019,8 @@ input CompanyCreateWithoutHoldersInput {
   mainMembers: MainMemberCreateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyCreateManyWithoutCompanyInput
   relatedParties: RelatedPartyCreateManyWithoutCompanyInput
-  sonProjects: MergeProjectCreateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectCreateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
@@ -1036,8 +1040,8 @@ input CompanyCreateWithoutMainMembersInput {
   holders: HolderCreateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyCreateManyWithoutCompanyInput
   relatedParties: RelatedPartyCreateManyWithoutCompanyInput
-  sonProjects: MergeProjectCreateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectCreateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
@@ -1058,8 +1062,8 @@ input CompanyCreateWithoutParentProjectsInput {
   mainMembers: MainMemberCreateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyCreateManyWithoutCompanyInput
   relatedParties: RelatedPartyCreateManyWithoutCompanyInput
-  sonProjects: MergeProjectCreateManyWithoutSonCompaniesInput
   accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
 
@@ -1079,12 +1083,12 @@ input CompanyCreateWithoutRelatedPartiesInput {
   mainMembers: MainMemberCreateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
-  sonProjects: MergeProjectCreateManyWithoutSonCompaniesInput
+  sonCompanies: SonCompanyCreateManyWithoutCompanyInput
   parentProjects: MergeProjectCreateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmCreateManyWithoutCustomersInput
 }
 
-input CompanyCreateWithoutSonProjectsInput {
+input CompanyCreateWithoutSonCompaniesInput {
   id: ID
   type: CompanyType!
   nature: CompanyNature!
@@ -1501,8 +1505,8 @@ input CompanyUpdateDataInput {
   mainMembers: MainMemberUpdateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyUpdateManyWithoutCompanyInput
   relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
-  sonProjects: MergeProjectUpdateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectUpdateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
@@ -1522,8 +1526,8 @@ input CompanyUpdateInput {
   mainMembers: MainMemberUpdateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyUpdateManyWithoutCompanyInput
   relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
-  sonProjects: MergeProjectUpdateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectUpdateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
@@ -1570,18 +1574,6 @@ input CompanyUpdateManyWithoutAccountingFirmsInput {
   updateMany: [CompanyUpdateManyWithWhereNestedInput!]
 }
 
-input CompanyUpdateManyWithoutSonProjectsInput {
-  create: [CompanyCreateWithoutSonProjectsInput!]
-  delete: [CompanyWhereUniqueInput!]
-  connect: [CompanyWhereUniqueInput!]
-  set: [CompanyWhereUniqueInput!]
-  disconnect: [CompanyWhereUniqueInput!]
-  update: [CompanyUpdateWithWhereUniqueWithoutSonProjectsInput!]
-  upsert: [CompanyUpsertWithWhereUniqueWithoutSonProjectsInput!]
-  deleteMany: [CompanyScalarWhereInput!]
-  updateMany: [CompanyUpdateManyWithWhereNestedInput!]
-}
-
 input CompanyUpdateManyWithWhereNestedInput {
   where: CompanyScalarWhereInput!
   data: CompanyUpdateManyDataInput!
@@ -1622,6 +1614,15 @@ input CompanyUpdateOneRequiredWithoutRelatedPartiesInput {
   connect: CompanyWhereUniqueInput
 }
 
+input CompanyUpdateOneWithoutSonCompaniesInput {
+  create: CompanyCreateWithoutSonCompaniesInput
+  update: CompanyUpdateWithoutSonCompaniesDataInput
+  upsert: CompanyUpsertWithoutSonCompaniesInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: CompanyWhereUniqueInput
+}
+
 input CompanyUpdateWithoutAccountingFirmsDataInput {
   type: CompanyType
   nature: CompanyNature
@@ -1637,8 +1638,8 @@ input CompanyUpdateWithoutAccountingFirmsDataInput {
   mainMembers: MainMemberUpdateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyUpdateManyWithoutCompanyInput
   relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
-  sonProjects: MergeProjectUpdateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectUpdateManyWithoutParentCompanyInput
 }
 
@@ -1656,8 +1657,8 @@ input CompanyUpdateWithoutHoldersDataInput {
   mainMembers: MainMemberUpdateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyUpdateManyWithoutCompanyInput
   relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
-  sonProjects: MergeProjectUpdateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectUpdateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
@@ -1676,8 +1677,8 @@ input CompanyUpdateWithoutMainMembersDataInput {
   holders: HolderUpdateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyUpdateManyWithoutCompanyInput
   relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
-  sonProjects: MergeProjectUpdateManyWithoutSonCompaniesInput
   parentProjects: MergeProjectUpdateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
@@ -1697,8 +1698,8 @@ input CompanyUpdateWithoutParentProjectsDataInput {
   mainMembers: MainMemberUpdateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
+  sonCompanies: SonCompanyUpdateManyWithoutCompanyInput
   relatedParties: RelatedPartyUpdateManyWithoutCompanyInput
-  sonProjects: MergeProjectUpdateManyWithoutSonCompaniesInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
 
@@ -1717,12 +1718,12 @@ input CompanyUpdateWithoutRelatedPartiesDataInput {
   mainMembers: MainMemberUpdateManyWithoutCompanyInput
   lastControllCompany: String
   lastControllPerson: String
-  sonProjects: MergeProjectUpdateManyWithoutSonCompaniesInput
+  sonCompanies: SonCompanyUpdateManyWithoutCompanyInput
   parentProjects: MergeProjectUpdateManyWithoutParentCompanyInput
   accountingFirms: AccountingFirmUpdateManyWithoutCustomersInput
 }
 
-input CompanyUpdateWithoutSonProjectsDataInput {
+input CompanyUpdateWithoutSonCompaniesDataInput {
   type: CompanyType
   nature: CompanyNature
   name: String
@@ -1745,11 +1746,6 @@ input CompanyUpdateWithoutSonProjectsDataInput {
 input CompanyUpdateWithWhereUniqueWithoutAccountingFirmsInput {
   where: CompanyWhereUniqueInput!
   data: CompanyUpdateWithoutAccountingFirmsDataInput!
-}
-
-input CompanyUpdateWithWhereUniqueWithoutSonProjectsInput {
-  where: CompanyWhereUniqueInput!
-  data: CompanyUpdateWithoutSonProjectsDataInput!
 }
 
 input CompanyUpsertNestedInput {
@@ -1777,16 +1773,15 @@ input CompanyUpsertWithoutRelatedPartiesInput {
   create: CompanyCreateWithoutRelatedPartiesInput!
 }
 
+input CompanyUpsertWithoutSonCompaniesInput {
+  update: CompanyUpdateWithoutSonCompaniesDataInput!
+  create: CompanyCreateWithoutSonCompaniesInput!
+}
+
 input CompanyUpsertWithWhereUniqueWithoutAccountingFirmsInput {
   where: CompanyWhereUniqueInput!
   update: CompanyUpdateWithoutAccountingFirmsDataInput!
   create: CompanyCreateWithoutAccountingFirmsInput!
-}
-
-input CompanyUpsertWithWhereUniqueWithoutSonProjectsInput {
-  where: CompanyWhereUniqueInput!
-  update: CompanyUpdateWithoutSonProjectsDataInput!
-  create: CompanyCreateWithoutSonProjectsInput!
 }
 
 input CompanyWhereInput {
@@ -1952,12 +1947,12 @@ input CompanyWhereInput {
   lastControllPerson_not_starts_with: String
   lastControllPerson_ends_with: String
   lastControllPerson_not_ends_with: String
+  sonCompanies_every: SonCompanyWhereInput
+  sonCompanies_some: SonCompanyWhereInput
+  sonCompanies_none: SonCompanyWhereInput
   relatedParties_every: RelatedPartyWhereInput
   relatedParties_some: RelatedPartyWhereInput
   relatedParties_none: RelatedPartyWhereInput
-  sonProjects_every: MergeProjectWhereInput
-  sonProjects_some: MergeProjectWhereInput
-  sonProjects_none: MergeProjectWhereInput
   parentProjects_every: MergeProjectWhereInput
   parentProjects_some: MergeProjectWhereInput
   parentProjects_none: MergeProjectWhereInput
@@ -3725,7 +3720,7 @@ input MemberWhereUniqueInput {
 type MergeProject {
   id: ID!
   accountingFirm: AccountingFirm!
-  sonCompanies(where: CompanyWhereInput, orderBy: CompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Company!]
+  sonCompanies(where: SonCompanyWhereInput, orderBy: SonCompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SonCompany!]
   parentCompany: Company!
   startTime: DateTime!
   endTime: DateTime!
@@ -3741,7 +3736,7 @@ type MergeProjectConnection {
 input MergeProjectCreateInput {
   id: ID
   accountingFirm: AccountingFirmCreateOneInput!
-  sonCompanies: CompanyCreateManyWithoutSonProjectsInput
+  sonCompanies: SonCompanyCreateManyInput
   parentCompany: CompanyCreateOneWithoutParentProjectsInput!
   startTime: DateTime!
   endTime: DateTime!
@@ -3753,11 +3748,6 @@ input MergeProjectCreateManyWithoutParentCompanyInput {
   connect: [MergeProjectWhereUniqueInput!]
 }
 
-input MergeProjectCreateManyWithoutSonCompaniesInput {
-  create: [MergeProjectCreateWithoutSonCompaniesInput!]
-  connect: [MergeProjectWhereUniqueInput!]
-}
-
 input MergeProjectCreateManyWithoutUsersInput {
   create: [MergeProjectCreateWithoutUsersInput!]
   connect: [MergeProjectWhereUniqueInput!]
@@ -3766,16 +3756,7 @@ input MergeProjectCreateManyWithoutUsersInput {
 input MergeProjectCreateWithoutParentCompanyInput {
   id: ID
   accountingFirm: AccountingFirmCreateOneInput!
-  sonCompanies: CompanyCreateManyWithoutSonProjectsInput
-  startTime: DateTime!
-  endTime: DateTime!
-  users: UserCreateManyWithoutMergeProjectsInput
-}
-
-input MergeProjectCreateWithoutSonCompaniesInput {
-  id: ID
-  accountingFirm: AccountingFirmCreateOneInput!
-  parentCompany: CompanyCreateOneWithoutParentProjectsInput!
+  sonCompanies: SonCompanyCreateManyInput
   startTime: DateTime!
   endTime: DateTime!
   users: UserCreateManyWithoutMergeProjectsInput
@@ -3784,7 +3765,7 @@ input MergeProjectCreateWithoutSonCompaniesInput {
 input MergeProjectCreateWithoutUsersInput {
   id: ID
   accountingFirm: AccountingFirmCreateOneInput!
-  sonCompanies: CompanyCreateManyWithoutSonProjectsInput
+  sonCompanies: SonCompanyCreateManyInput
   parentCompany: CompanyCreateOneWithoutParentProjectsInput!
   startTime: DateTime!
   endTime: DateTime!
@@ -3866,7 +3847,7 @@ input MergeProjectSubscriptionWhereInput {
 
 input MergeProjectUpdateInput {
   accountingFirm: AccountingFirmUpdateOneRequiredInput
-  sonCompanies: CompanyUpdateManyWithoutSonProjectsInput
+  sonCompanies: SonCompanyUpdateManyInput
   parentCompany: CompanyUpdateOneRequiredWithoutParentProjectsInput
   startTime: DateTime
   endTime: DateTime
@@ -3895,18 +3876,6 @@ input MergeProjectUpdateManyWithoutParentCompanyInput {
   updateMany: [MergeProjectUpdateManyWithWhereNestedInput!]
 }
 
-input MergeProjectUpdateManyWithoutSonCompaniesInput {
-  create: [MergeProjectCreateWithoutSonCompaniesInput!]
-  delete: [MergeProjectWhereUniqueInput!]
-  connect: [MergeProjectWhereUniqueInput!]
-  set: [MergeProjectWhereUniqueInput!]
-  disconnect: [MergeProjectWhereUniqueInput!]
-  update: [MergeProjectUpdateWithWhereUniqueWithoutSonCompaniesInput!]
-  upsert: [MergeProjectUpsertWithWhereUniqueWithoutSonCompaniesInput!]
-  deleteMany: [MergeProjectScalarWhereInput!]
-  updateMany: [MergeProjectUpdateManyWithWhereNestedInput!]
-}
-
 input MergeProjectUpdateManyWithoutUsersInput {
   create: [MergeProjectCreateWithoutUsersInput!]
   delete: [MergeProjectWhereUniqueInput!]
@@ -3926,15 +3895,7 @@ input MergeProjectUpdateManyWithWhereNestedInput {
 
 input MergeProjectUpdateWithoutParentCompanyDataInput {
   accountingFirm: AccountingFirmUpdateOneRequiredInput
-  sonCompanies: CompanyUpdateManyWithoutSonProjectsInput
-  startTime: DateTime
-  endTime: DateTime
-  users: UserUpdateManyWithoutMergeProjectsInput
-}
-
-input MergeProjectUpdateWithoutSonCompaniesDataInput {
-  accountingFirm: AccountingFirmUpdateOneRequiredInput
-  parentCompany: CompanyUpdateOneRequiredWithoutParentProjectsInput
+  sonCompanies: SonCompanyUpdateManyInput
   startTime: DateTime
   endTime: DateTime
   users: UserUpdateManyWithoutMergeProjectsInput
@@ -3942,7 +3903,7 @@ input MergeProjectUpdateWithoutSonCompaniesDataInput {
 
 input MergeProjectUpdateWithoutUsersDataInput {
   accountingFirm: AccountingFirmUpdateOneRequiredInput
-  sonCompanies: CompanyUpdateManyWithoutSonProjectsInput
+  sonCompanies: SonCompanyUpdateManyInput
   parentCompany: CompanyUpdateOneRequiredWithoutParentProjectsInput
   startTime: DateTime
   endTime: DateTime
@@ -3951,11 +3912,6 @@ input MergeProjectUpdateWithoutUsersDataInput {
 input MergeProjectUpdateWithWhereUniqueWithoutParentCompanyInput {
   where: MergeProjectWhereUniqueInput!
   data: MergeProjectUpdateWithoutParentCompanyDataInput!
-}
-
-input MergeProjectUpdateWithWhereUniqueWithoutSonCompaniesInput {
-  where: MergeProjectWhereUniqueInput!
-  data: MergeProjectUpdateWithoutSonCompaniesDataInput!
 }
 
 input MergeProjectUpdateWithWhereUniqueWithoutUsersInput {
@@ -3967,12 +3923,6 @@ input MergeProjectUpsertWithWhereUniqueWithoutParentCompanyInput {
   where: MergeProjectWhereUniqueInput!
   update: MergeProjectUpdateWithoutParentCompanyDataInput!
   create: MergeProjectCreateWithoutParentCompanyInput!
-}
-
-input MergeProjectUpsertWithWhereUniqueWithoutSonCompaniesInput {
-  where: MergeProjectWhereUniqueInput!
-  update: MergeProjectUpdateWithoutSonCompaniesDataInput!
-  create: MergeProjectCreateWithoutSonCompaniesInput!
 }
 
 input MergeProjectUpsertWithWhereUniqueWithoutUsersInput {
@@ -3997,9 +3947,9 @@ input MergeProjectWhereInput {
   id_ends_with: ID
   id_not_ends_with: ID
   accountingFirm: AccountingFirmWhereInput
-  sonCompanies_every: CompanyWhereInput
-  sonCompanies_some: CompanyWhereInput
-  sonCompanies_none: CompanyWhereInput
+  sonCompanies_every: SonCompanyWhereInput
+  sonCompanies_some: SonCompanyWhereInput
+  sonCompanies_none: SonCompanyWhereInput
   parentCompany: CompanyWhereInput
   startTime: DateTime
   startTime_not: DateTime
@@ -4120,6 +4070,12 @@ type Mutation {
   upsertRelatedParty(where: RelatedPartyWhereUniqueInput!, create: RelatedPartyCreateInput!, update: RelatedPartyUpdateInput!): RelatedParty!
   deleteRelatedParty(where: RelatedPartyWhereUniqueInput!): RelatedParty
   deleteManyRelatedParties(where: RelatedPartyWhereInput): BatchPayload!
+  createSonCompany(data: SonCompanyCreateInput!): SonCompany!
+  updateSonCompany(data: SonCompanyUpdateInput!, where: SonCompanyWhereUniqueInput!): SonCompany
+  updateManySonCompanies(data: SonCompanyUpdateManyMutationInput!, where: SonCompanyWhereInput): BatchPayload!
+  upsertSonCompany(where: SonCompanyWhereUniqueInput!, create: SonCompanyCreateInput!, update: SonCompanyUpdateInput!): SonCompany!
+  deleteSonCompany(where: SonCompanyWhereUniqueInput!): SonCompany
+  deleteManySonCompanies(where: SonCompanyWhereInput): BatchPayload!
   createStdSubject(data: StdSubjectCreateInput!): StdSubject!
   updateStdSubject(data: StdSubjectUpdateInput!, where: StdSubjectWhereUniqueInput!): StdSubject
   updateManyStdSubjects(data: StdSubjectUpdateManyMutationInput!, where: StdSubjectWhereInput): BatchPayload!
@@ -4574,6 +4530,9 @@ type Query {
   relatedParty(where: RelatedPartyWhereUniqueInput!): RelatedParty
   relatedParties(where: RelatedPartyWhereInput, orderBy: RelatedPartyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RelatedParty]!
   relatedPartiesConnection(where: RelatedPartyWhereInput, orderBy: RelatedPartyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RelatedPartyConnection!
+  sonCompany(where: SonCompanyWhereUniqueInput!): SonCompany
+  sonCompanies(where: SonCompanyWhereInput, orderBy: SonCompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SonCompany]!
+  sonCompaniesConnection(where: SonCompanyWhereInput, orderBy: SonCompanyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SonCompanyConnection!
   stdSubject(where: StdSubjectWhereUniqueInput!): StdSubject
   stdSubjects(where: StdSubjectWhereInput, orderBy: StdSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [StdSubject]!
   stdSubjectsConnection(where: StdSubjectWhereInput, orderBy: StdSubjectOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): StdSubjectConnection!
@@ -4878,6 +4837,220 @@ input RelatedPartyWhereUniqueInput {
 enum Role {
   ADMIN
   CUSTOMER
+}
+
+type SonCompany {
+  id: ID!
+  type: String!
+  company: Company
+}
+
+type SonCompanyConnection {
+  pageInfo: PageInfo!
+  edges: [SonCompanyEdge]!
+  aggregate: AggregateSonCompany!
+}
+
+input SonCompanyCreateInput {
+  id: ID
+  type: String!
+  company: CompanyCreateOneWithoutSonCompaniesInput
+}
+
+input SonCompanyCreateManyInput {
+  create: [SonCompanyCreateInput!]
+  connect: [SonCompanyWhereUniqueInput!]
+}
+
+input SonCompanyCreateManyWithoutCompanyInput {
+  create: [SonCompanyCreateWithoutCompanyInput!]
+  connect: [SonCompanyWhereUniqueInput!]
+}
+
+input SonCompanyCreateWithoutCompanyInput {
+  id: ID
+  type: String!
+}
+
+type SonCompanyEdge {
+  node: SonCompany!
+  cursor: String!
+}
+
+enum SonCompanyOrderByInput {
+  id_ASC
+  id_DESC
+  type_ASC
+  type_DESC
+}
+
+type SonCompanyPreviousValues {
+  id: ID!
+  type: String!
+}
+
+input SonCompanyScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  type: String
+  type_not: String
+  type_in: [String!]
+  type_not_in: [String!]
+  type_lt: String
+  type_lte: String
+  type_gt: String
+  type_gte: String
+  type_contains: String
+  type_not_contains: String
+  type_starts_with: String
+  type_not_starts_with: String
+  type_ends_with: String
+  type_not_ends_with: String
+  AND: [SonCompanyScalarWhereInput!]
+  OR: [SonCompanyScalarWhereInput!]
+  NOT: [SonCompanyScalarWhereInput!]
+}
+
+type SonCompanySubscriptionPayload {
+  mutation: MutationType!
+  node: SonCompany
+  updatedFields: [String!]
+  previousValues: SonCompanyPreviousValues
+}
+
+input SonCompanySubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: SonCompanyWhereInput
+  AND: [SonCompanySubscriptionWhereInput!]
+  OR: [SonCompanySubscriptionWhereInput!]
+  NOT: [SonCompanySubscriptionWhereInput!]
+}
+
+input SonCompanyUpdateDataInput {
+  type: String
+  company: CompanyUpdateOneWithoutSonCompaniesInput
+}
+
+input SonCompanyUpdateInput {
+  type: String
+  company: CompanyUpdateOneWithoutSonCompaniesInput
+}
+
+input SonCompanyUpdateManyDataInput {
+  type: String
+}
+
+input SonCompanyUpdateManyInput {
+  create: [SonCompanyCreateInput!]
+  update: [SonCompanyUpdateWithWhereUniqueNestedInput!]
+  upsert: [SonCompanyUpsertWithWhereUniqueNestedInput!]
+  delete: [SonCompanyWhereUniqueInput!]
+  connect: [SonCompanyWhereUniqueInput!]
+  set: [SonCompanyWhereUniqueInput!]
+  disconnect: [SonCompanyWhereUniqueInput!]
+  deleteMany: [SonCompanyScalarWhereInput!]
+  updateMany: [SonCompanyUpdateManyWithWhereNestedInput!]
+}
+
+input SonCompanyUpdateManyMutationInput {
+  type: String
+}
+
+input SonCompanyUpdateManyWithoutCompanyInput {
+  create: [SonCompanyCreateWithoutCompanyInput!]
+  delete: [SonCompanyWhereUniqueInput!]
+  connect: [SonCompanyWhereUniqueInput!]
+  set: [SonCompanyWhereUniqueInput!]
+  disconnect: [SonCompanyWhereUniqueInput!]
+  update: [SonCompanyUpdateWithWhereUniqueWithoutCompanyInput!]
+  upsert: [SonCompanyUpsertWithWhereUniqueWithoutCompanyInput!]
+  deleteMany: [SonCompanyScalarWhereInput!]
+  updateMany: [SonCompanyUpdateManyWithWhereNestedInput!]
+}
+
+input SonCompanyUpdateManyWithWhereNestedInput {
+  where: SonCompanyScalarWhereInput!
+  data: SonCompanyUpdateManyDataInput!
+}
+
+input SonCompanyUpdateWithoutCompanyDataInput {
+  type: String
+}
+
+input SonCompanyUpdateWithWhereUniqueNestedInput {
+  where: SonCompanyWhereUniqueInput!
+  data: SonCompanyUpdateDataInput!
+}
+
+input SonCompanyUpdateWithWhereUniqueWithoutCompanyInput {
+  where: SonCompanyWhereUniqueInput!
+  data: SonCompanyUpdateWithoutCompanyDataInput!
+}
+
+input SonCompanyUpsertWithWhereUniqueNestedInput {
+  where: SonCompanyWhereUniqueInput!
+  update: SonCompanyUpdateDataInput!
+  create: SonCompanyCreateInput!
+}
+
+input SonCompanyUpsertWithWhereUniqueWithoutCompanyInput {
+  where: SonCompanyWhereUniqueInput!
+  update: SonCompanyUpdateWithoutCompanyDataInput!
+  create: SonCompanyCreateWithoutCompanyInput!
+}
+
+input SonCompanyWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  type: String
+  type_not: String
+  type_in: [String!]
+  type_not_in: [String!]
+  type_lt: String
+  type_lte: String
+  type_gt: String
+  type_gte: String
+  type_contains: String
+  type_not_contains: String
+  type_starts_with: String
+  type_not_starts_with: String
+  type_ends_with: String
+  type_not_ends_with: String
+  company: CompanyWhereInput
+  AND: [SonCompanyWhereInput!]
+  OR: [SonCompanyWhereInput!]
+  NOT: [SonCompanyWhereInput!]
+}
+
+input SonCompanyWhereUniqueInput {
+  id: ID
 }
 
 type StdSubject {
@@ -5234,6 +5407,7 @@ type Subscription {
   noneCompany(where: NoneCompanySubscriptionWhereInput): NoneCompanySubscriptionPayload
   project(where: ProjectSubscriptionWhereInput): ProjectSubscriptionPayload
   relatedParty(where: RelatedPartySubscriptionWhereInput): RelatedPartySubscriptionPayload
+  sonCompany(where: SonCompanySubscriptionWhereInput): SonCompanySubscriptionPayload
   stdSubject(where: StdSubjectSubscriptionWhereInput): StdSubjectSubscriptionPayload
   subjectContrast(where: SubjectContrastSubscriptionWhereInput): SubjectContrastSubscriptionPayload
   tbSubject(where: TbSubjectSubscriptionWhereInput): TbSubjectSubscriptionPayload

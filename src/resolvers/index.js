@@ -8,6 +8,7 @@ const { Project } = require('./Project')
 const { Member } = require('./Member')
 const {RelatedParty} = require('./RelatedParty')
 const {MergeProject} = require('./MergeProject')
+const {SonCompany} = require('./SonCompany')
 // const {GraphQLUpload} = require("apollo-server-express")
 
 const resolvers = {
@@ -21,6 +22,7 @@ const resolvers = {
   Member,
   RelatedParty,
   MergeProject,
+  SonCompany,
 }
 
 module.exports = {

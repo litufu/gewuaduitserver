@@ -625,7 +625,7 @@ const Mutation = {
       throw new Error("未发现数据记录")
     }
   },
-  createMergeProject:async (parent, {parentCompanyName, sonCompanyNames,startTime,endTime,userEmails}, ctx) => {
+  createMergeProject:async (parent, {parentCompanyName, sonCompanys,startTime,endTime,userEmails}, ctx) => {
     // 创建者
     const userId = getUserId(ctx)
     const user = await ctx.prisma.user({ id: userId })
@@ -653,7 +653,27 @@ const Mutation = {
       throw new Error("本所已经创建该项目，无法重复创建")
     }
 
-    const sonCompanyNamesObjs = sonCompanyNames.map(companyName=>({name:companyName}))
+    const sonCompanyIds = []
+    for(let i=0;i<sonCompanys.length;i++){
+      const sonCompanies = await ctx.prisma.sonCompanies({
+        where:{
+          AND:[
+            {type:sonCompanys[i].sonType},
+            {company:{name:sonCompanys[i].sonCompanyName}}
+          ]
+        }
+      })
+      if(sonCompanies.length===0){
+        const newSonCompany = await ctx.prisma.createSonCompany({
+          type:sonCompanys[i].sonType,
+          company:{connect:{name:sonCompanys[i].sonCompanyName}}
+        })
+        sonCompanyIds.push({id:newSonCompany.id})
+      }else{
+        sonCompanyIds.push({id:sonCompanies[0].id})
+      }
+    }
+
     const userEmailsObjs = newUserEmails.map(userEmail=>({email:userEmail}))
 
     const mergeProject = await ctx.prisma.createMergeProject({
@@ -661,7 +681,7 @@ const Mutation = {
       endTime,
       parentCompany:{connect:{name:parentCompanyName}},
       accountingFirm:{connect:{id:accountingFirm.id}},
-      sonCompanies:{connect:sonCompanyNamesObjs},
+      sonCompanies:{connect:sonCompanyIds},
       users:{connect:userEmailsObjs}
     })
    

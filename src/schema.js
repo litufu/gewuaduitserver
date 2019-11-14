@@ -59,7 +59,7 @@ const typeDefs = gql`
     uploadDataFiles(uploads:[UploadTypeInput!]!,companyName:String!,startTime:DateTime!,endTime:DateTime!):Boolean
     addDataRecordUsers(userEmails:[String],companyName:String!,startTime:DateTime!,endTime:DateTime!):DataRecord!
     createProject(members:[MemberInput],companyName:String!,startTime:DateTime!,endTime:DateTime!):Project
-    createMergeProject(parentCompanyName:String!,sonCompanyNames:[String!]!,startTime:DateTime!,endTime:DateTime!,userEmails:[String]):MergeProject
+    createMergeProject(parentCompanyName:String!,sonCompanys:[SonCompanyInput!]!,startTime:DateTime!,endTime:DateTime!,userEmails:[String]):MergeProject
     projectInitData(projectId:String!):Boolean!
     addAduitAdjustment(projectId:String!,record:String!):Boolean!
     deleteAdutiAdjustment(projectId:String!,vocherNum:Int!,vocherType:String!):Boolean!
@@ -91,6 +91,11 @@ const typeDefs = gql`
   input UploadTypeInput{
     file:Upload!
     type:String!
+  }
+
+  input SonCompanyInput{
+    sonType:String!
+    sonCompanyName:String!
   }
 
   enum FileType{
@@ -258,15 +263,21 @@ type Vedio{
     project:Project!
 }
 
-  type MergeProject{
-    id: ID!
-    accountingFirm:AccountingFirm!
-    sonCompanies:[Company]
-    parentCompany:Company! 
-    startTime:DateTime!
-    endTime:DateTime!
-    users:[User!]!
-  }
+type MergeProject{
+  id: ID!
+  accountingFirm:AccountingFirm!
+  sonCompanies:[SonCompany]
+  parentCompany:Company!
+  startTime:DateTime!
+  endTime:DateTime!
+  users:[User]
+}
+
+type SonCompany{
+  id: ID!
+  type:String!
+  company:Company
+}
 
   type Project{
     id: ID!
